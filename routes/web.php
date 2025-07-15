@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Device\DeviceController;
 use App\Http\Controllers\Device\MaintenanceController;
+use App\Http\Controllers\Barang\BarangController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -28,6 +29,13 @@ Route::middleware('auth')->group(function () {
 
     // Riwayat perawatan
     Route::get('/device/{id}/riwayat', [DeviceController::class, 'riwayat'])->name('device.riwayat');
+
+        // ========= ✅ BARANG (USER PUBLIK) =========
+    Route::get('/barang', [BarangController::class, 'index'])->name('barang.index'); // lihat stok
+    Route::get('/barang/request', [BarangController::class, 'createRequest'])->name('barang.request'); // form
+    Route::post('/barang/request', [BarangController::class, 'storeRequest'])->name('barang.request.store'); // simpan
+    Route::get('/barang/history', [BarangController::class, 'history'])->name('barang.history'); // riwayat
+
 });
 
 require __DIR__.'/auth.php';
