@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TransaksiBarang extends Model
 {
-    // ❗ Tambahkan ini untuk eksplisit nama tabel
     protected $table = 'transaksi_barang';
 
     protected $primaryKey = 'no_transaksi';
