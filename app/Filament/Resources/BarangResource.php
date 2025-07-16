@@ -14,11 +14,11 @@ use Filament\Tables\Columns\TextColumn;
 class BarangResource extends Resource
 {
     protected static ?string $model = Barang::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-archive-box';
-    protected static ?string $navigationLabel = 'Barang';
+    protected static ?string $navigationGroup = 'Inventaris Barang';
+    protected static ?int $navigationSort = 1;
+    protected static ?string $navigationLabel = 'Daftar Barang';
     protected static ?string $pluralModelLabel = 'Barang';
-    protected static ?string $navigationGroup = 'Manajemen Inventaris';
+
 
     public static function form(Forms\Form $form): Forms\Form
     {
@@ -38,10 +38,53 @@ class BarangResource extends Resource
                 ->searchable()
                 ->required(),
 
+            Select::make('status_asal')
+                ->label('Asal Barang')
+                ->options([
+                    'TKDN' => 'TKDN',
+                    'PDN' => 'PDN',
+                    'IMPOR' => 'IMPOR',
+                ])
+                ->reactive()
+                ->required(),
+
+            TextInput::make('nilai_tkdn')
+                ->label('Nilai TKDN (%)')
+                ->numeric()
+                ->suffix('%')
+                ->visible(fn ($get) => $get('status_asal') === 'TKDN'),
+
             TextInput::make('stok')
                 ->label('Stok')
                 ->numeric()
-                ->required(),
+                ->required()
+                ->reactive()
+                ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                    $harga = $get('harga_satuan');
+                    if ($harga !== null) {
+                        $set('total_harga', $state * $harga);
+                    }
+                }),
+
+            TextInput::make('harga_satuan')
+                ->label('Harga Satuan')
+                ->numeric()
+                ->prefix('Rp')
+                ->required()
+                ->reactive()
+                ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                    $stok = $get('stok');
+                    if ($stok !== null) {
+                        $set('total_harga', $stok * $state);
+                    }
+                }),
+
+            TextInput::make('total_harga')
+                ->label('Total Harga')
+                ->numeric()
+                ->prefix('Rp')
+                ->disabled()
+                ->dehydrated(false),
         ]);
     }
 
@@ -52,6 +95,7 @@ class BarangResource extends Resource
                 TextColumn::make('kode_barang')->label('Kode')->searchable(),
                 TextColumn::make('nama_barang')->label('Nama')->searchable(),
                 TextColumn::make('kategori.nama_kategori')->label('Kategori'),
+
                 TextColumn::make('stok')
                     ->label('Stok')
                     ->badge()
@@ -60,6 +104,29 @@ class BarangResource extends Resource
                         $state <= 10 => 'warning',
                         default => 'success',
                     }),
+
+                TextColumn::make('harga_satuan')
+                    ->label('Harga Satuan')
+                    ->money('IDR', true),
+
+                TextColumn::make('total_harga')
+                    ->label('Total Harga')
+                    ->money('IDR', true),
+
+                TextColumn::make('status_asal')
+                    ->label('Status Asal')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'TKDN' => 'success',
+                        'PDN' => 'warning',
+                        'IMPOR' => 'danger',
+                        default => 'gray',
+                    }),
+
+                TextColumn::make('nilai_tkdn')
+                    ->label('Nilai TKDN (%)')
+                    ->suffix('%')
+                    ->formatStateUsing(fn ($state, $record) => $record->status_asal === 'TKDN' ? $state : '-'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('kategori_id')

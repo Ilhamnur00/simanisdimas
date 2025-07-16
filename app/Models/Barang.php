@@ -13,7 +13,12 @@ class Barang extends Model
         'nama_barang',
         'kategori_id',
         'stok',
+        'harga_satuan',
+        'total_harga',
+        'status_asal',
+        'nilai_tkdn',
     ];
+
 
     public function kategori()
     {
