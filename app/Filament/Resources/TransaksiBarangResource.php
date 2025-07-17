@@ -11,9 +11,12 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\Placeholder;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use App\Filament\Resources\TransaksiBarangResource\Pages;
+use Filament\Tables\Columns\TextColumn;
+
 
 class TransaksiBarangResource extends Resource
 {
@@ -64,35 +67,11 @@ class TransaksiBarangResource extends Resource
                         ->numeric()
                         ->suffix('%')
                         ->visible(fn ($get) => $get('status_asal') === 'TKDN'),
-                    TextInput::make('stok')
-                        ->label('Stok Awal')
-                        ->numeric()
-                        ->default(0),
-                    TextInput::make('harga_satuan')
-                        ->label('Harga Satuan')
-                        ->numeric()
-                        ->prefix('Rp')
-                        ->required(),
+                    TextInput::make('stok')->label('Stok Awal')->numeric()->default(0),
+                    TextInput::make('harga_satuan')->label('Harga Satuan')->numeric()->prefix('Rp')->required(),
                 ])
                 ->createOptionUsing(fn (array $data) => Barang::create($data))
                 ->reactive(),
-
-            // Pilihan status_asal untuk setiap transaksi baru
-            Select::make('status_asal')
-                ->label('Status Pengadaan')
-                ->options([
-                    'TKDN' => 'TKDN',
-                    'PDN' => 'PDN',
-                    'IMPOR' => 'IMPOR',
-                ])
-                ->required()
-                ->reactive(),
-
-            TextInput::make('nilai_tkdn')
-                ->label('Nilai TKDN (%)')
-                ->numeric()
-                ->suffix('%')
-                ->visible(fn ($get) => $get('status_asal') === 'TKDN'),
 
             TextInput::make('jumlah_barang')
                 ->label('Jumlah Barang')
@@ -114,15 +93,36 @@ class TransaksiBarangResource extends Resource
                     $set('total_harga', (float) $get('jumlah_barang') * (float) $get('harga_satuan'))
                 ),
 
+            Select::make('status_asal')
+                ->label('Asal Barang')
+                ->options([
+                    'TKDN' => 'TKDN',
+                    'PDN' => 'PDN',
+                    'IMPOR' => 'IMPOR',
+                ])
+                ->required(fn ($get) => $get('jenis_transaksi') === 'masuk')
+                ->visible(fn ($get) => $get('jenis_transaksi') === 'masuk')
+                ->reactive(),
+
+            TextInput::make('nilai_tkdn')
+                ->label('Nilai TKDN (%)')
+                ->numeric()
+                ->suffix('%')
+                ->visible(fn ($get) => $get('status_asal') === 'TKDN' && $get('jenis_transaksi') === 'masuk'),
+
             TextInput::make('total_harga')
                 ->label('Total Harga')
                 ->prefix('Rp')
                 ->disabled()
                 ->dehydrated(false)
-                ->visible(fn ($get) => $get('jenis_transaksi') === 'masuk')
-                ->afterStateHydrated(fn ($set, $record) =>
-                    $set('total_harga', $record?->total_harga ?? 0)
-                ),
+                ->visible(fn ($get) => $get('jenis_transaksi') === 'masuk'),
+
+            Placeholder::make('kategori_placeholder')
+                ->label('Kategori Barang')
+                ->content(fn ($get) => optional(Barang::find($get('barang_id')))?->kategori?->nama_kategori ?? '-')
+                ->visible(fn ($get) => filled($get('barang_id'))),
+
+            DatePicker::make('tanggal')->label('Tanggal Transaksi')->required(),
 
             Select::make('status')
                 ->label('Status')
@@ -133,9 +133,6 @@ class TransaksiBarangResource extends Resource
                 ])
                 ->default('pending')
                 ->required(),
-
-            DatePicker::make('tanggal')->label('Tanggal Transaksi')->required(),
-
         ])->columns(2);
     }
 
@@ -188,5 +185,26 @@ class TransaksiBarangResource extends Resource
         return [
             'index' => Pages\ManageTransaksiBarangs::route('/'),
         ];
+    }
+
+    public static function afterCreate($record)
+    {
+        $barang = $record->barang;
+        if ($record->jenis_transaksi === 'masuk') {
+            $barang->stok += $record->jumlah_barang;
+            $barang->harga_satuan = $record->harga_satuan;
+            $barang->status_asal = $record->status_asal;
+            $barang->nilai_tkdn = $record->status_asal === 'TKDN' ? $record->nilai_tkdn : null;
+        } elseif ($record->jenis_transaksi === 'keluar') {
+            if ($barang->stok < $record->jumlah_barang) {
+                Notification::make()
+                    ->title('Stok tidak mencukupi untuk transaksi keluar.')
+                    ->danger()
+                    ->send();
+                return;
+            }
+            $barang->stok -= $record->jumlah_barang;
+        }
+        $barang->save();
     }
 }

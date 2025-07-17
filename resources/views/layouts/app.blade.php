@@ -44,11 +44,19 @@
                     </button>
                     <div x-show="open" x-cloak class="ml-4 space-y-1 text-white">
                         <a href="{{ route('devices.index') }}" class="block px-3 py-1 hover:underline">Manajemen Device</a>
-                        <a href="{{ route('devices.show', optional(\App\Models\Device::where('user_id', auth()->id())->first())->id) }}"
-                           class="block px-3 py-1 hover:underline">Laporan Perawatan</a>
-                        <a href="{{ route('device.riwayat', optional(\App\Models\Device::where('user_id', auth()->id())->first())->id) }}"
-                           class="block px-3 py-1 hover:underline">Riwayat Device</a>
-                    </div>
+                        @php
+                            $userDevice = \App\Models\Device::where('user_id', auth()->id())->first();
+                        @endphp
+
+                        @if ($userDevice)
+                            <a href="{{ route('devices.show', $userDevice->id) }}"
+                            class="block px-3 py-1 hover:underline">Laporan Perawatan</a>
+                            <a href="{{ route('device.riwayat', $userDevice->id) }}"
+                            class="block px-3 py-1 hover:underline">Riwayat Device</a>
+                        @else
+                            <span class="block px-3 py-1 text-gray-400">Laporan Perawatan (belum ada device)</span>
+                            <span class="block px-3 py-1 text-gray-400">Riwayat Device (belum ada device)</span>
+                        @endif
                 </div>
 
                 <!-- Kendaraan -->

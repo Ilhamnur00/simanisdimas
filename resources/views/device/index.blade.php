@@ -11,17 +11,17 @@
                 <p class="mt-1 text-slate-600 text-base">Aplikasi Inventaris Dinas Komunikasi dan Informatika</p>
                 <p class="text-sm italic text-slate-500">“Laporan Perawatan Perangkat oleh Pengguna”</p>
             </div>
-
             @php
-                $myDevice = $devices->firstWhere('user_id', auth()->id());
+                $myDevice = $devices->first();
             @endphp
 
             @if ($myDevice)
                 <a href="{{ route('devices.show', $myDevice->id) }}"
-                   class="inline-flex items-center px-5 py-2 bg-sky-700 hover:bg-sky-800 text-white text-sm font-medium rounded-lg shadow-md transition">
+                class="inline-flex items-center px-5 py-2 bg-sky-700 hover:bg-sky-800 text-white text-sm font-medium rounded-lg shadow-md transition">
                     + Laporkan Perawatan
                 </a>
             @endif
+
         </div>
 
         <!-- Tabel -->
