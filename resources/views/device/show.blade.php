@@ -6,7 +6,7 @@
     <div class="max-w-5xl mx-auto py-12 px-6">
         <!-- Header -->
         <div class="mb-10 text-center">
-            <h2 class="text-4xl font-extrabold text-slate-900">Laporan Perawatan Device</h2>
+            <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#003973] via-[#2980B9] to-[#6DD5FA] drop-shadow">Laporan Perawatan Device</h2>
             <p class="text-slate-500 mt-2 text-lg">Formulir pelaporan untuk perawatan perangkat Diskominfo</p>
         </div>
 
@@ -91,7 +91,7 @@
                 <!-- Tombol Submit -->
                 <div class="pt-6 text-right">
                     <button type="submit"
-                        class="px-6 py-2 bg-sky-700 hover:bg-sky-800 text-white font-semibold rounded-lg shadow-md transition">
+                        class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-2 rounded-md shadow-md hover:opacity-90 transition text-sm">
                         Kirim Laporan
                     </button>
                 </div>

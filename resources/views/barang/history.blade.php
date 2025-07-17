@@ -14,43 +14,43 @@
             @endif
 
             <div class="bg-white border border-slate-200 shadow-xl rounded-2xl overflow-x-auto">
-                <table class="min-w-full divide-y divide-slate-200 text-sm">
-                    <thead class="bg-gradient-to-r from-sky-700 to-teal-600 text-white uppercase text-xs font-semibold">
+                <table class="min-w-full divide-y divide-slate-200 text-sm text-left">
+                    <thead class="bg-gradient-to-r from-sky-700 to-teal-600 text-white text-xs uppercase font-semibold">
                         <tr>
-                            <th class="px-5 py-4">#</th>
-                            <th class="px-5 py-4">Tanggal</th>
-                            <th class="px-5 py-4">Kategori</th>
-                            <th class="px-5 py-4">Nama Barang</th>
-                            <th class="px-5 py-4 text-center">Jumlah</th>
-                            <th class="px-5 py-4 text-center">Status</th>
-                            <th class="px-5 py-4 text-center">Aksi</th>
+                            <th class="px-6 py-4">#</th>
+                            <th class="px-6 py-4">Tanggal</th>
+                            <th class="px-6 py-4">Kategori</th>
+                            <th class="px-6 py-4">Nama Barang</th>
+                            <th class="px-6 py-4 text-center">Jumlah</th>
+                            <th class="px-6 py-4 text-center">Status</th>
+                            <th class="px-6 py-4 text-center">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="text-gray-800">
+                    <tbody class="text-gray-800 divide-y divide-slate-100">
                         @forelse ($transaksi as $index => $item)
-                            <tr class="border-t hover:bg-gray-50 hover:shadow-sm transition-all duration-200 ease-in-out">
-                                <td class="px-5 py-4">{{ $index + 1 }}</td>
-                                <td class="px-5 py-4">{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
-                                <td class="px-5 py-4">{{ $item->barang->kategori->nama_kategori ?? '-' }}</td>
-                                <td class="px-5 py-4">{{ $item->barang->nama_barang }}</td>
-                                <td class="px-5 py-4 text-center">{{ $item->jumlah_barang }}</td>
-                                <td class="px-5 py-4 text-center">
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="px-6 py-4">{{ $index + 1 }}</td>
+                                <td class="px-6 py-4">{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
+                                <td class="px-6 py-4">{{ $item->barang->kategori->nama_kategori ?? '-' }}</td>
+                                <td class="px-6 py-4">{{ $item->barang->nama_barang }}</td>
+                                <td class="px-6 py-4 text-center">{{ $item->jumlah_barang }}</td>
+                                <td class="px-6 py-4 text-center">
                                     <span class="inline-block px-3 py-1 text-xs font-bold rounded-full transition
                                         {{ $item->status === 'pending' ? 'bg-yellow-200 text-yellow-800' :
                                             ($item->status === 'disetujui' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800') }}">
                                         {{ ucfirst($item->status) }}
                                     </span>
                                 </td>
-                                <td class="px-5 py-4 text-center">
+                                <td class="px-6 py-4 text-center">
                                     <button onclick="showDetail({{ $index }})"
-                                        class="text-indigo-600 hover:text-indigo-900 font-semibold text-sm underline transition duration-150">
+                                        class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-2 rounded-md shadow-md hover:opacity-90 transition text-sm">
                                         Lihat Detail
                                     </button>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-5 py-6 text-center text-gray-500">Belum ada permintaan barang.</td>
+                                <td colspan="7" class="px-6 py-6 text-center text-gray-500">Belum ada permintaan barang.</td>
                             </tr>
                         @endforelse
                     </tbody>

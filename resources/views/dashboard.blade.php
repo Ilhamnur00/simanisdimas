@@ -10,8 +10,8 @@
         </div>
     </x-slot>
 
-    <div class="py-12 bg-gradient-to-b from-slate-100 via-white to-white min-h-screen">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+    <div class="bg-gradient-to-b from-slate-100 via-white to-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
 
             {{-- Statistik Ringkasan --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

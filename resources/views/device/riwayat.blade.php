@@ -6,7 +6,7 @@
     <div class="max-w-7xl mx-auto py-10 px-6">
         <!-- Header -->
         <div class="mb-8">
-            <h2 class="text-4xl font-bold text-slate-900 tracking-tight">
+            <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#003973] via-[#2980B9] to-[#6DD5FA] drop-shadow">
                 Riwayat Perawatan
             </h2>
             <p class="text-slate-500 mt-1 text-base">
@@ -50,8 +50,8 @@
                             </td>
                             <td class="px-6 py-4">
                                 <button onclick="openModal({{ $index }})"
-                                    class="bg-sky-600 hover:bg-sky-700 text-white text-xs px-4 py-1.5 font-semibold rounded-md shadow-sm">
-                                    Detail
+                                    class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-2 rounded-md shadow-md hover:opacity-90 transition text-sm">
+                                    Lihat Detail
                                 </button>
                             </td>
                         </tr>

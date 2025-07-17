@@ -10,12 +10,13 @@
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-8">
         <div class="bg-white shadow-xl rounded-xl p-6">
 
-            {{-- Filter bar: sejajar --}}
+            {{-- Filter Bar --}}
             <div class="flex flex-wrap md:flex-nowrap gap-4 mb-6 items-end">
                 {{-- Input Search --}}
                 <div class="flex-1 min-w-[200px]">
                     <label for="searchInput" class="block text-sm font-medium text-gray-700">Nama Barang</label>
-                    <input type="text" id="searchInput" placeholder="Contoh: Proyektor, Meja..."
+                    <input type="text" id="searchInput" name="search"
+                        placeholder="Contoh: Proyektor, Meja..."
                         value="{{ request('search') }}"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm" />
                 </div>
@@ -23,7 +24,7 @@
                 {{-- Dropdown Kategori --}}
                 <div class="flex-1 min-w-[180px]">
                     <label for="kategoriSelect" class="block text-sm font-medium text-gray-700">Kategori</label>
-                    <select id="kategoriSelect"
+                    <select id="kategoriSelect" name="kategori"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 sm:text-sm">
                         <option value="">Semua Kategori</option>
                         @foreach(\App\Models\Kategori::all() as $kategori)
@@ -53,28 +54,28 @@
                 </div>
             </div>
 
-            {{-- Tabel --}}
+            {{-- Tabel Data --}}
             <div class="bg-white border border-slate-200 shadow-xl rounded-2xl overflow-x-auto">
                 <table class="min-w-full divide-y divide-slate-200 text-sm">
-                    <thead class="bg-gradient-to-r from-sky-700 to-teal-600 text-white uppercase text-xs font-semibold">
+                    <thead class="bg-gradient-to-r from-sky-700 to-teal-600 text-white uppercase text-xs font-semibold text-left">
                         <tr>
-                            <th class="px-4 py-3 w-1/6 font-semibold">Kode</th>
-                            <th class="px-4 py-3 w-1/3 font-semibold">Nama Barang</th>
-                            <th class="px-4 py-3 w-1/4 font-semibold">Kategori</th>
-                            <th class="px-4 py-3 w-1/6 font-semibold">Stok</th>
+                            <th class="px-6 py-3">Kode</th>
+                            <th class="px-6 py-3">Nama Barang</th>
+                            <th class="px-6 py-3">Kategori</th>
+                            <th class="px-6 py-3 text-center">Stok</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="bg-white divide-y divide-gray-100">
                         @forelse ($barang as $item)
-                            <tr class="border-b hover:bg-slate-50 transition">
-                                <td class="px-4 py-2">{{ $item->kode_barang }}</td>
-                                <td class="px-4 py-2">{{ $item->nama_barang }}</td>
-                                <td class="px-4 py-2">{{ $item->kategori->nama_kategori }}</td>
-                                <td class="px-4 py-2">{{ $item->stok }}</td>
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="px-6 py-3 whitespace-nowrap">{{ $item->kode_barang }}</td>
+                                <td class="px-6 py-3 whitespace-nowrap">{{ $item->nama_barang }}</td>
+                                <td class="px-6 py-3 whitespace-nowrap">{{ $item->kategori->nama_kategori }}</td>
+                                <td class="px-6 py-3 text-center font-semibold">{{ $item->stok }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-4 py-4 text-center text-gray-500">
+                                <td colspan="4" class="px-6 py-4 text-center text-gray-500">
                                     Tidak ada barang ditemukan.
                                 </td>
                             </tr>
