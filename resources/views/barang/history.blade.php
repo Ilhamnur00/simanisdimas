@@ -1,56 +1,56 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            📜 Riwayat Permintaan Barang
+        <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#003973] via-[#2980B9] to-[#6DD5FA] drop-shadow">
+            Riwayat Permintaan Barang
         </h2>
     </x-slot>
 
-    <div class="py-6">
+    <div class="py-8">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
             @if (session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 shadow">
                     {{ session('success') }}
                 </div>
             @endif
 
-            <div class="bg-white shadow-md rounded-lg overflow-hidden">
-                <table class="w-full table-auto border-collapse">
-                    <thead class="bg-gray-100 text-left text-gray-700">
+            <div class="bg-white border border-slate-200 shadow-xl rounded-2xl overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200 text-sm">
+                    <thead class="bg-gradient-to-r from-sky-700 to-teal-600 text-white uppercase text-xs font-semibold">
                         <tr>
-                            <th class="px-4 py-3">#</th>
-                            <th class="px-4 py-3">Tanggal</th>
-                            <th class="px-4 py-3">Kategori</th>
-                            <th class="px-4 py-3">Nama Barang</th>
-                            <th class="px-4 py-3 text-center">Jumlah</th>
-                            <th class="px-4 py-3 text-center">Status</th>
-                            <th class="px-4 py-3 text-center">Aksi</th>
+                            <th class="px-5 py-4">#</th>
+                            <th class="px-5 py-4">Tanggal</th>
+                            <th class="px-5 py-4">Kategori</th>
+                            <th class="px-5 py-4">Nama Barang</th>
+                            <th class="px-5 py-4 text-center">Jumlah</th>
+                            <th class="px-5 py-4 text-center">Status</th>
+                            <th class="px-5 py-4 text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-800">
                         @forelse ($transaksi as $index => $item)
-                            <tr class="border-t">
-                                <td class="px-4 py-3">{{ $index + 1 }}</td>
-                                <td class="px-4 py-3">{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
-                                <td class="px-4 py-3">{{ $item->barang->kategori->nama_kategori ?? '-' }}</td>
-                                <td class="px-4 py-3">{{ $item->barang->nama_barang }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item->jumlah_barang }}</td>
-                                <td class="px-4 py-3 text-center">
-                                    <span class="inline-block px-2 py-1 text-xs font-semibold rounded
-                                        {{ $item->status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                                            ($item->status === 'disetujui' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700') }}">
+                            <tr class="border-t hover:bg-gray-50 hover:shadow-sm transition-all duration-200 ease-in-out">
+                                <td class="px-5 py-4">{{ $index + 1 }}</td>
+                                <td class="px-5 py-4">{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
+                                <td class="px-5 py-4">{{ $item->barang->kategori->nama_kategori ?? '-' }}</td>
+                                <td class="px-5 py-4">{{ $item->barang->nama_barang }}</td>
+                                <td class="px-5 py-4 text-center">{{ $item->jumlah_barang }}</td>
+                                <td class="px-5 py-4 text-center">
+                                    <span class="inline-block px-3 py-1 text-xs font-bold rounded-full transition
+                                        {{ $item->status === 'pending' ? 'bg-yellow-200 text-yellow-800' :
+                                            ($item->status === 'disetujui' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800') }}">
                                         {{ ucfirst($item->status) }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-center">
-                                    <button onclick="showDetail({ $index })"
-                                        class="text-blue-600 hover:text-blue-800 font-medium text-sm underline">
+                                <td class="px-5 py-4 text-center">
+                                    <button onclick="showDetail({{ $index }})"
+                                        class="text-indigo-600 hover:text-indigo-900 font-semibold text-sm underline transition duration-150">
                                         Lihat Detail
                                     </button>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-4 py-6 text-center text-gray-500">Belum ada permintaan barang.</td>
+                                <td colspan="7" class="px-5 py-6 text-center text-gray-500">Belum ada permintaan barang.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -60,9 +60,9 @@
     </div>
 
     {{-- MODAL DETAIL --}}
-    <div id="detailModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-        <div class="bg-white w-full max-w-md mx-auto rounded shadow-lg p-6 relative">
-            <h3 class="text-lg font-bold mb-4">📦 Detail Permintaan Barang</h3>
+    <div id="detailModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm hidden transition-opacity duration-300 ease-in-out">
+        <div class="bg-white/90 backdrop-blur-xl w-full max-w-md mx-auto rounded-2xl shadow-2xl p-6 border border-gray-200 animate-fade-in">
+            <h3 class="text-xl font-bold mb-4 text-slate-800">📦 Detail Permintaan Barang</h3>
 
             <div class="space-y-2 text-sm text-gray-700">
                 <p><strong>Tanggal:</strong> <span id="detailTanggal"></span></p>
@@ -72,20 +72,20 @@
                 <p><strong>Status:</strong> <span id="detailStatus"></span></p>
             </div>
 
-            <div class="text-right mt-4">
-                <button onclick="closeModal()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
+            <div class="text-right mt-5">
+                <button onclick="closeModal()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow">
                     Tutup
                 </button>
             </div>
         </div>
     </div>
 
-    {{-- JSON Data untuk Script --}}
+    {{-- JSON Data --}}
     <script id="transaksi-data" type="application/json">
         {!! $transaksi->toJson() !!}
     </script>
 
-    {{-- Script untuk Popup --}}
+    {{-- Script --}}
     <script>
         const transaksi = JSON.parse(document.getElementById('transaksi-data').textContent);
 
@@ -115,4 +115,15 @@
             return str.charAt(0).toUpperCase() + str.slice(1);
         }
     </script>
+
+    <style>
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fade-in 0.3s ease-out forwards;
+        }
+    </style>
 </x-app-layout>

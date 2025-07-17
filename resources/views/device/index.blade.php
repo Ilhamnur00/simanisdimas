@@ -25,9 +25,9 @@
         </div>
 
         <!-- Tabel -->
-        <div class="overflow-x-auto bg-white border border-slate-200 shadow-lg rounded-2xl">
-            <table class="min-w-full divide-y divide-slate-200 text-sm text-slate-700">
-                <thead class="bg-sky-700 text-white uppercase text-xs">
+        <div class="bg-white border border-slate-200 shadow-xl rounded-2xl overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200 text-sm">
+                <thead class="bg-gradient-to-r from-sky-700 to-teal-600 text-white uppercase text-xs font-semibold">
                     <tr>
                         <th class="px-6 py-3 text-left font-semibold tracking-wide">ID Device</th>
                         <th class="px-6 py-3 text-left font-semibold">Nama User</th>
