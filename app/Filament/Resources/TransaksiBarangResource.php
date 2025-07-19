@@ -98,25 +98,34 @@ class TransaksiBarangResource extends Resource
                 ->sortable()
                 ->searchable(),
 
+            TextColumn::make('jenis_transaksi')
+                ->label('Jenis')
+                ->badge() // aktifkan tampilan badge
+                ->color(fn (string $state): string => match ($state) {
+                    'masuk' => 'success',
+                    'keluar' => 'danger',
+                    default => 'gray',
+                })
+                ->formatStateUsing(fn ($state) => ucfirst($state)),
+
             TextColumn::make('user.name')
-                ->label('Nama User')
+                ->label('User')
                 ->sortable()
-                ->searchable(),
+                ->searchable()
+                ->wrap(),
 
             TextColumn::make('barang.nama_barang')
-                ->label('Nama Barang')
+                ->label('Barang')
                 ->sortable()
-                ->searchable(),
-
-            TextColumn::make('jenis_transaksi')
-                ->label('Jenis'),
+                ->searchable()
+                ->wrap(),
 
             TextColumn::make('jumlah_barang')
                 ->label('Jumlah'),
 
             TextColumn::make('detailBarang.harga_satuan')
-                ->label('Harga Satuan')
-                ->money('IDR', true), // tampilkan format uang
+                ->label('Harga')
+                ->money('IDR', true),
 
             TextColumn::make('detailBarang.total_harga')
                 ->label('Total Harga')
