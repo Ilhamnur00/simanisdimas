@@ -2,209 +2,172 @@
 
 namespace App\Filament\Resources;
 
-use App\Models\TransaksiBarang;
 use App\Models\Barang;
-use Filament\Resources\Resource;
+use App\Models\DetailBarang;
+use App\Models\TransaksiBarang;
+use App\Filament\Resources\TransaksiBarangResource\Pages;
 use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Forms\Components\Select;
+use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder;
-use Filament\Notifications\Notification;
-use Illuminate\Support\Facades\Auth;
-use App\Filament\Resources\TransaksiBarangResource\Pages;
+use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
-
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Support\Facades\Auth;
 
 class TransaksiBarangResource extends Resource
 {
     protected static ?string $model = TransaksiBarang::class;
-
-    protected static ?string $navigationGroup = 'Inventaris Barang';
+    protected static ?string $navigationIcon = 'heroicon-o-arrows-right-left';
     protected static ?string $navigationLabel = 'Transaksi Barang';
-    protected static ?string $pluralModelLabel = 'Transaksi Barang';
-    protected static ?int $navigationSort = 3;
 
-    public static function form(Forms\Form $form): Forms\Form
+    public static function form(Form $form): Form
     {
         return $form->schema([
-            Hidden::make('user_id')->default(fn () => Auth::id()),
-
             Select::make('jenis_transaksi')
                 ->label('Jenis Transaksi')
                 ->options([
-                    'masuk' => 'Masuk (Pengadaan)',
-                    'keluar' => 'Keluar (Permintaan)',
+                    'masuk' => 'Masuk',
+                    'keluar' => 'Keluar',
                 ])
-                ->required()
-                ->reactive(),
+                ->live()
+                ->required(),
 
             Select::make('barang_id')
-                ->label('Barang')
-                ->relationship('barang', 'nama_barang')
+                ->label('Nama Barang')
+                ->options(fn () => Barang::pluck('nama_barang', 'id'))
                 ->searchable()
-                ->required()
-                ->createOptionForm([
-                    TextInput::make('kode_barang')->label('Kode Barang')->required()->unique(ignoreRecord: true),
-                    TextInput::make('nama_barang')->label('Nama Barang')->required(),
-                    Select::make('kategori_id')
-                        ->label('Kategori')
-                        ->relationship('kategori', 'nama_kategori')
-                        ->required(),
-                    Select::make('status_asal')
-                        ->label('Asal Barang')
-                        ->options([
-                            'TKDN' => 'TKDN',
-                            'PDN' => 'PDN',
-                            'IMPOR' => 'IMPOR',
-                        ])
-                        ->required()
-                        ->reactive(),
-                    TextInput::make('nilai_tkdn')
-                        ->label('Nilai TKDN (%)')
-                        ->numeric()
-                        ->suffix('%')
-                        ->visible(fn ($get) => $get('status_asal') === 'TKDN'),
-                    TextInput::make('stok')->label('Stok Awal')->numeric()->default(0),
-                    TextInput::make('harga_satuan')->label('Harga Satuan')->numeric()->prefix('Rp')->required(),
-                ])
-                ->createOptionUsing(fn (array $data) => Barang::create($data))
-                ->reactive(),
+                ->required(),
 
             TextInput::make('jumlah_barang')
                 ->label('Jumlah Barang')
                 ->numeric()
-                ->required()
-                ->reactive()
-                ->afterStateUpdated(fn ($set, $get) =>
-                    $set('total_harga', (float) $get('jumlah_barang') * (float) $get('harga_satuan'))
-                ),
+                ->required(),
 
             TextInput::make('harga_satuan')
                 ->label('Harga Satuan')
                 ->numeric()
-                ->prefix('Rp')
-                ->required(fn ($get) => $get('jenis_transaksi') === 'masuk')
-                ->visible(fn ($get) => $get('jenis_transaksi') === 'masuk')
-                ->reactive()
-                ->afterStateUpdated(fn ($set, $get) =>
-                    $set('total_harga', (float) $get('jumlah_barang') * (float) $get('harga_satuan'))
-                ),
+                ->required(fn (Forms\Get $get) => $get('jenis_transaksi') === 'masuk')
+                ->hidden(fn (Forms\Get $get) => $get('jenis_transaksi') !== 'masuk'),
 
             Select::make('status_asal')
-                ->label('Asal Barang')
+                ->label('Asal Pengadaan')
                 ->options([
                     'TKDN' => 'TKDN',
                     'PDN' => 'PDN',
                     'IMPOR' => 'IMPOR',
                 ])
-                ->required(fn ($get) => $get('jenis_transaksi') === 'masuk')
-                ->visible(fn ($get) => $get('jenis_transaksi') === 'masuk')
-                ->reactive(),
+                ->required(fn (Forms\Get $get) => $get('jenis_transaksi') === 'masuk')
+                ->hidden(fn (Forms\Get $get) => $get('jenis_transaksi') !== 'masuk')
+                ->live(),
 
             TextInput::make('nilai_tkdn')
                 ->label('Nilai TKDN (%)')
                 ->numeric()
                 ->suffix('%')
-                ->visible(fn ($get) => $get('status_asal') === 'TKDN' && $get('jenis_transaksi') === 'masuk'),
+                ->required(fn (Forms\Get $get) => $get('status_asal') === 'TKDN')
+                ->hidden(fn (Forms\Get $get) => $get('status_asal') !== 'TKDN'),
+            
+            DatePicker::make('tanggal')
+                ->label('Tanggal')
+                ->required(),
 
             TextInput::make('total_harga')
-                ->label('Total Harga')
-                ->prefix('Rp')
-                ->disabled()
-                ->dehydrated(false)
-                ->visible(fn ($get) => $get('jenis_transaksi') === 'masuk'),
-
-            Placeholder::make('kategori_placeholder')
-                ->label('Kategori Barang')
-                ->content(fn ($get) => optional(Barang::find($get('barang_id')))?->kategori?->nama_kategori ?? '-')
-                ->visible(fn ($get) => filled($get('barang_id'))),
-
-            DatePicker::make('tanggal')->label('Tanggal Transaksi')->required(),
-
-            Select::make('status')
-                ->label('Status')
-                ->options([
-                    'pending' => 'Pending',
-                    'approved' => 'Disetujui',
-                    'rejected' => 'Ditolak',
-                ])
-                ->default('pending')
-                ->required(),
-        ])->columns(2);
+                ->numeric()
+                ->dehydrated()
+                ->hidden()
+                ->afterStateHydrated(function (TextInput $component, Forms\Get $get) {
+                    $jumlah = $get('jumlah_barang');
+                    $harga = $get('harga_satuan');
+                    if ($jumlah && $harga) {
+                        $component->state($jumlah * $harga);
+                    }
+                }),
+        ]);
     }
 
-    public static function table(Tables\Table $table): Tables\Table
+    public static function table(Table $table): Table
     {
-        return $table
-            ->columns([
-                TextColumn::make('barang.nama_barang')->label('Barang')->searchable(),
-                TextColumn::make('barang.kategori.nama_kategori')->label('Kategori')->toggleable(),
-                TextColumn::make('status_asal')->label('Asal')->badge()->toggleable(),
-                TextColumn::make('nilai_tkdn')->label('TKDN')->suffix('%')->toggleable(),
-                TextColumn::make('jenis_transaksi')->label('Jenis')->badge(),
-                TextColumn::make('jumlah_barang')->label('Jumlah'),
-                TextColumn::make('harga_satuan')->label('Harga')->money('IDR')->sortable()->toggleable(),
-                TextColumn::make('total_harga')->label('Total')->money('IDR')->sortable()->toggleable(),
-                TextColumn::make('status')
-                    ->label('Status')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'approved' => 'success',
-                        'pending' => 'warning',
-                        'rejected' => 'danger',
-                        default => 'gray',
-                    }),
-                TextColumn::make('tanggal')->label('Tanggal')->date('d M Y'),
-                TextColumn::make('user.name')->label('Admin')->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('jenis_transaksi')->options([
-                    'masuk' => 'Masuk',
-                    'keluar' => 'Keluar',
+        return $table->columns([
+            TextColumn::make('id')
+                ->label('No Transaksi')
+                ->formatStateUsing(fn ($state) => 'TRX' . str_pad($state, 3, '0', STR_PAD_LEFT))
+                ->sortable()
+                ->searchable(),
+
+            TextColumn::make('user.name')
+                ->label('Nama User')
+                ->sortable()
+                ->searchable(),
+
+            TextColumn::make('barang.nama_barang')
+                ->label('Nama Barang')
+                ->sortable()
+                ->searchable(),
+
+            TextColumn::make('jenis_transaksi')
+                ->label('Jenis'),
+
+            TextColumn::make('jumlah_barang')
+                ->label('Jumlah'),
+
+            TextColumn::make('detailBarang.harga_satuan')
+                ->label('Harga Satuan')
+                ->money('IDR', true), // tampilkan format uang
+
+            TextColumn::make('detailBarang.total_harga')
+                ->label('Total Harga')
+                ->money('IDR', true),
+
+            TextColumn::make('detailBarang.status_asal')
+                ->label('Pengadaan'),
+
+            TextColumn::make('detailBarang.nilai_tkdn')
+                ->label('Nilai TKDN')
+                ->formatStateUsing(fn ($state) => $state ? rtrim(rtrim(number_format($state, 2, '.', ''), '0'), '.') . '%' : '-'),
+
+            TextColumn::make('tanggal')
+                ->label('Tanggal')
+                ->date(),
+
+            TextColumn::make('status')
+                ->label('Status')
+                ->badge()
+                ->colors([
+                    'primary' => 'Menunggu',
+                    'success' => 'Disetujui',
+                    'danger' => 'Ditolak',
                 ]),
-                Tables\Filters\SelectFilter::make('status')->options([
-                    'pending' => 'Pending',
-                    'approved' => 'Approved',
-                    'rejected' => 'Rejected',
+            
+        ])
+
+        ->filters([
+            SelectFilter::make('jenis_transaksi')
+                ->label('Jenis Transaksi')
+                ->options([
+                    'masuk' => 'Transaksi Masuk',
+                    'keluar' => 'Transaksi Keluar',
                 ]),
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
-            ]);
+        ])
+
+        ->contentGrid(['sm' => 1])
+        ->paginated([10, 25, 50])
+        ->striped()
+        ->actions([])
+        ->bulkActions([])
+        ->recordUrl(null);
     }
+
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageTransaksiBarangs::route('/'),
+            'index' => Pages\ListTransaksiBarangs::route('/'),
+            'create' => Pages\CreateTransaksiBarang::route('/create'),
+            'edit' => Pages\EditTransaksiBarang::route('/{record}/edit'),
         ];
-    }
-
-    public static function afterCreate($record)
-    {
-        $barang = $record->barang;
-        if ($record->jenis_transaksi === 'masuk') {
-            $barang->stok += $record->jumlah_barang;
-            $barang->harga_satuan = $record->harga_satuan;
-            $barang->status_asal = $record->status_asal;
-            $barang->nilai_tkdn = $record->status_asal === 'TKDN' ? $record->nilai_tkdn : null;
-        } elseif ($record->jenis_transaksi === 'keluar') {
-            if ($barang->stok < $record->jumlah_barang) {
-                Notification::make()
-                    ->title('Stok tidak mencukupi untuk transaksi keluar.')
-                    ->danger()
-                    ->send();
-                return;
-            }
-            $barang->stok -= $record->jumlah_barang;
-        }
-        $barang->save();
     }
 }

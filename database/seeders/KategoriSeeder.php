@@ -10,16 +10,15 @@ class KategoriSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            ['kode_kategori' => 'ATK', 'nama_kategori' => 'Alat Tulis Kantor'],
-            ['kode_kategori' => 'ELK', 'nama_kategori' => 'Alat Listrik'],
-            ['kode_kategori' => 'KRT', 'nama_kategori' => 'Kertas'],
-            ['kode_kategori' => 'CLN', 'nama_kategori' => 'Cairan Pembersih'],
-            ['kode_kategori' => 'BHK', 'nama_kategori' => 'Bahan Komputer'],
-            ['kode_kategori' => 'PRC', 'nama_kategori' => 'Percetakan'],
+            ['nama_kategori' => 'Elektronik', 'kode_kategori' => 'ELK'],
+            ['nama_kategori' => 'Meubelair', 'kode_kategori' => 'MBL'],
+            ['nama_kategori' => 'Alat Tulis Kantor', 'kode_kategori' => 'ATK'],
+            ['nama_kategori' => 'Kendaraan', 'kode_kategori' => 'KND'],
+            ['nama_kategori' => 'Jaringan', 'kode_kategori' => 'JRG'],
         ];
 
-        foreach ($data as $kategori) {
-            Kategori::create($kategori);
+        foreach ($data as $item) {
+            Kategori::firstOrCreate(['kode_kategori' => $item['kode_kategori']], $item);
         }
     }
 }

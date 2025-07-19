@@ -2,59 +2,75 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\KategoriResource\Pages;
 use App\Models\Kategori;
-use Filament\Resources\Resource;
 use Filament\Forms;
 use Filament\Tables;
-use App\Filament\Resources\KategoriResource\Pages;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Illuminate\Database\Eloquent\Model;
 
 class KategoriResource extends Resource
 {
     protected static ?string $model = Kategori::class;
-    protected static ?string $navigationGroup = 'Inventaris Barang';
-    protected static ?int $navigationSort = 2;
-    protected static ?string $navigationLabel = 'Kategori';
+
+    protected static ?string $navigationIcon = null;
+
+    protected static ?string $navigationLabel = 'Kategori Barang';
     protected static ?string $pluralModelLabel = 'Kategori';
 
-    public static function form(Forms\Form $form): Forms\Form
+    public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                TextInput::make('kode_kategori')
-                    ->label('Kode Kategori (3 Huruf)')
-                    ->required()
-                    ->minLength(3)
-                    ->maxLength(3)
-                    ->unique(ignoreRecord: true)
-                    ->afterStateUpdated(fn (callable $set, $state) => $set('kode_kategori', strtoupper($state))),
+        return $form->schema([
 
+           Forms\Components\TextInput::make('kode_kategori')
+                ->label('Kode Kategori')
+                ->maxLength(3)
+                ->required()
+                ->rules(['alpha', 'size:3']) // hanya huruf dan tepat 3 karakter
+                ->unique(ignoreRecord: true),
 
-                TextInput::make('nama_kategori')
-                    ->label('Nama Kategori')
-                    ->required()
-                    ->maxLength(50),
-            ]);
+            Forms\Components\TextInput::make('nama_kategori')
+                ->label('Nama Kategori')
+                ->required()
+                ->maxLength(255),
+        ]);
     }
 
-    public static function table(Tables\Table $table): Tables\Table
+    public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('kode_kategori')->label('Kode')->searchable(),
-                TextColumn::make('nama_kategori')->label('Nama')->searchable(),
+                Tables\Columns\TextColumn::make('kode_kategori')
+                    ->label('Kode')
+                    ->sortable()
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('nama_kategori')
+                    ->label('Nama Kategori')
+                    ->sortable()
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('barang_count')
+                    ->label('Jumlah Barang')
+                    ->counts('barang') // gunakan relasi "barang"
+                    ->sortable(),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-            ]);
+            ->defaultSort('id', 'desc');
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return $record->barang()->count() === 0;
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageKategoris::route('/'),
+            'index' => Pages\ListKategoris::route('/'),
+            'create' => Pages\CreateKategori::route('/create'),
+            'edit' => Pages\EditKategori::route('/{record}/edit'),
         ];
     }
 }
