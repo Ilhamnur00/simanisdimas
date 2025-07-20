@@ -125,18 +125,32 @@ class TransaksiBarangResource extends Resource
 
             TextColumn::make('detailBarang.harga_satuan')
                 ->label('Harga')
-                ->money('IDR', true),
+                ->money('IDR', true)
+                ->formatStateUsing(fn ($state, $record) => 
+                    $record->jenis_transaksi === 'masuk' ? $state : null
+                ),
 
             TextColumn::make('detailBarang.total_harga')
                 ->label('Total Harga')
-                ->money('IDR', true),
+                ->money('IDR', true)
+                ->formatStateUsing(fn ($state, $record) => 
+                    $record->jenis_transaksi === 'masuk' ? $state : null
+                ),
 
             TextColumn::make('detailBarang.status_asal')
-                ->label('Pengadaan'),
+                ->label('Pengadaan')
+                ->formatStateUsing(fn ($state, $record) => 
+                    $record->jenis_transaksi === 'masuk' ? $state : null
+                ),
 
             TextColumn::make('detailBarang.nilai_tkdn')
                 ->label('Nilai TKDN')
-                ->formatStateUsing(fn ($state) => $state ? rtrim(rtrim(number_format($state, 2, '.', ''), '0'), '.') . '%' : '-'),
+                ->formatStateUsing(function ($state, $record) {
+                    if ($record->jenis_transaksi === 'masuk' && $record->detailBarang->status_asal === 'TKDN') {
+                        return $state !== null ? rtrim(rtrim(number_format($state, 2, '.', ''), '0'), '.') . '%' : '-';
+                    }
+                    return null;
+                }),
 
             TextColumn::make('tanggal')
                 ->label('Tanggal')

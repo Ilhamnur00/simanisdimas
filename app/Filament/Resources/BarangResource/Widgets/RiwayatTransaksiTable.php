@@ -4,11 +4,11 @@ namespace App\Filament\Resources\BarangResource\Widgets;
 
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Widgets\TableWidget;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Builder;
 use App\Models\TransaksiBarang;
 use App\Models\Barang;
-use Illuminate\Database\Eloquent\Builder;
 
 class RiwayatTransaksiTable extends TableWidget
 {
@@ -16,7 +16,6 @@ class RiwayatTransaksiTable extends TableWidget
     protected static ?int $sort = 2;
 
     public ?Barang $record = null;
-
     protected int | string | array $columnSpan = 'full';
 
     protected function getTableQuery(): Builder
@@ -36,7 +35,12 @@ class RiwayatTransaksiTable extends TableWidget
 
             TextColumn::make('jenis_transaksi')
                 ->label('Jenis')
-                ->badge(),
+                ->badge()
+                ->color(fn (string $state): string => match ($state) {
+                    'masuk' => 'success',
+                    'keluar' => 'danger',
+                    default => 'gray',
+                }),
 
             TextColumn::make('jumlah_barang')
                 ->label('Jumlah')
@@ -51,9 +55,14 @@ class RiwayatTransaksiTable extends TableWidget
                 ->money('IDR', true),
 
             TextColumn::make('status_asal')
-                ->label('Status Asal')
+                ->label('Asal Pengadaan')
                 ->badge()
-                ->color(fn (string $state) => $state === 'TKDN' ? 'success' : 'gray'),
+                ->color(fn (string $state): string => match ($state) {
+                    'TKDN' => 'success',
+                    'PDN' => 'primary',
+                    'IMPOR' => 'warning',
+                    default => 'gray',
+                }),
 
             TextColumn::make('nilai_tkdn')
                 ->label('Nilai TKDN')

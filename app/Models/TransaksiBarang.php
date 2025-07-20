@@ -18,6 +18,12 @@ class TransaksiBarang extends Model
         'status',
         'user_id',
         'detail_barang_id',
+        'barang_id',
+        'harga_satuan',
+        'total_harga',
+        'status_asal',
+        'nilai_tkdn',
+
     ];
 
     public function user()

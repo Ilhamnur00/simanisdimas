@@ -15,16 +15,13 @@ class CreateTransaksiBarang extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $barang = Barang::findOrFail($data['barang_id']);
+        $data['user_id'] = Auth::id();
+        $data['status'] = 'Disetujui';
 
-        // Hanya buat detail_barang saat transaksi masuk
         if ($data['jenis_transaksi'] === 'masuk') {
-            // Ambil nilai TKDN hanya jika status_asal TKDN
             $nilaiTkdn = $data['status_asal'] === 'TKDN' ? ($data['nilai_tkdn'] ?? 0) : null;
-
-            // Hitung total_harga
             $totalHarga = ($data['harga_satuan'] ?? 0) * $data['jumlah_barang'];
 
-            // Cari apakah sudah ada detail_barang dengan kombinasi sama
             $detail = DetailBarang::where('barang_id', $barang->id)
                 ->where('status_asal', $data['status_asal'])
                 ->where('harga_satuan', $data['harga_satuan'])
@@ -33,7 +30,6 @@ class CreateTransaksiBarang extends CreateRecord
                 })
                 ->first();
 
-            // Jika belum ada → buat detail_barang
             if (!$detail) {
                 $detail = DetailBarang::create([
                     'barang_id' => $barang->id,
@@ -44,20 +40,40 @@ class CreateTransaksiBarang extends CreateRecord
                     'total_harga' => $totalHarga,
                 ]);
             } else {
-                // Jika sudah ada → update jumlah dan total_harga
                 $detail->increment('jumlah', $data['jumlah_barang']);
                 $detail->increment('total_harga', $totalHarga);
             }
 
-            // Hubungkan transaksi dengan detail_barang
-            $data['detail_barang_id'] = $detail->id;
-            $data['total_harga'] = $totalHarga;
-        }
+            $barang->increment('stok', $data['jumlah_barang']);
 
-        // Set data umum
-        $data['user_id'] = Auth::id();
-        $data['status'] = 'Disetujui'; // Transaksi admin langsung disetujui
+            $data['detail_barang_id'] = $detail->id;
+            $data['harga_satuan'] = $data['harga_satuan'];
+            $data['status_asal'] = $data['status_asal'];
+            $data['nilai_tkdn'] = $nilaiTkdn;
+            $data['total_harga'] = $totalHarga;
+
+        } elseif ($data['jenis_transaksi'] === 'keluar') {
+            if ($barang->stok < $data['jumlah_barang']) {
+                throw new \Exception('Stok barang tidak mencukupi untuk transaksi keluar.');
+            }
+
+            $barang->decrement('stok', $data['jumlah_barang']);
+
+            $detail = DetailBarang::where('barang_id', $barang->id)->first();
+            if (!$detail) {
+                throw new \Exception('Tidak ditemukan detail barang untuk barang ini.');
+            }
+
+            $data['detail_barang_id'] = $detail->id;
+
+            // ✅ Kosongkan nilai, agar tidak masuk ke database
+            $data['harga_satuan'] = null;
+            $data['status_asal'] = null;
+            $data['nilai_tkdn'] = null;
+            $data['total_harga'] = null;
+        }
 
         return $data;
     }
+
 }
