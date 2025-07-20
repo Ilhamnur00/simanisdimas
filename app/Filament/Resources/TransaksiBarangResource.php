@@ -16,13 +16,15 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 
 class TransaksiBarangResource extends Resource
 {
     protected static ?string $model = TransaksiBarang::class;
-    protected static ?string $navigationIcon = 'heroicon-o-arrows-right-left';
-    protected static ?string $navigationLabel = 'Transaksi Barang';
+    protected static ?string $navigationGroup = 'Inventaris Barang';
+    protected static ?string $navigationIcon = NULL;
+    protected static ?string $navigationLabel = 'Transaksi';
+    protected static ?string $pluralModelLabel = 'Transaksi';
 
     public static function form(Form $form): Form
     {
@@ -45,11 +47,13 @@ class TransaksiBarangResource extends Resource
             TextInput::make('jumlah_barang')
                 ->label('Jumlah Barang')
                 ->numeric()
+                ->minValue(1)
                 ->required(),
 
             TextInput::make('harga_satuan')
                 ->label('Harga Satuan')
                 ->numeric()
+                ->minValue(0)
                 ->required(fn (Forms\Get $get) => $get('jenis_transaksi') === 'masuk')
                 ->hidden(fn (Forms\Get $get) => $get('jenis_transaksi') !== 'masuk'),
 
@@ -68,6 +72,7 @@ class TransaksiBarangResource extends Resource
                 ->label('Nilai TKDN (%)')
                 ->numeric()
                 ->suffix('%')
+                ->minValue(0)
                 ->required(fn (Forms\Get $get) => $get('status_asal') === 'TKDN')
                 ->hidden(fn (Forms\Get $get) => $get('status_asal') !== 'TKDN'),
             
@@ -125,16 +130,19 @@ class TransaksiBarangResource extends Resource
 
             TextColumn::make('detailBarang.harga_satuan')
                 ->label('Harga')
-                ->money('IDR', true)
-                ->formatStateUsing(fn ($state, $record) => 
-                    $record->jenis_transaksi === 'masuk' ? $state : null
+                ->formatStateUsing(fn ($state, $record) =>
+                    $record->jenis_transaksi === 'masuk'
+                        ? 'Rp. ' . number_format($state, 0, ',', '.')
+                        : null
                 ),
 
             TextColumn::make('detailBarang.total_harga')
                 ->label('Total Harga')
                 ->money('IDR', true)
-                ->formatStateUsing(fn ($state, $record) => 
-                    $record->jenis_transaksi === 'masuk' ? $state : null
+                ->formatStateUsing(fn ($state, $record) =>
+                    $record->jenis_transaksi === 'masuk'
+                        ? 'Rp. ' . number_format($state, 0, ',', '.')
+                        : null
                 ),
 
             TextColumn::make('detailBarang.status_asal')
@@ -185,12 +193,16 @@ class TransaksiBarangResource extends Resource
     }
 
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('status', 'Disetujui');
+    }
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListTransaksiBarangs::route('/'),
             'create' => Pages\CreateTransaksiBarang::route('/create'),
-            'edit' => Pages\EditTransaksiBarang::route('/{record}/edit'),
         ];
     }
 }

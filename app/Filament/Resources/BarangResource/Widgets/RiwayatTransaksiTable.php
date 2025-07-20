@@ -48,11 +48,19 @@ class RiwayatTransaksiTable extends TableWidget
 
             TextColumn::make('harga_satuan')
                 ->label('Harga Satuan')
-                ->money('IDR', true),
+                ->formatStateUsing(fn ($state, $record) =>
+                    $record->jenis_transaksi === 'masuk'
+                        ? 'Rp. ' . number_format($state, 0, ',', '.')
+                        : null
+                ),
 
             TextColumn::make('total_harga')
                 ->label('Total Harga')
-                ->money('IDR', true),
+                ->formatStateUsing(fn ($state, $record) =>
+                    $record->jenis_transaksi === 'masuk'
+                        ? 'Rp. ' . number_format($state, 0, ',', '.')
+                        : null
+                ),
 
             TextColumn::make('status_asal')
                 ->label('Asal Pengadaan')
@@ -62,12 +70,18 @@ class RiwayatTransaksiTable extends TableWidget
                     'PDN' => 'primary',
                     'IMPOR' => 'warning',
                     default => 'gray',
-                }),
+                })
+                ->formatStateUsing(fn ($state, $record) => 
+                    $record->jenis_transaksi === 'masuk' ? $state : null
+                ),
 
             TextColumn::make('nilai_tkdn')
                 ->label('Nilai TKDN')
                 ->suffix('%')
-                ->visible(fn ($record) => $record?->status_asal === 'TKDN'),
+                ->visible(fn ($record) => $record?->status_asal === 'TKDN')
+                ->formatStateUsing(fn ($state, $record) => 
+                    $record->jenis_transaksi === 'masuk' ? $state : null
+                ),
         ];
     }
 }

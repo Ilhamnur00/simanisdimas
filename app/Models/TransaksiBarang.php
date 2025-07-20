@@ -38,7 +38,7 @@ class TransaksiBarang extends Model
 
     public function barang()
     {
-        return $this->hasOneThrough(Barang::class, DetailBarang::class, 'id', 'id', 'detail_barang_id', 'barang_id');
+        return $this->belongsTo(Barang::class);
     }
 
 }

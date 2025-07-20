@@ -9,11 +9,11 @@ return new class extends Migration {
         Schema::create('detail_barang', function (Blueprint $table) {
             $table->id();
             $table->foreignId('barang_id')->constrained('barang')->onDelete('cascade');
-            $table->enum('status_asal', ['TKDN', 'PDN', 'IMPOR']);
-            $table->decimal('nilai_tkdn', 5, 2)->nullable(); // Maksimal 999.99
+            $table->enum('status_asal', ['TKDN', 'PDN', 'IMPOR'])->nullable();
+            $table->decimal('nilai_tkdn', 5, 2)->nullable();
             $table->unsignedInteger('jumlah');
-            $table->unsignedBigInteger('harga_satuan');
-            $table->unsignedBigInteger('total_harga');
+            $table->unsignedBigInteger('harga_satuan')->nullable();
+            $table->unsignedBigInteger('total_harga')->nullable();
             $table->timestamps();
         });
     }

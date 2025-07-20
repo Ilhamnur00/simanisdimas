@@ -59,18 +59,17 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-                RoleMiddleware::class . ':admin',
+                RoleMiddleware::class . ':admin|super_admin',
             ]);
     }
 
     public function boot()
     {
-        app()->setLocale('id');
+        app()->setLocale('en');
 
-        // Jika kamu ingin set untuk tampilan saja
         FilamentView::registerRenderHook(
             'head.start',
-            fn () => app()->setLocale('id')
+            fn () => app()->setLocale('en')
         );
     }
 }

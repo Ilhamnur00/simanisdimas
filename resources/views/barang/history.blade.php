@@ -27,7 +27,8 @@
                         </tr>
                     </thead>
                     <tbody class="text-gray-800 divide-y divide-slate-100">
-                        @forelse ($transaksi as $index => $item)
+                        
+                        @forelse ($pengajuan as $index => $item)
                             <tr class="hover:bg-gray-50 transition">
                                 <td class="px-6 py-4">{{ $index + 1 }}</td>
                                 <td class="px-6 py-4">{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
@@ -41,6 +42,7 @@
                                         {{ ucfirst($item->status) }}
                                     </span>
                                 </td>
+
                                 <td class="px-6 py-4 text-center">
                                     <button onclick="showDetail({{ $index }})"
                                         class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-2 rounded-md shadow-md hover:opacity-90 transition text-sm">
@@ -82,15 +84,15 @@
 
     {{-- JSON Data --}}
     <script id="transaksi-data" type="application/json">
-        {!! $transaksi->toJson() !!}
+        {!! $pengajuan->toJson() !!}
     </script>
 
     {{-- Script --}}
     <script>
-        const transaksi = JSON.parse(document.getElementById('transaksi-data').textContent);
+        const pengajuan = JSON.parse(document.getElementById('transaksi-data').textContent);
 
         function showDetail(index) {
-            const data = transaksi[index];
+            const data = pengajuan[index];
             if (!data) return alert("Data tidak ditemukan");
 
             document.getElementById("detailTanggal").textContent = formatTanggal(data.tanggal);

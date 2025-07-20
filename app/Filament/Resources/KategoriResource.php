@@ -16,10 +16,10 @@ class KategoriResource extends Resource
     protected static ?string $model = Kategori::class;
 
     protected static ?string $navigationIcon = null;
-        protected static ?string $navigationGroup = 'Barang';
+    protected static ?string $navigationGroup = 'Inventaris Barang';
 
-    protected static ?string $navigationLabel = 'Kategori Barang';
-    protected static ?string $pluralModelLabel = 'Kategori';
+    protected static ?string $navigationLabel = 'Kategori';
+    protected static ?string $pluralModelLabel = 'Daftar Kategori';
 
     public static function form(Form $form): Form
     {

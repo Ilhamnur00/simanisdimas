@@ -9,11 +9,10 @@ use Filament\Resources\Pages\ListRecords;
 class ListTransaksiBarangs extends ListRecords
 {
     protected static string $resource = TransaksiBarangResource::class;
-
-    protected function getHeaderActions(): array
+        
+    public function getTitle(): string
     {
-        return [
-            Actions\CreateAction::make(),
-        ];
+        return 'Riwayat Transaksi Barang';
     }
+
 }

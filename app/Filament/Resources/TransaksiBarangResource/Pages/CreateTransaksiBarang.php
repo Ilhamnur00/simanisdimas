@@ -11,6 +11,16 @@ use Illuminate\Support\Facades\Auth;
 class CreateTransaksiBarang extends CreateRecord
 {
     protected static string $resource = TransaksiBarangResource::class;
+        
+    public function getTitle(): string
+    {
+        return 'Transaksi Barang';
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Transaksi Baru';
+    }
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
@@ -66,7 +76,6 @@ class CreateTransaksiBarang extends CreateRecord
 
             $data['detail_barang_id'] = $detail->id;
 
-            // ✅ Kosongkan nilai, agar tidak masuk ke database
             $data['harga_satuan'] = null;
             $data['status_asal'] = null;
             $data['nilai_tkdn'] = null;

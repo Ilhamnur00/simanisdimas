@@ -16,7 +16,10 @@ use Filament\Tables\Columns\TextColumn;
 class BarangResource extends Resource
 {
     protected static ?string $model = Barang::class;
-    protected static ?string $navigationIcon = 'heroicon-o-archive-box';
+    protected static ?string $navigationGroup = 'Inventaris Barang' ;
+    protected static ?string $navigationIcon = NULL;
+    protected static ?string $navigationLabel= 'Barang';
+    protected static ?string $pluralModelLabel = 'Daftar Barang';
 
     public static function form(Form $form): Form
     {
@@ -77,9 +80,9 @@ class BarangResource extends Resource
                 }),
         ])->actions([
             Tables\Actions\Action::make('Lihat Detail')
-                ->icon('heroicon-m-eye')
-                ->label('Lihat Detail')
-                ->url(fn (Barang $record) => static::getUrl('view', ['record' => $record]))
+                ->icon('heroicon-s-document-magnifying-glass')
+                ->label('Rincian')
+                ->url(fn (Barang $record) => static::getUrl('rincian', ['record' => $record]))
                 ->openUrlInNewTab(false),
         ]);
     }
@@ -90,7 +93,7 @@ class BarangResource extends Resource
             'index' => Pages\ListBarangs::route('/'),
             'create' => Pages\CreateBarang::route('/create'),
             'edit' => Pages\EditBarang::route('/{record}/edit'),
-            'view' => Pages\ViewBarang::route('/{record}'),
+            'rincian' => Pages\RincianBarang::route('/{record}'),
         ];
     }
 }

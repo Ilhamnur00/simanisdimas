@@ -4,28 +4,24 @@ namespace App\Http\Controllers\Barang;
 
 use Illuminate\Http\Request;
 use App\Models\Barang;
-use App\Models\TransaksiBarang;
 use App\Models\Kategori;
+use App\Models\PengajuanBarang; // gunakan model baru
 use Illuminate\Support\Facades\Auth;
-use app\Http\Controllers\Controller;
+use App\Http\Controllers\Controller;
+
 
 class BarangController extends Controller
 {
-    /**
-     * 1. Tampilkan daftar stok barang (untuk user)
-     */
+    // 1. Tampilkan daftar stok barang
     public function index(Request $request)
     {
         $kategori = Kategori::all();
-
         $query = Barang::with('kategori');
 
-        // Filter berdasarkan nama barang
         if ($request->filled('search')) {
             $query->where('nama_barang', 'like', '%' . $request->search . '%');
         }
 
-        // Filter berdasarkan kategori
         if ($request->filled('kategori')) {
             $query->where('kategori_id', $request->kategori);
         }
@@ -35,9 +31,7 @@ class BarangController extends Controller
         return view('barang.index', compact('barang', 'kategori'));
     }
 
-    /**
-     * 2. Tampilkan form permintaan barang (user)
-     */
+    // 2. Tampilkan form permintaan barang
     public function createRequest()
     {
         $barang = Barang::all();
@@ -46,40 +40,44 @@ class BarangController extends Controller
         return view('barang.request', compact('barang', 'kategori'));
     }
 
-    /**
-     * 3. Simpan permintaan barang (user)
-     */
+    // 3. Simpan permintaan barang ke tabel pengajuan_barang
     public function storeRequest(Request $request)
     {
         $request->validate([
-            'barang_id' => 'required|exists:barang,id', // gunakan nama tabel yang sesuai
+            'barang_id' => 'required|exists:barang,id',
             'jumlah_barang' => 'required|integer|min:1',
             'tanggal' => 'required|date',
         ]);
 
-        TransaksiBarang::create([
+        $barang = Barang::findOrFail($request->barang_id);
+        $stokTersedia = $barang->stok; // dari kolom tabel barang, bukan dari relasi detail_barang
+
+        if ($stokTersedia < $request->jumlah_barang) {
+            return back()->withErrors([
+                'jumlah_barang' => 'Stok barang tidak mencukupi. Stok tersedia: ' . $stokTersedia
+            ])->withInput();
+        }
+
+        // Simpan ke tabel pengajuan_barang
+        PengajuanBarang::create([
             'user_id' => Auth::id(),
-            'barang_id' => $request->barang_id,
+            'barang_id' => $barang->id,
             'jumlah_barang' => $request->jumlah_barang,
-            'jenis_transaksi' => 'keluar',
             'tanggal' => $request->tanggal,
-            'status' => 'pending',
+            'status' => 'Menunggu',
         ]);
 
-        return redirect()->route('barang.history')
-            ->with('success', 'Permintaan barang berhasil dikirim.');
+        return redirect()->back()->with('success', 'Permintaan barang berhasil dikirim.');
     }
 
-    /**
-     * 4. Tampilkan riwayat permintaan barang user
-     */
     public function history()
     {
-        $transaksi = TransaksiBarang::with('barang.kategori')
+        $pengajuan = PengajuanBarang::with('barang.kategori')
             ->where('user_id', Auth::id())
-            ->orderByDesc('tanggal')
+            ->latest()
             ->get();
 
-        return view('barang.history', compact('transaksi'));
+        return view('barang.history', compact('pengajuan'));
     }
+
 }
