@@ -18,7 +18,7 @@ class Barang extends Model
     ];
 
     /**
-     * Boot: Otomatis buat kode_barang berdasarkan kategori
+     * Boot: Otomatis buat kode_barang berdasarkan kategori saat create
      */
     protected static function boot()
     {
@@ -36,7 +36,7 @@ class Barang extends Model
     /**
      * Accessor: Hitung stok dari barang masuk - barang keluar
      */
-    public function getStokAttribute()
+    public function getStokAttribute(): int
     {
         $masuk = $this->detailBarang()->sum('jumlah');
 
@@ -64,25 +64,24 @@ class Barang extends Model
     }
 
     /**
-     * Relasi ke transaksi (lewat detail barang)
-     * Digunakan jika ingin ambil semua transaksi barang ini
+     * Relasi ke transaksi barang (lewat detail barang)
      */
     public function transaksiBarang()
     {
         return $this->hasManyThrough(
             TransaksiBarang::class,
             DetailBarang::class,
-            'barang_id',         // FK di detail_barang
-            'detail_barang_id',  // FK di transaksi_barang
-            'id',                // PK di barang
-            'id'                 // PK di detail_barang
+            'barang_id',         // Foreign key di detail_barang
+            'detail_barang_id',  // Foreign key di transaksi_barang
+            'id',                // Local key di barang
+            'id'                 // Local key di detail_barang
         );
     }
 
     /**
-     * Pengurangan stok: digunakan saat transaksi keluar
+     * Pengurangan stok (FIFO): digunakan saat transaksi keluar
      */
-    public function keluarkanStok($jumlah): void
+    public function keluarkanStok(int $jumlah): void
     {
         $tersisa = $jumlah;
 

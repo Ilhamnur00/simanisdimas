@@ -5,34 +5,42 @@ namespace App\Http\Controllers\Barang;
 use Illuminate\Http\Request;
 use App\Models\Barang;
 use App\Models\Kategori;
-use App\Models\PengajuanBarang; // gunakan model baru
+use App\Models\PengajuanBarang;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
-
 
 class BarangController extends Controller
 {
     public function index(Request $request)
     {
         $kategori = Kategori::all();
-        $query = Barang::with('kategori');
 
+        // Ambil data barang + kategori + total stok dari detail_barang
+        $query = Barang::with(['kategori'])
+            ->withSum('detailBarang', 'jumlah');
+
+        // Filter nama
         if ($request->filled('search')) {
             $query->where('nama_barang', 'like', '%' . $request->search . '%');
         }
 
+        // Filter kategori
         if ($request->filled('kategori')) {
             $query->where('kategori_id', $request->kategori);
         }
 
-        $barang = $query->get();
+        $barang = $query
+            ->withSum('detailBarang', 'jumlah')
+            ->orderBy('nama_barang')
+            ->get()
+            ->filter(fn ($item) => $item->detail_barang_sum_jumlah > 0);
 
         return view('barang.index', compact('barang', 'kategori'));
     }
 
     public function createRequest()
     {
-        $barang = Barang::all();
+        $barang = Barang::withSum('detailBarang', 'jumlah')->get();
         $kategori = Kategori::all();
 
         return view('barang.request', compact('barang', 'kategori'));
@@ -46,12 +54,19 @@ class BarangController extends Controller
             'tanggal' => 'required|date',
         ]);
 
-        $barang = Barang::findOrFail($request->barang_id);
-        $stokTersedia = $barang->stok; // Ambil langsung dari kolom stok di tabel barang
+        $barang = Barang::withSum('detailBarang', 'jumlah')->findOrFail($request->barang_id);
+        $stokTersedia = $barang->detail_barang_sum_jumlah ?? 0;
 
-        if ($stokTersedia < $request->jumlah_barang) {
+        $pengajuanMenunggu = PengajuanBarang::where('user_id', Auth::id())
+            ->where('barang_id', $barang->id)
+            ->where('status', 'Menunggu')
+            ->sum('jumlah_barang');
+
+        $stokSisa = $stokTersedia - $pengajuanMenunggu;
+
+        if ($stokSisa < $request->jumlah_barang) {
             return back()->withErrors([
-                'jumlah_barang' => 'Stok barang tidak mencukupi. Stok tersedia: ' . $stokTersedia
+                'jumlah_barang' => 'Stok tidak mencukupi. Sisa stok tersedia (setelah dikurangi pengajuan sebelumnya): ' . $stokSisa
             ])->withInput();
         }
 
@@ -75,5 +90,4 @@ class BarangController extends Controller
 
         return view('barang.history', compact('pengajuan'));
     }
-
 }

@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->foreignId('barang_id')->constrained('barang')->onDelete('cascade');
             $table->enum('status_asal', ['TKDN', 'PDN', 'IMPOR'])->nullable();
             $table->decimal('nilai_tkdn', 5, 2)->nullable();
-            $table->unsignedInteger('jumlah');
+            $table->Integer('jumlah');
             $table->unsignedBigInteger('harga_satuan')->nullable();
             $table->unsignedBigInteger('total_harga')->nullable();
             $table->timestamps();

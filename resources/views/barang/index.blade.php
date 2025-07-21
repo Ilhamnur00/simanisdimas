@@ -71,7 +71,9 @@
                                 <td class="px-6 py-3 whitespace-nowrap">{{ $item->kode_barang }}</td>
                                 <td class="px-6 py-3 whitespace-nowrap">{{ $item->nama_barang }}</td>
                                 <td class="px-6 py-3 whitespace-nowrap">{{ $item->kategori->nama_kategori }}</td>
-                                <td class="px-6 py-3 text-center font-semibold">{{ $item->stok }}</td>
+                                <td class="px-6 py-3 text-center font-semibold">
+                                    {{ $item->detail_barang_sum_jumlah ?? 0 }}
+                                </td>
                             </tr>
                         @empty
                             <tr>

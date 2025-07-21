@@ -22,9 +22,10 @@ class TransaksiBarangResource extends Resource
 {
     protected static ?string $model = TransaksiBarang::class;
     protected static ?string $navigationGroup = 'Inventaris Barang';
-    protected static ?string $navigationIcon = NULL;
+    protected static ?string $navigationIcon = 'heroicon-o-arrows-right-left';
     protected static ?string $navigationLabel = 'Transaksi';
     protected static ?string $pluralModelLabel = 'Transaksi';
+    protected static ?int $NavigationSort = 3;
 
     public static function form(Form $form): Form
     {

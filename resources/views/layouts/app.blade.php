@@ -31,6 +31,24 @@
                     Dashboard
                 </a>
 
+                <!-- Barang Dropdown -->
+                <div x-data="{ open: false }" class="space-y-1">
+                    <button @click="open = !open"
+                            class="w-full text-left px-3 py-2 rounded hover:bg-sky-700 flex justify-between items-center transition">
+                        Barang
+                        <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform"
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div x-show="open" x-cloak class="ml-4 space-y-1 text-white">
+                        <a href="{{ route('barang.index') }}" class="block px-3 py-1 hover:underline">Daftar Stok</a>
+                        <a href="{{ route('barang.request') }}" class="block px-3 py-1 hover:underline">Permintaan Barang</a>
+                        <a href="{{ route('barang.history') }}" class="block px-3 py-1 hover:underline">Riwayat Barang</a>
+                    </div>
+                </div>
+
                 <!-- Device Dropdown -->
                 <div x-data="{ open: false }" class="space-y-1">
                     <button @click="open = !open"
@@ -63,24 +81,6 @@
                 <a href="#" class="block px-3 py-2 rounded hover:bg-sky-700 transition">
                     Kendaraan
                 </a>
-
-                <!-- Barang Dropdown -->
-                <div x-data="{ open: false }" class="space-y-1">
-                    <button @click="open = !open"
-                            class="w-full text-left px-3 py-2 rounded hover:bg-sky-700 flex justify-between items-center transition">
-                        Barang
-                        <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform"
-                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-                    <div x-show="open" x-cloak class="ml-4 space-y-1 text-white">
-                        <a href="{{ route('barang.index') }}" class="block px-3 py-1 hover:underline">Daftar Stok</a>
-                        <a href="{{ route('barang.request') }}" class="block px-3 py-1 hover:underline">Permintaan Barang</a>
-                        <a href="{{ route('barang.history') }}" class="block px-3 py-1 hover:underline">Riwayat Barang</a>
-                    </div>
-                </div>
             </nav>
 
             <!-- Admin Section -->

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\TransaksiBarangResource\Pages;
 
 use App\Models\Barang;
 use App\Models\DetailBarang;
+use App\Models\TransaksiBarang;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\TransaksiBarangResource;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +33,7 @@ class CreateTransaksiBarang extends CreateRecord
             $nilaiTkdn = $data['status_asal'] === 'TKDN' ? ($data['nilai_tkdn'] ?? 0) : null;
             $totalHarga = ($data['harga_satuan'] ?? 0) * $data['jumlah_barang'];
 
+            // Cek apakah sudah ada detail barang yang sesuai
             $detail = DetailBarang::where('barang_id', $barang->id)
                 ->where('status_asal', $data['status_asal'])
                 ->where('harga_satuan', $data['harga_satuan'])
@@ -40,6 +42,7 @@ class CreateTransaksiBarang extends CreateRecord
                 })
                 ->first();
 
+            // Jika belum ada, buat baru
             if (!$detail) {
                 $detail = DetailBarang::create([
                     'barang_id' => $barang->id,
@@ -50,11 +53,10 @@ class CreateTransaksiBarang extends CreateRecord
                     'total_harga' => $totalHarga,
                 ]);
             } else {
+                // Jika sudah ada, update jumlah dan total harga
                 $detail->increment('jumlah', $data['jumlah_barang']);
                 $detail->increment('total_harga', $totalHarga);
             }
-
-            $barang->increment('stok', $data['jumlah_barang']);
 
             $data['detail_barang_id'] = $detail->id;
             $data['harga_satuan'] = $data['harga_satuan'];
@@ -63,19 +65,21 @@ class CreateTransaksiBarang extends CreateRecord
             $data['total_harga'] = $totalHarga;
 
         } elseif ($data['jenis_transaksi'] === 'keluar') {
+            // Cek stok cukup
             if ($barang->stok < $data['jumlah_barang']) {
                 throw new \Exception('Stok barang tidak mencukupi untuk transaksi keluar.');
             }
 
-            $barang->decrement('stok', $data['jumlah_barang']);
-
+            // Ambil detail barang pertama yang ditemukan
             $detail = DetailBarang::where('barang_id', $barang->id)->first();
             if (!$detail) {
                 throw new \Exception('Tidak ditemukan detail barang untuk barang ini.');
             }
 
-            $data['detail_barang_id'] = $detail->id;
+            // Kurangi stok per detail (FIFO)
+            $barang->keluarkanStok($data['jumlah_barang']);
 
+            $data['detail_barang_id'] = $detail->id;
             $data['harga_satuan'] = null;
             $data['status_asal'] = null;
             $data['nilai_tkdn'] = null;
@@ -84,5 +88,4 @@ class CreateTransaksiBarang extends CreateRecord
 
         return $data;
     }
-
 }

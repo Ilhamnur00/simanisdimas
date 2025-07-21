@@ -18,10 +18,12 @@ class PengajuanBarangResource extends Resource
 {
     protected static ?string $model = PengajuanBarang::class;
 
-    protected static ?string $navigationIcon = null;
+    protected static ?string $navigationIcon = 'heroicon-o-document-plus';
     protected static ?string $navigationGroup = 'Inventaris Barang';
     protected static ?string $modelLabel = 'Pengajuan Barang';
     protected static ?string $pluralModelLabel = 'Pengajuan Barang';
+    protected static ?int $NavigationSort = 4;
+
 
     public static function form(Form $form): Form
     {
@@ -68,17 +70,21 @@ class PengajuanBarangResource extends Resource
                     ->visible(fn ($record) => $record->status === 'Menunggu')
                     ->requiresConfirmation()
                     ->action(function (PengajuanBarang $record) {
-                        // Update status pengajuan
                         $record->update(['status' => 'Disetujui']);
 
+                        // Buat detail barang keluar dengan jumlah negatif
                         $detail = DetailBarang::create([
                             'barang_id' => $record->barang_id,
                             'kode_barang' => $record->barang->kode_barang,
                             'kategori_id' => $record->barang->kategori_id,
-                            'jumlah' => $record->jumlah_barang, // ini yang penting
+                            'jumlah' => -1 * $record->jumlah_barang, // penting: negatif
+                            'asal_pengadaan' => null,
+                            'nilai_tkdn' => null,
+                            'harga_satuan' => null,
+                            'total_harga' => null,
                         ]);
 
-                        // Buat transaksi keluar
+                        // Simpan transaksi barang keluar
                         TransaksiBarang::create([
                             'barang_id' => $record->barang_id,
                             'jenis_transaksi' => 'keluar',
@@ -88,8 +94,6 @@ class PengajuanBarangResource extends Resource
                             'user_id' => $record->user_id,
                             'detail_barang_id' => $detail->id,
                         ]);
-
-                        $record->barang->decrement('stok', $record->jumlah_barang);
                     }),
 
                 Actions\Action::make('tolak')
