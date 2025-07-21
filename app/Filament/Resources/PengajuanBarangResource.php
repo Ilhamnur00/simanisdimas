@@ -44,7 +44,7 @@ class PengajuanBarangResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn ($query) => $query->where('status', 'pending'))
+            ->modifyQueryUsing(fn ($query) => $query->where('status', 'Menunggu'))
             ->columns([
                 TextColumn::make('tanggal')->label('Tanggal')->date(),
                 TextColumn::make('user.name')->label('User'),
