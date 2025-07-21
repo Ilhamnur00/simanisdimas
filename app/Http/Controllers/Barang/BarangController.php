@@ -12,7 +12,6 @@ use App\Http\Controllers\Controller;
 
 class BarangController extends Controller
 {
-    // 1. Tampilkan daftar stok barang
     public function index(Request $request)
     {
         $kategori = Kategori::all();
@@ -31,7 +30,6 @@ class BarangController extends Controller
         return view('barang.index', compact('barang', 'kategori'));
     }
 
-    // 2. Tampilkan form permintaan barang
     public function createRequest()
     {
         $barang = Barang::all();
@@ -50,8 +48,8 @@ class BarangController extends Controller
         ]);
 
         $barang = Barang::findOrFail($request->barang_id);
-        $stokTersedia = $barang->stok; // dari kolom tabel barang, bukan dari relasi detail_barang
-
+        $stokTersedia = $barang->stok;
+        
         if ($stokTersedia < $request->jumlah_barang) {
             return back()->withErrors([
                 'jumlah_barang' => 'Stok barang tidak mencukupi. Stok tersedia: ' . $stokTersedia

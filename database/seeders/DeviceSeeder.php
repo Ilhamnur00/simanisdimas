@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Device;
 use App\Models\User;
-use Carbon\Carbon;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class DeviceSeeder extends Seeder
 {
@@ -14,32 +14,43 @@ class DeviceSeeder extends Seeder
      */
     public function run(): void
     {
-        // Pastikan ada user dulu
-        $user = User::first() ?? User::factory()->create([
-            'name' => 'Default User',
-            'email' => 'user@example.com',
-            'password' => bcrypt('password123'),
-        ]);
+        // Ambil user pertama (pastikan minimal 1 user ada di DB)
+        $user = User::first();
 
-        Device::create([
-            'user_id' => $user->id,
-            'nama' => 'Laptop ASUS ROG',
-            'spesifikasi' => 'Intel i7, 16GB RAM, 512GB SSD',
-            'tanggal_serah_terima' => Carbon::now()->subDays(10),
-        ]);
+        if (!$user) {
+            // Jika tidak ada user, seeder batal dijalankan
+            $this->command->warn('Tidak ada user ditemukan. Seeder Device tidak dijalankan.');
+            return;
+        }
 
-        Device::create([
-            'user_id' => $user->id,
-            'nama' => 'MacBook Pro M1',
-            'spesifikasi' => 'Apple M1, 8GB RAM, 256GB SSD',
-            'tanggal_serah_terima' => Carbon::now()->subDays(30),
-        ]);
+        // Isi data dummy device
+        $devices = [
+            [
+                'nama' => 'Laptop Dell Latitude 5420',
+                'kategori' => 'Laptop',
+                'spesifikasi' => 'Intel i5 Gen 11, 16GB RAM, 512GB SSD, Windows 11 Pro',
+                'tanggal_serah_terima' => '2023-05-10',
+            ],
+            [
+                'nama' => 'HP LaserJet Pro M404n',
+                'kategori' => 'Printer',
+                'spesifikasi' => 'Mono Laser, Ethernet, 38ppm',
+                'tanggal_serah_terima' => '2023-08-15',
+            ],
+            [
+                'nama' => 'Monitor LG 24MP400-B',
+                'kategori' => 'Monitor',
+                'spesifikasi' => '24 inch Full HD IPS, HDMI, VGA',
+                'tanggal_serah_terima' => '2024-01-20',
+            ],
+        ];
 
-        Device::create([
-            'user_id' => $user->id,
-            'nama' => 'Lenovo ThinkPad',
-            'spesifikasi' => 'Intel i5, 8GB RAM, 1TB HDD',
-            'tanggal_serah_terima' => Carbon::now()->subDays(60),
-        ]);
+        foreach ($devices as $data) {
+            Device::create(array_merge($data, [
+                'user_id' => $user->id,
+            ]));
+        }
+
+        $this->command->info('Seeder Device berhasil dijalankan.');
     }
 }

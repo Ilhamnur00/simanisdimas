@@ -5,6 +5,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Device\DeviceController;
 use App\Http\Controllers\Device\MaintenanceController;
 use App\Http\Controllers\Barang\BarangController;
+use App\Http\Controllers\Kendaraan\KendaraanController;
+use App\Http\Controllers\Kendaraan\PajakKendaraanController;
 
 // Redirect root URL ke halaman login
 Route::get('/', function () {
@@ -38,6 +40,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/barang/request', [BarangController::class, 'createRequest'])->name('barang.request'); // form permintaan
     Route::post('/barang/request', [BarangController::class, 'storeRequest'])->name('barang.request.store'); // simpan permintaan
     Route::get('/barang/history', [BarangController::class, 'history'])->name('barang.history'); // riwayat permintaan
+
+    // ======================== KENDARAAN ========================
+    Route::get('/kendaraan', [KendaraanController::class, 'index'])->name('kendaraan.index');         // Tampilkan daftar kendaraan
+    Route::post('/kendaraan', [KendaraanController::class, 'store'])->name('kendaraan.store');         // Simpan data baru
+    Route::put('/kendaraan/{id}', [KendaraanController::class, 'update'])->name('kendaraan.update');   // Update data
+    Route::delete('/kendaraan/{id}', [KendaraanController::class, 'destroy'])->name('kendaraan.destroy'); // Hapus data
+
+    Route::get('/kendaraan', [PajakKendaraanController::class, 'index'])->name('transaksi.kendaraan');            // Tampilkan halaman transaksi kendaraan
+    Route::post('/kendaraan', [PajakKendaraanController::class, 'store'])->name('transaksi.kendaraan.store');     // Simpan transaksi kendaraan
 });
 
 // Rute auth (login, register, password reset, dll)
