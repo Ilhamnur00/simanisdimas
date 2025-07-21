@@ -38,7 +38,6 @@ class BarangController extends Controller
         return view('barang.request', compact('barang', 'kategori'));
     }
 
-    // 3. Simpan permintaan barang ke tabel pengajuan_barang
     public function storeRequest(Request $request)
     {
         $request->validate([
@@ -48,15 +47,14 @@ class BarangController extends Controller
         ]);
 
         $barang = Barang::findOrFail($request->barang_id);
-        $stokTersedia = $barang->stok;
-        
+        $stokTersedia = $barang->stok; // Ambil langsung dari kolom stok di tabel barang
+
         if ($stokTersedia < $request->jumlah_barang) {
             return back()->withErrors([
                 'jumlah_barang' => 'Stok barang tidak mencukupi. Stok tersedia: ' . $stokTersedia
             ])->withInput();
         }
 
-        // Simpan ke tabel pengajuan_barang
         PengajuanBarang::create([
             'user_id' => Auth::id(),
             'barang_id' => $barang->id,
@@ -65,7 +63,7 @@ class BarangController extends Controller
             'status' => 'Menunggu',
         ]);
 
-        return redirect()->back()->with('success', 'Permintaan barang berhasil dikirim.');
+        return redirect()->route('barang.history')->with('success', 'Permintaan barang berhasil dikirim.');
     }
 
     public function history()
