@@ -16,7 +16,7 @@ class Maintenance extends Model
     protected $fillable = [
         'device_id',
         'tanggal',
-        'status',
+        'kategori_perawatan',
         'deskripsi',
         'bukti',
     ];
@@ -31,7 +31,7 @@ class Maintenance extends Model
     /**
      * Relasi: Maintenance milik satu Device
      */
-    public function device(): BelongsTo
+    public function device()
     {
         return $this->belongsTo(Device::class);
     }

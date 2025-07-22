@@ -5,19 +5,20 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Device\DeviceController;
 use App\Http\Controllers\Device\MaintenanceController;
 use App\Http\Controllers\Barang\BarangController;
-use App\Http\Controllers\Kendaraan\KendaraanController;
-use App\Http\Controllers\Kendaraan\PajakKendaraanController;
 
-// Redirect root URL ke halaman login
+// ========================
+// 🔁 Redirect Root ke Login
+// ========================
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
 // ========================
-// 🔒 RUTE PROTEKSI (Login Diperlukan)
+// 🔒 RUTE DENGAN PROTEKSI LOGIN & VERIFIKASI
 // ========================
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Dashboard utama
+
+    // ======================== DASHBOARD ========================
     Route::view('/dashboard', 'dashboard')->name('dashboard');
 
     // ======================== PROFIL PENGGUNA ========================
@@ -25,31 +26,34 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // ======================== DEVICE ========================
+    // ======================== DEVICE & MAINTENANCE ========================
+
+    // Daftar semua device milik user
     Route::get('/devices', [DeviceController::class, 'index'])->name('devices.index');
+
+    // Form laporan perawatan untuk device tertentu
     Route::get('/devices/{device}', [DeviceController::class, 'show'])->name('devices.show');
 
-    // Laporan perawatan perangkat
+    // Simpan laporan perawatan (POST)
     Route::post('/device/{id}/maintenance', [MaintenanceController::class, 'store'])->name('maintenance.store');
 
-    // Riwayat perawatan perangkat
+    // Riwayat perawatan untuk satu device
     Route::get('/device/{id}/riwayat', [DeviceController::class, 'riwayat'])->name('device.riwayat');
 
+    // ✅ Riwayat semua perawatan dari semua device user (dengan dropdown filter)
+    Route::get('/maintenance/riwayat', [MaintenanceController::class, 'riwayatAll'])->name('maintenance.riwayat.all');
+
+    Route::get('/device/{deviceId}/riwayat', [MaintenanceController::class, 'riwayat'])->name('device.riwayat');
+    Route::get('/riwayat', [MaintenanceController::class, 'index'])->name('riwayat.index');
+    Route::get('/riwayat', [MaintenanceController::class, 'riwayatAll'])->name('device.riwayatAll');
+    Route::get('/device/riwayat/all', [\App\Http\Controllers\Device\MaintenanceController::class, 'riwayatAll'])->name('device.riwayatAll');
+
     // ======================== BARANG ========================
-    Route::get('/barang', [BarangController::class, 'index'])->name('barang.index'); // lihat stok
+    Route::get('/barang', [BarangController::class, 'index'])->name('barang.index'); // stok barang
     Route::get('/barang/request', [BarangController::class, 'createRequest'])->name('barang.request'); // form permintaan
     Route::post('/barang/request', [BarangController::class, 'storeRequest'])->name('barang.request.store'); // simpan permintaan
     Route::get('/barang/history', [BarangController::class, 'history'])->name('barang.history'); // riwayat permintaan
-
-    // ======================== KENDARAAN ========================
-    Route::get('/kendaraan', [KendaraanController::class, 'index'])->name('kendaraan.index');         // Tampilkan daftar kendaraan
-    Route::post('/kendaraan', [KendaraanController::class, 'store'])->name('kendaraan.store');         // Simpan data baru
-    Route::put('/kendaraan/{id}', [KendaraanController::class, 'update'])->name('kendaraan.update');   // Update data
-    Route::delete('/kendaraan/{id}', [KendaraanController::class, 'destroy'])->name('kendaraan.destroy'); // Hapus data
-
-    Route::get('/kendaraan', [PajakKendaraanController::class, 'index'])->name('transaksi.kendaraan');            // Tampilkan halaman transaksi kendaraan
-    Route::post('/kendaraan', [PajakKendaraanController::class, 'store'])->name('transaksi.kendaraan.store');     // Simpan transaksi kendaraan
 });
 
-// Rute auth (login, register, password reset, dll)
+// ======================== RUTE AUTENTIKASI (LOGIN, REGISTER, DLL) ========================
 require __DIR__.'/auth.php';

@@ -15,7 +15,7 @@
             <h3 class="text-xl font-semibold text-sky-800 mb-4">Informasi Perangkat</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 text-sm text-slate-800">
                 <p><span class="font-medium">ID Device:</span> {{ $device->id }}</p>
-                <p><span class="font-medium">Nama Device:</span> {{ $device->nama }}</p> <!-- Tambahan -->
+                <p><span class="font-medium">Nama Device:</span> {{ $device->nama }}</p>
                 <p><span class="font-medium">Nama User:</span> {{ $device->user->name ?? '-' }}</p>
                 <p><span class="font-medium">Kategori:</span> {{ $device->kategori ?? '-' }}</p>
                 <p><span class="font-medium">Spesifikasi:</span> {{ $device->spesifikasi }}</p>
@@ -63,8 +63,8 @@
 
                     <!-- Lampiran -->
                     <div class="sm:col-span-2">
-                        <label for="lampiran" class="block text-sm font-medium text-slate-700 mb-1">Upload Bukti Perawatan (PDF/JPG/PNG)</label>
-                        <input type="file" name="lampiran" id="lampiran" accept=".pdf,.jpg,.jpeg,.png" required
+                        <label for="bukti" class="block text-sm font-medium text-slate-700 mb-1">Upload Bukti Perawatan (PDF/JPG/PNG)</label>
+                        <input type="file" name="bukti" id="bukti" accept=".pdf,.jpg,.jpeg,.png"
                             class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-sky-500 focus:ring focus:ring-sky-100 transition"
                             onchange="previewLampiran(event)">
 
@@ -120,7 +120,7 @@
         }
 
         function hapusLampiran() {
-            const fileInput = document.getElementById('lampiran');
+            const fileInput = document.getElementById('bukti');
             const previewContainer = document.getElementById('preview-container');
             const previewImage = document.getElementById('preview-image');
 
