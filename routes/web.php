@@ -36,10 +36,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/device/{id}/riwayat', [DeviceController::class, 'riwayat'])->name('device.riwayat');
 
     // ======================== BARANG ========================
-    Route::get('/barang', [BarangController::class, 'index'])->name('barang.index'); // lihat stok
-    Route::get('/barang/request', [BarangController::class, 'createRequest'])->name('barang.request'); // form permintaan
-    Route::post('/barang/request', [BarangController::class, 'storeRequest'])->name('barang.request.store'); // simpan permintaan
-    Route::get('/barang/history', [BarangController::class, 'history'])->name('barang.history'); // riwayat permintaan
+    Route::get('/', [BarangController::class, 'index'])->name('barang.index');
+    Route::get('/keluar', [BarangController::class, 'createRequest'])->name('barang.request');
+    Route::post('/keluar', [BarangController::class, 'storeRequest'])->name('barang.request.store');
+    Route::get('/history', [BarangController::class, 'history'])->name('barang.history');
 
     // ======================== KENDARAAN ========================
     Route::get('/kendaraan', [KendaraanController::class, 'index'])->name('kendaraan.index');         // Tampilkan daftar kendaraan

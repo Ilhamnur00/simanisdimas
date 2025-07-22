@@ -21,7 +21,10 @@ class RiwayatTransaksiTable extends TableWidget
     protected function getTableQuery(): Builder
     {
         return TransaksiBarang::query()
-            ->where('barang_id', $this->record?->id)
+            ->whereHas('detailBarang', function ($query) {
+                $query->where('barang_id', $this->record?->id);
+            })
+            ->with('detailBarang.barang')
             ->latest();
     }
 

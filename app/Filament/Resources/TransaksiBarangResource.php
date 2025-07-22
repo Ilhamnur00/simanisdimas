@@ -17,6 +17,8 @@ use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\Actions\Action;
+
 
 class TransaksiBarangResource extends Resource
 {
@@ -43,7 +45,23 @@ class TransaksiBarangResource extends Resource
                 ->label('Nama Barang')
                 ->options(fn () => Barang::pluck('nama_barang', 'id'))
                 ->searchable()
-                ->required(),
+                ->required()
+                ->createOptionForm([
+                    Forms\Components\TextInput::make('nama_barang')
+                        ->label('Nama Barang')
+                        ->required(),
+                    Forms\Components\Select::make('kategori_id')
+                        ->relationship('kategori', 'nama_kategori')
+                        ->label('Kategori')
+                        ->required(),
+                    // tambahkan field lain sesuai kebutuhanmu...
+                ])
+                ->createOptionAction(function (\Filament\Forms\Components\Actions\Action $action) {
+                    return $action
+                        ->label('Tambah Barang Baru')
+                        ->modalHeading('Tambah Barang Baru')
+                        ->modalSubmitActionLabel('Simpan');
+                }),
 
             TextInput::make('jumlah_barang')
                 ->label('Jumlah Barang')
@@ -164,16 +182,6 @@ class TransaksiBarangResource extends Resource
             TextColumn::make('tanggal')
                 ->label('Tanggal')
                 ->date(),
-
-            TextColumn::make('status')
-                ->label('Status')
-                ->badge()
-                ->colors([
-                    'primary' => 'Menunggu',
-                    'success' => 'Disetujui',
-                    'danger' => 'Ditolak',
-                ]),
-            
         ])
 
         ->filters([

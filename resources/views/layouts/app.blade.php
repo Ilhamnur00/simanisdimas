@@ -44,8 +44,8 @@
                     </button>
                     <div x-show="open" x-cloak class="ml-4 space-y-1 text-white">
                         <a href="{{ route('barang.index') }}" class="block px-3 py-1 hover:underline">Daftar Stok</a>
-                        <a href="{{ route('barang.request') }}" class="block px-3 py-1 hover:underline">Permintaan Barang</a>
-                        <a href="{{ route('barang.history') }}" class="block px-3 py-1 hover:underline">Riwayat Barang</a>
+                        <a href="{{ route('barang.request') }}" class="block px-3 py-1 hover:underline">Pengajuan Barang</a>
+                        <a href="{{ route('barang.history') }}" class="block px-3 py-1 hover:underline">Riwayat</a>
                     </div>
                 </div>
 

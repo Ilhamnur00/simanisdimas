@@ -15,9 +15,6 @@ class ListBarangs extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
-                ->label('Tambah Barang'),
-
             Actions\Action::make('transaksiBaru')
                 ->label('Transaksi Baru')
                 ->icon('heroicon-o-plus-circle')

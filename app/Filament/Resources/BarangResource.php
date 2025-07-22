@@ -50,8 +50,6 @@ class BarangResource extends Resource
                 ->required()
                 ->readOnly()
                 ->disabledOn('edit'),
-
-            Hidden::make('stok')->default(0),
         ]);
     }
 
@@ -69,12 +67,10 @@ class BarangResource extends Resource
                 ->getStateUsing(function ($record) {
                     $masuk = $record->transaksiBarang()
                         ->where('jenis_transaksi', 'masuk')
-                        ->where('status', 'Disetujui')
                         ->sum('jumlah_barang');
 
                     $keluar = $record->transaksiBarang()
                         ->where('jenis_transaksi', 'keluar')
-                        ->where('status', 'Disetujui')
                         ->sum('jumlah_barang');
 
                     return $masuk - $keluar;
