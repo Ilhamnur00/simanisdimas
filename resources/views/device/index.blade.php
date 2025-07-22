@@ -15,18 +15,37 @@
 
     <div class="py-10">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Tombol Laporkan -->
-            @php
-                $myDevice = $devices->first();
-            @endphp
-
-            @if ($myDevice)
-                <div class="flex justify-end mb-6">
-                    <a href="{{ route('devices.show', $myDevice->id) }}"
-                       class="inline-block bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-5 py-2 rounded-lg shadow-md hover:opacity-90 transition text-sm font-semibold">
-                        + Laporkan Perawatan
-                    </a>
+            <!-- Dropdown + Tombol Laporkan -->
+            @if ($devices->count())
+                <div class="flex justify-end mb-6 items-center gap-2">
+                    <div class="flex gap-2">
+                        <select id="deviceSelect"
+                            class="border border-gray-300 rounded-md px-4 py-2 text-sm shadow-sm focus:ring focus:ring-indigo-200">
+                            <option value="">-- Pilih Device --</option>
+                            @foreach ($devices as $device)
+                                <option value="{{ route('devices.show', $device->id) }}">
+                                    {{ $device->nama }} 
+                                </option>
+                            @endforeach
+                        </select>
+                        <button type="button" onclick="redirectToDevice()"
+                            class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-lg shadow hover:opacity-90 text-sm font-semibold">
+                            Laporkan Perawatan
+                        </button>
+                    </div>
                 </div>
+
+                <script>
+                    function redirectToDevice() {
+                        const select = document.getElementById('deviceSelect');
+                        const url = select.value;
+                        if (url) {
+                            window.location.href = url;
+                        } else {
+                            alert('Silakan pilih device terlebih dahulu.');
+                        }
+                    }
+                </script>
             @endif
 
             <!-- Tabel Device -->

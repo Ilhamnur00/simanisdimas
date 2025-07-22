@@ -44,8 +44,15 @@ class DeviceController extends Controller
             abort(403, 'Anda tidak memiliki akses ke perangkat ini.');
         }
 
+        // Ambil semua device milik user untuk dropdown di view
+        $devices = Device::where('user_id', Auth::id())->get();
+
         $riwayat = $device->maintenances()->with('device.user')->latest()->get();
 
-        return view('device.riwayat', compact('device', 'riwayat'));
+        return view('device.riwayat', [
+            'device' => $device,
+            'riwayat' => $riwayat,
+            'devices' => $devices,
+        ]);
     }
 }

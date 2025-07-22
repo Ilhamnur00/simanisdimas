@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
@@ -41,6 +42,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Relasi: User memiliki banyak device
+     */
+    public function devices(): HasMany
+    {
+        return $this->hasMany(Device::class);
+    }
+
+    /**
+     * Relasi tidak langsung: User memiliki banyak maintenance melalui device
+     */
+    public function maintenances(): HasManyThrough
+    {
+        return $this->hasManyThrough(Maintenance::class, Device::class);
+    }
+
+    /**
      * Helper untuk mengecek apakah user adalah admin
      */
     public function isAdmin(): bool
@@ -55,4 +72,6 @@ class User extends Authenticatable
     {
         return method_exists($this, 'hasRole') && $this->hasRole('user');
     }
+
+    
 }

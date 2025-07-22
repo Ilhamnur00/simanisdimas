@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('maintenances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('device_id')->constrained()->onDelete('cascade');
-            $table->date('tanggal');
-            $table->text('deskripsi'); // lebih fleksibel dari string
-            $table->string('status')->default('Selesai'); // menyimpan kategori
-            $table->string('bukti')->nullable(); // untuk file PDF/JPG
-            $table->timestamps();
+            $table->date('tanggal'); // Tanggal perawatan
+            $table->string('kategori_perawatan'); // Contoh: Ganti Part, Cleaning, Upgrade, dll
+            $table->text('deskripsi'); // Penjelasan tambahan perawatan
+            $table->string('status')->default('Selesai'); // Status pengerjaan: Selesai / Pending / Dalam Proses
+            $table->string('bukti')->nullable(); // Path file bukti, bisa PDF, JPG, PNG
+            $table->timestamps(); // created_at & updated_at
         });
     }
 

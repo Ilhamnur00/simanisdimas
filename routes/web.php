@@ -37,8 +37,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ======================== BARANG ========================
     Route::get('/', [BarangController::class, 'index'])->name('barang.index');
-    Route::get('/keluar', [BarangController::class, 'createRequest'])->name('barang.request');
-    Route::post('/keluar', [BarangController::class, 'storeRequest'])->name('barang.request.store');
+
+    // Form transaksi keluar (pengganti request)
+    Route::get('/keluar', [BarangController::class, 'createTransaksiKeluar'])->name('barang.keluar');
+    Route::post('/keluar', [BarangController::class, 'storeTransaksiKeluar'])->name('barang.keluar.store');
+
+    // History transaksi keluar oleh user
     Route::get('/history', [BarangController::class, 'history'])->name('barang.history');
 
     // ======================== KENDARAAN ========================
