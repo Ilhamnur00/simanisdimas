@@ -40,6 +40,7 @@ class Device extends Model
     {
         return $this->belongsTo(User::class);
     }
+    
 
     /**
      * Device memiliki banyak Maintenance.
