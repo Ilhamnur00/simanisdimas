@@ -5,73 +5,54 @@ namespace App\Http\Controllers\Kendaraan;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Kendaraan;
-
-
+use Illuminate\Support\Facades\Auth;
 
 class KendaraanController extends Controller
 {
-    // Menampilkan halaman utama Data Master Kendaraan
+    /**
+     * Menampilkan daftar semua perangkat milik user yang login
+     */
     public function index()
     {
-        $kendaraans = Kendaraan::latest()->get();
-        return view('datamaster.kendaraan.index', compact('kendaraans'));
+        $kendaraans = Kendaraan::where('user_id', Auth::id())->get();
+
+        return view('kendaraan.index', compact('kendaraans'));
     }
 
-    // Menyimpan data kendaraan baru dari form Tambah (via AJAX)
-    public function store(Request $request)
+    /**
+     * Menampilkan detail dan form laporan perawatan untuk 1 perangkat
+     */
+    public function show(Kendaraan $kendaraan)
     {
-        $validated = $request->validate([
-            'jenis_transaksi'   => 'required|string',
-            'tanggal'           => 'required|date',
-            'jenis_kendaraan'   => 'required|string',
-            'nama_kendaraan'    => 'required|string',
-            'pengguna'          => 'required|string',
-            'status_pajak'      => 'required|string',
-            'perawatan'         => 'nullable|string',
-            'bulan'             => 'required|string',
-        ]);
+        // Batasi agar hanya user pemilik yang bisa melihat detail perangkat
+        if ($kendaraan->user_id !== Auth::id()) {
+            abort(403, 'Anda tidak memiliki akses ke perangkat ini.');
+        }
 
-        $kendaraan = Kendaraan::create($validated);
-
-        // Return response JSON agar bisa ditangkap oleh JavaScript (AJAX)
-        return response()->json([
-            'message' => 'Data berhasil disimpan!',
-            'id' => $kendaraan->id,
-            'pengguna' => $kendaraan->pengguna,
-            'tanggal' => $kendaraan->tanggal,
-        ]);
+        return view('kendaraan.show', compact('kendaraan'));
     }
 
-    // Mengupdate data kendaraan dari modal edit (via AJAX)
-    public function update(Request $request, $id)
+    /**
+     * Menampilkan riwayat perawatan untuk 1 perangkat
+     */
+    public function riwayat($id)
     {
-        $validated = $request->validate([
-            'jenis_transaksi'   => 'required|string',
-            'tanggal'           => 'required|date',
-            'jenis_kendaraan'   => 'required|string',
-            'nama_kendaraan'    => 'required|string',
-            'pengguna'          => 'required|string',
-            'status_pajak'      => 'required|string',
-            'perawatan'         => 'nullable|string',
-            'bulan'             => 'required|string',
-        ]);
+        $kendaraan = Kendaraan::with(['maintenances.kendaraan.user'])->findOrFail($id);
 
-        $kendaraan = Kendaraan::findOrFail($id);
-        $kendaraan->update($validated);
+        // Batasi akses hanya untuk pemilik perangkat
+        if ($kendaraan->user_id !== Auth::id()) {
+            abort(403, 'Anda tidak memiliki akses ke perangkat ini.');
+        }
 
-        return response()->json([
-            'message' => 'Data berhasil diperbarui!',
-        ]);
-    }
+        // Ambil semua kendaraan milik user untuk dropdown di view
+        $kendaraans = Kendaraan::where('user_id', Auth::id())->get();
 
-    // Menghapus data kendaraan (via AJAX)
-    public function destroy($id)
-    {
-        $kendaraan = Kendaraan::findOrFail($id);
-        $kendaraan->delete();
+        $riwayat = $kendaraan->maintenances()->with('kendaraan.user')->latest()->get();
 
-        return response()->json([
-            'message' => 'Data berhasil dihapus!',
+        return view('kendaraan.riwayat', [
+            'kendaraan' => $kendaraan,
+            'riwayat' => $riwayat,
+            'kendaraans' => $kendaraans,
         ]);
     }
 }

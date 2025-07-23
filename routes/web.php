@@ -56,12 +56,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ======================== KENDARAAN ========================
     Route::get('/kendaraan', [KendaraanController::class, 'index'])->name('kendaraan.index');         // Tampilkan daftar kendaraan
-    Route::post('/kendaraan', [KendaraanController::class, 'store'])->name('kendaraan.store');         // Simpan data baru
-    Route::put('/kendaraan/{id}', [KendaraanController::class, 'update'])->name('kendaraan.update');   // Update data
-    Route::delete('/kendaraan/{id}', [KendaraanController::class, 'destroy'])->name('kendaraan.destroy'); // Hapus data
-
-    Route::get('/kendaraan', [PajakKendaraanController::class, 'index'])->name('transaksi.kendaraan');            // Tampilkan halaman transaksi kendaraan
-    Route::post('/kendaraan', [PajakKendaraanController::class, 'store'])->name('transaksi.kendaraan.store');     // Simpan transaksi kendaraan
+    Route::post('/kendaraan', [KendaraanController::class, 'store'])->name('kendaraan.store');
+    Route::get('/kendaraan/{id}/bayar-pajak', [PajakController::class, 'bayar'])->name('pajak.bayar');
+    Route::get('/kendaraan/{id}/perawatan', [PerawatanController::class, 'create'])->name('perawatan.create');
+    Route::get('/maintenance/riwayat', [MaintenanceKendaraanController::class, 'riwayatAll'])->name('maintenance.riwayat.all');
 
 });
 

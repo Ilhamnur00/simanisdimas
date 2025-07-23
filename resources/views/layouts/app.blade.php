@@ -78,9 +78,7 @@
                 </div>
 
                 <!-- Kendaraan -->
-                <a href="#" class="block px-3 py-2 rounded hover:bg-sky-700 transition">
-                    Kendaraan
-                </a>
+                        <a href="#" class="block px-3 py-1 hover:underline">kendaraan</a>
             </nav>
 
             <!-- Admin Section -->

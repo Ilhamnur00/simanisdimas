@@ -4,33 +4,48 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
+
 
 class Kendaraan extends Model
 {
     use HasFactory;
 
-    // Nama tabel (opsional jika sesuai konvensi Laravel)
-    protected $table = 'kendaraans';
-
-    // Kolom-kolom yang boleh diisi secara massal
+    /**
+     * Kolom yang diizinkan untuk mass-assignment
+     */
     protected $fillable = [
-        'jenis_transaksi',
-        'tanggal',
-        'jenis_kendaraan',
-        'nama_kendaraan',
-        'pengguna',
-        'status_pajak',
-        'perawatan',
-        'bulan',
+        'user_id',
+        'nama',
+        'kategori',            // ← ditambahkan
+        'spesifikasi',
+        'tanggal_serah_terima',
     ];
 
-    // Jika ingin menonaktifkan kolom created_at dan updated_at, bisa tambahkan ini:
-    // public $timestamps = false;
+    /**
+     * Casting otomatis – memudahkan manipulasi tanggal
+     */
+    protected $casts = [
+        'tanggal_serah_terima' => 'date',
+    ];
 
-    // (Opsional) Jika kamu nanti pakai relasi ke tabel lain, bisa tambah relasi di sini
-    // Contoh: kendaraan punya banyak transaksi
-    // public function transaksi()
-    // {
-    //     return $this->hasMany(TransaksiKendaraan::class);
-    // }
+    /* -----------------------------------------------------------------
+     |  RELASI
+     |-----------------------------------------------------------------*/
+
+    /**
+     * Kendaraan dimiliki oleh satu User.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Kendaraan memiliki banyak Maintenance.
+     */
+    public function maintenances(): HasMany
+    {
+        return $this->hasMany(Maintenance::class);
+    }
 }
