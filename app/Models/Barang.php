@@ -33,18 +33,9 @@ class Barang extends Model
         });
     }
 
-    /**
-     * Accessor: Hitung stok dari barang masuk - barang keluar
-     */
     public function getStokAttribute(): int
     {
-        $masuk = $this->detailBarang()->sum('jumlah');
-
-        $keluar = \App\Models\TransaksiBarang::whereHas('detailBarang', function ($query) {
-            $query->where('barang_id', $this->id);
-        })->where('jenis_transaksi', 'keluar')->sum('jumlah_barang');
-
-        return $masuk - $keluar;
+        return $this->detailBarang()->sum('jumlah');
     }
 
     /**

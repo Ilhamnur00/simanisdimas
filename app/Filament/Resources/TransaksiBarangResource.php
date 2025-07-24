@@ -209,12 +209,6 @@ class TransaksiBarangResource extends Resource
         ->recordUrl(null);
     }
 
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()->where('status', 'Disetujui');
-    }
-
     public static function getPages(): array
     {
         return [

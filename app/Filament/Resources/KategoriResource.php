@@ -30,7 +30,8 @@ class KategoriResource extends Resource
                 ->maxLength(3)
                 ->required()
                 ->rules(['alpha', 'size:3']) // hanya huruf dan tepat 3 karakter
-                ->unique(ignoreRecord: true),
+                ->unique(ignoreRecord: true)
+                ->disabled(fn (?Model $record) => $record !== null),
 
             Forms\Components\TextInput::make('nama_kategori')
                 ->label('Nama Kategori')

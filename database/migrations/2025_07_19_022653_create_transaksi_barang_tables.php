@@ -19,7 +19,6 @@ return new class extends Migration {
             $table->unsignedBigInteger('total_harga')->nullable(); // hanya jika transaksi masuk
             $table->enum('status_asal', ['TKDN', 'PDN', 'IMPOR'])->nullable();
             $table->decimal('nilai_tkdn', 5, 2)->nullable();
-            $table->enum('status', ['Disetujui', 'Ditolak', 'Menunggu'])->default('Menunggu');
             $table->timestamps();
         });
 

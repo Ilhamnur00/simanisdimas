@@ -18,7 +18,6 @@ class DetailBarang extends Model
         'harga_satuan',
         'total_harga',
         'jumlah',
-        'tanggal_masuk',
     ];
 
     public function barang()
@@ -28,6 +27,7 @@ class DetailBarang extends Model
 
     public function transaksiBarang()
     {
-        return $this->hasMany(TransaksiBarang::class);
+        return $this->hasOne(TransaksiBarang::class);
     }
+
 }

@@ -7,14 +7,13 @@
 
     <div class="py-6">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            {{-- Notifikasi berhasil --}}
+            {{-- Notifikasi --}}
             @if (session('success'))
                 <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 shadow-md animate-fade-in-down">
                     {{ session('success') }}
                 </div>
             @endif
 
-            {{-- Notifikasi error --}}
             @if ($errors->any())
                 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 shadow-md animate-fade-in-down">
                     <ul class="list-disc list-inside space-y-1">
@@ -30,13 +29,15 @@
                 class="bg-white/80 border border-slate-200 shadow-2xl backdrop-blur-sm rounded-2xl px-10 pt-8 pb-10 space-y-8 transition-all duration-300 ease-in-out">
                 @csrf
 
+                {{-- jenis_transaksi --}}
+                <input type="hidden" name="jenis_transaksi" value="keluar">
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {{-- Kategori --}}
+                    {{-- Kategori (untuk filter) --}}
                     <div>
                         <label class="block text-sm font-semibold text-gray-800 mb-1">Kategori</label>
-                        <select name="kategori" id="kategori"
-                            class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
-                            required>
+                        <select id="kategori"
+                            class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
                             <option value="">-- Pilih --</option>
                             @foreach ($kategori as $kat)
                                 <option value="{{ $kat->id }}" {{ old('kategori') == $kat->id ? 'selected' : '' }}>
@@ -57,14 +58,13 @@
                                 <option 
                                     value="{{ $b->id }}" 
                                     data-kategori="{{ $b->kategori_id }}"
-                                    data-stok="{{ $b->stok}}"
+                                    data-stok="{{ $b->stok }}"
                                     {{ old('barang_id') == $b->id ? 'selected' : '' }}>
                                     {{ $b->nama_barang }}
                                 </option>
                             @endforeach
                         </select>
 
-                        {{-- Tampilkan stok --}}
                         <div class="text-sm text-gray-600 mt-2" id="stok_info">
                             Stok tersedia: <span id="stok_tersedia">-</span>
                         </div>
@@ -87,7 +87,6 @@
                     </div>
                 </div>
 
-                {{-- Tombol Submit --}}
                 <div class="text-right pt-6">
                     <button type="submit"
                         class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-2 rounded-md shadow-md hover:opacity-90 transition text-sm">
@@ -98,7 +97,7 @@
         </div>
     </div>
 
-    {{-- SCRIPT FILTER BARANG --}}
+    {{-- SCRIPT --}}
     <script>
         const kategoriSelect = document.getElementById('kategori');
         const barangSelect = document.getElementById('barang_id');
@@ -106,10 +105,8 @@
 
         kategoriSelect.addEventListener('change', function () {
             const selected = this.value;
-
             barangSelect.innerHTML = '';
             const filtered = allBarangOption.filter(opt => opt.dataset.kategori == selected);
-
             if (filtered.length > 0) {
                 barangSelect.innerHTML = '<option value="">-- Pilih --</option>';
                 filtered.forEach(opt => barangSelect.appendChild(opt));
@@ -130,17 +127,13 @@
                 });
             }
         });
-    </script>
 
-    <script>
         const stokSpan = document.getElementById('stok_tersedia');
-
         function tampilkanStok(select) {
             const stok = select.options[select.selectedIndex]?.dataset?.stok ?? '-';
             stokSpan.textContent = `${stok} unit`;
         }
 
-        // Saat halaman dimuat ulang (misalnya setelah validasi gagal)
         window.addEventListener('DOMContentLoaded', () => {
             const selectedOption = document.querySelector('#barang_id option:checked');
             if (selectedOption && selectedOption.dataset.stok) {
@@ -149,21 +142,17 @@
         });
     </script>
 
-
-    {{-- Animasi --}}
     <style>
         @keyframes fade-in-down {
             from {
                 opacity: 0;
                 transform: translateY(-10px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-
         .animate-fade-in-down {
             animation: fade-in-down 0.4s ease-out;
         }

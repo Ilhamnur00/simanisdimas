@@ -15,7 +15,6 @@ class TransaksiBarang extends Model
         'jenis_transaksi',
         'jumlah_barang',
         'tanggal',
-        'status',
         'user_id',
         'detail_barang_id',
         'barang_id',
