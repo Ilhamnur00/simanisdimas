@@ -63,18 +63,7 @@ class BarangResource extends Resource
                 ->url(fn (Barang $record) => static::getUrl('edit', ['record' => $record])),
             TextColumn::make('kategori.nama_kategori')->label('Kategori'),
             TextColumn::make('stok')
-                ->label('Stok Tersedia')
-                ->getStateUsing(function ($record) {
-                    $masuk = $record->transaksiBarang()
-                        ->where('jenis_transaksi', 'masuk')
-                        ->sum('jumlah_barang');
-
-                    $keluar = $record->transaksiBarang()
-                        ->where('jenis_transaksi', 'keluar')
-                        ->sum('jumlah_barang');
-
-                    return $masuk - $keluar;
-                }),
+                ->label('Stok Tersedia'),
         ])->actions([
             Tables\Actions\Action::make('Lihat Detail')
                 ->icon('heroicon-s-document-magnifying-glass')

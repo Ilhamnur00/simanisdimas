@@ -54,6 +54,28 @@ class Barang extends Model
         return $this->hasMany(DetailBarang::class);
     }
 
+    public function semuaTransaksi()
+    {
+        return $this->hasMany(TransaksiBarang::class);
+    }
+
+    public function transaksiMasuk()
+    {
+        return $this->hasMany(TransaksiBarang::class)
+                    ->where('jenis_transaksi', 'masuk');
+    }
+
+    public function transaksiKeluar()
+    {
+        return $this->hasMany(TransaksiBarang::class)
+                    ->where('jenis_transaksi', 'keluar');
+    }
+
+    public function getTotalKeluarAttribute(): int
+    {
+        return $this->transaksiKeluar()->sum('jumlah_barang');
+    }
+
     /**
      * Relasi ke transaksi barang (lewat detail barang)
      */

@@ -21,10 +21,7 @@ class RiwayatTransaksiTable extends TableWidget
     protected function getTableQuery(): Builder
     {
         return TransaksiBarang::query()
-            ->whereHas('detailBarang', function ($query) {
-                $query->where('barang_id', $this->record?->id);
-            })
-            ->with('detailBarang.barang')
+            ->where('barang_id', $this->record?->id)
             ->latest();
     }
 
@@ -52,38 +49,38 @@ class RiwayatTransaksiTable extends TableWidget
             TextColumn::make('harga_satuan')
                 ->label('Harga Satuan')
                 ->formatStateUsing(fn ($state, $record) =>
-                    $record->jenis_transaksi === 'masuk'
+                    $record->jenis_transaksi === 'masuk' && $state !== null
                         ? 'Rp. ' . number_format($state, 0, ',', '.')
-                        : null
+                        : '-'
                 ),
 
             TextColumn::make('total_harga')
                 ->label('Total Harga')
                 ->formatStateUsing(fn ($state, $record) =>
-                    $record->jenis_transaksi === 'masuk'
+                    $record->jenis_transaksi === 'masuk' && $state !== null
                         ? 'Rp. ' . number_format($state, 0, ',', '.')
-                        : null
+                        : '-'
                 ),
 
             TextColumn::make('status_asal')
                 ->label('Asal Pengadaan')
                 ->badge()
-                ->color(fn (string $state): string => match ($state) {
+                ->color(fn (?string $state): string => match ($state) {
                     'TKDN' => 'success',
                     'PDN' => 'primary',
                     'IMPOR' => 'warning',
                     default => 'gray',
                 })
-                ->formatStateUsing(fn ($state, $record) => 
-                    $record->jenis_transaksi === 'masuk' ? $state : null
+                ->formatStateUsing(fn (?string $state, $record) =>
+                    $record->jenis_transaksi === 'masuk' ? $state : '-'
                 ),
 
             TextColumn::make('nilai_tkdn')
                 ->label('Nilai TKDN')
                 ->suffix('%')
-                ->visible(fn ($record) => $record?->status_asal === 'TKDN')
-                ->formatStateUsing(fn ($state, $record) => 
-                    $record->jenis_transaksi === 'masuk' ? $state : null
+                ->visible(fn ($record) => $record?->jenis_transaksi === 'masuk' && $record->status_asal === 'TKDN')
+                ->formatStateUsing(fn ($state) =>
+                    $state !== null ? $state : '-'
                 ),
         ];
     }

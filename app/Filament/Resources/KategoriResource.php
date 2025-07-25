@@ -29,7 +29,7 @@ class KategoriResource extends Resource
                 ->label('Kode Kategori')
                 ->maxLength(3)
                 ->required()
-                ->rules(['alpha', 'size:3']) // hanya huruf dan tepat 3 karakter
+                ->rules(['alpha', 'size:3'])
                 ->unique(ignoreRecord: true)
                 ->disabled(fn (?Model $record) => $record !== null),
 
@@ -56,7 +56,7 @@ class KategoriResource extends Resource
 
                 Tables\Columns\TextColumn::make('barang_count')
                     ->label('Jumlah Barang')
-                    ->counts('barang') // gunakan relasi "barang"
+                    ->counts('barang')
                     ->sortable(),
             ])
             ->defaultSort('id', 'desc');

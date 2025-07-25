@@ -46,7 +46,7 @@ class TransaksiBarangResource extends Resource
             Select::make('barang_id')
                 ->label('Nama Barang')
                 ->options(fn () => Barang::pluck('nama_barang', 'id'))
-                ->relationship('barang', 'nama_barang') // HARUS SESUAI NAMA RELASI
+                ->relationship('barang', 'nama_barang')
                 ->searchable()
                 ->required()
                 ->createOptionForm([

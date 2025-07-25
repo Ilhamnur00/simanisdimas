@@ -13,6 +13,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Spatie\Permission\Models\Role;
+use Illuminate\Database\Eloquent\Model;
 
 class UserResource extends Resource
 {
@@ -28,20 +29,16 @@ class UserResource extends Resource
             TextInput::make('name')->required()->maxLength(255),
             TextInput::make('nip')->label('NIP')->required()->maxLength(20),
             TextInput::make('email')->email()->required()->maxLength(255),
-            TextInput::make('password')
-                ->password()
-                ->required(fn ($livewire) => $livewire instanceof Pages\CreateUser)
-                ->dehydrated(fn ($state) => filled($state))
-                ->label('Password')
-                ->maxLength(255),
+
             Select::make('roles')
                 ->label('Role')
                 ->relationship('roles', 'name')
-                ->options(Role::all()->pluck('name', 'name'))
+                ->options(Role::all()->pluck('name', 'id'))
                 ->searchable()
                 ->preload()
                 ->required()
                 ->multiple(false),
+
         ]);
     }
 

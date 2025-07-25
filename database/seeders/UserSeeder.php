@@ -11,7 +11,7 @@ class UserSeeder extends Seeder
     {
 
         $super_admin = User::firstOrCreate([
-            'email' => 'admin@inventory.com',
+            'email' => 'ainnunnisa123@gmail.com',
         ], [
             'name' => 'Admin Dinkominfo',
             'nip' => '2211102295', // ← tambahkan NIP valid
@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
         $super_admin->assignRole('super_admin');
 
         $admin = User::firstOrCreate([
-            'email' => 'admin@inventory22.com',
+            'email' => 'ilham.nurfajri121@gmail.com',
         ], [
             'name' => 'Admin barang',
             'nip' => '1234567890', // ← tambahkan NIP valid
@@ -29,7 +29,7 @@ class UserSeeder extends Seeder
         $admin->assignRole('admin');
 
         $user = User::firstOrCreate([
-            'email' => 'user@inventory.com',
+            'email' => '2211102295@ittelkom-pwt.ac.id.com',
         ], [
             'name' => 'User Umum',
             'nip' => '0987654321', // ← tambahkan NIP juga

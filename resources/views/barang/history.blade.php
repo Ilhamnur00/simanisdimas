@@ -30,8 +30,8 @@
                             <tr class="hover:bg-gray-50 transition">
                                 <td class="px-6 py-4">{{ $index + 1 }}</td>
                                 <td class="px-6 py-4">{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
-                                <td class="px-6 py-4">{{ $item->detailBarang->barang->kategori->nama_kategori ?? '-' }}</td>
-                                <td class="px-6 py-4">{{ $item->detailBarang->barang->nama_barang ?? '-' }}</td>
+                                <td class="px-6 py-4">{{ $item->barang->kategori->nama_kategori ?? '-' }}</td>
+                                <td class="px-6 py-4">{{ $item->barang->nama_barang ?? '-' }}</td>
                                 <td class="px-6 py-4 text-center">{{ $item->jumlah_barang }}</td>
                                 </td>
                                 <td class="px-6 py-4 text-center">
@@ -78,8 +78,8 @@
             return [
                 'tanggal' => $item->tanggal,
                 'jumlah_barang' => $item->jumlah_barang,
-                'kategori' => $item->detailBarang->barang->kategori->nama_kategori ?? '-',
-                'barang' => $item->detailBarang->barang->nama_barang ?? '-',
+                'kategori' => $item->barang->kategori->nama_kategori ?? '-',
+                'barang' => $item->barang->nama_barang ?? '-',
             ];
         })->toJson() !!}
     </script>

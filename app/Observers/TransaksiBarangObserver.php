@@ -4,7 +4,9 @@ namespace App\Observers;
 
 use App\Models\TransaksiBarang;
 use App\Models\DetailBarang;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use App\Notifications\StokBarangHabis;
 
 class TransaksiBarangObserver
 {
@@ -56,13 +58,10 @@ class TransaksiBarangObserver
                 throw new \Exception('Stok tidak mencukupi.');
             }
 
-            // Jalankan transaksi DB agar rollback jika gagal
             DB::beginTransaction();
 
             try {
                 $tersisa = $transaksi->jumlah_barang;
-                $originalAttributes = $transaksi->getAttributes();
-
                 $details = $barang->detailBarang()->orderBy('id')->get();
 
                 foreach ($details as $detail) {
@@ -72,41 +71,31 @@ class TransaksiBarangObserver
                     if ($ambil <= 0) continue;
 
                     $detail->decrement('jumlah', $ambil);
-                    $detail->decrement('total_harga', $ambil * $detail->harga_satuan);
-
                     $tersisa -= $ambil;
-
-                    if ($tersisa == 0) {
-                        // Isi transaksi utama dengan detail pertama yang digunakan
-                        $transaksi->detail_barang_id = $detail->id;
-                        $transaksi->harga_satuan = null;
-                        $transaksi->status_asal = null;
-                        $transaksi->nilai_tkdn = null;
-                        $transaksi->total_harga = null;
-                        $transaksi->jumlah_barang = $ambil;
-                        break;
-                    } else {
-                        // Buat transaksi tambahan (salinan)
-                        TransaksiBarang::create([
-                            ...$originalAttributes,
-                            'jumlah_barang' => $ambil,
-                            'detail_barang_id' => $detail->id,
-                            'harga_satuan' => null,
-                            'status_asal' => null,
-                            'nilai_tkdn' => null,
-                            'total_harga' => null,
-                        ]);
-                    }
                 }
 
                 if ($tersisa > 0) {
-                    throw new \Exception('Stok tidak mencukupi saat proses FIFO.');
+                    throw new \Exception('Stok tidak mencukupi saat proses pengeluaran.');
                 }
+
+                // Kosongkan info harga/sumber, tidak perlu set detail_barang_id
+                $transaksi->detail_barang_id = null;
+                $transaksi->harga_satuan = null;
+                $transaksi->status_asal = null;
+                $transaksi->nilai_tkdn = null;
+                $transaksi->total_harga = null;
 
                 DB::commit();
             } catch (\Throwable $e) {
                 DB::rollBack();
                 throw $e;
+            }
+
+            if ($barang->stok <= 5) {
+                $users = User::role(['admin', 'super_admin'])->get();
+                foreach ($users as $user) {
+                    $user->notify(new StokBarangHabis($barang));
+                }
             }
         }
     }

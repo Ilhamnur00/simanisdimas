@@ -20,24 +20,18 @@ class BarangController extends Controller
     public function createRequest()
     {
         $barang = Barang::all();
-        $kategori = Kategori::all(); // Tambahkan ini
-        return view('barang.request', compact('barang', 'kategori')); // Tambahkan $kategori
+        $kategori = Kategori::all();
+        return view('barang.request', compact('barang', 'kategori'));
     }
 
     public function storeRequest()
     {
         try {
             DB::transaction(function () {
-                $statusAsal = request('status_asal');
-                $nilaiTkdn = ($statusAsal === 'TKDN') ? request('nilai_tkdn') : null;
-
                 TransaksiBarang::create([
                     'barang_id' => request('barang_id'),
                     'jenis_transaksi' => request('jenis_transaksi'),
                     'jumlah_barang' => request('jumlah_barang'),
-                    'harga_satuan' => request('harga_satuan') ?: null,
-                    'status_asal' => $statusAsal,
-                    'nilai_tkdn' => $nilaiTkdn,
                     'tanggal' => now(),
                     'user_id' => Auth::id(),
                 ]);
