@@ -90,9 +90,10 @@ class TransaksiBarangObserver
                 DB::rollBack();
                 throw $e;
             }
-
+            
             if ($barang->stok <= 5) {
                 $users = User::role(['admin', 'super_admin'])->get();
+
                 foreach ($users as $user) {
                     $user->notify(new StokBarangHabis($barang));
                 }

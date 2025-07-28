@@ -11,12 +11,10 @@ class UserObserver
 {
     public function creating(User $user): void
     {
-        // Hanya jika belum ada password (misal buat via Filament tanpa field password)
         if (empty($user->password)) {
             $randomPassword = Str::random(10);
             $user->password = bcrypt($randomPassword);
 
-            // Simpan password plain ke session (sementara)
             session(['__generated_password' => $randomPassword]);
         }
     }

@@ -22,6 +22,7 @@ use Spatie\Permission\Middleware\RoleMiddleware;
 use Filament\Support\Facades\FilamentView;
 use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
+use Filament\Features\NotificationsFeature;
 
 
 class AdminPanelProvider extends PanelProvider
@@ -60,11 +61,13 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 FilamentShieldPlugin::make(),
             ])
+
             ->authMiddleware([
                 Authenticate::class,
                 RoleMiddleware::class . ':admin|super_admin',
-            ]);
-    }
+            ])
+             ->databaseNotifications();
+        }
 
     public function boot()
     {
@@ -73,6 +76,6 @@ class AdminPanelProvider extends PanelProvider
         FilamentView::registerRenderHook(
             'head.start',
             fn () => app()->setLocale('en')
-        );
+        );        
     }
 }

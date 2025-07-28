@@ -23,7 +23,7 @@ class UserSeeder extends Seeder
             'email' => 'ilham.nurfajri121@gmail.com',
         ], [
             'name' => 'Admin barang',
-            'nip' => '1234567890', // ← tambahkan NIP valid
+            'nip' => '1234567890', // ← 
             'password' => bcrypt('password'),
         ]);
         $admin->assignRole('admin');
@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
             'email' => 'hernandiradenbagus@gmail.com',
         ], [
             'name' => 'User Umum',
-            'nip' => '1122334455', // ← tambahkan NIP juga
+            'nip' => '0987654321',
             'password' => bcrypt('password'),
         ]);
         $user->assignRole('user');
