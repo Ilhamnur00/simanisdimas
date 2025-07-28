@@ -14,6 +14,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Spatie\Permission\Models\Role;
 use Illuminate\Database\Eloquent\Model;
+use App\Filament\Resources\UserResource\RelationManagers\DeviceRelationManager;
+
 
 class UserResource extends Resource
 {
@@ -56,10 +58,7 @@ class UserResource extends Resource
         ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [];
-    }
+
 
     public static function getPages(): array
     {

@@ -3,8 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\DeviceResource\Pages;
-use App\Models\Device;
 use App\Models\User;
+use App\Models\Device;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -18,6 +18,8 @@ class DeviceResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    // Hapus form jika tidak ingin menambah device dari sini
+    
     public static function form(Form $form): Form
     {
         return $form
@@ -28,16 +30,16 @@ class DeviceResource extends Resource
                     ->searchable()
                     ->required(),
 
-                Forms\Components\TextInput::make('nama_device')
+                Forms\Components\TextInput::make('nama')
                     ->label('Nama Device')
                     ->required(),
 
-                Forms\Components\TextInput::make('tipe')
+                Forms\Components\TextInput::make('spesifikasi')
                     ->label('Tipe Device')
                     ->required(),
 
-                Forms\Components\TextInput::make('serial_number')
-                    ->label('Nomor Seri')
+                Forms\Components\DatePicker::make('tanggal_serah_terima')
+                    ->label('Tanggal Serah Terima')
                     ->required(),
 
                 Forms\Components\Select::make('status')
@@ -54,48 +56,30 @@ class DeviceResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(
+                // Ambil data unik berdasarkan user
+                User::query()->withCount('devices')
+            )
             ->columns([
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Nama Pemilik')
+                    ->sortable()
+                    ->searchable(),
 
-                Tables\Columns\TextColumn::make('user.name')
-                    ->label('Pemilik')
-                    ->searchable()
+                Tables\Columns\TextColumn::make('devices_count')
+                    ->label('Jumlah Device')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('nama')
-                    ->label('Nama Device')
-                    ->searchable()
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('spesifikasi')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('serial_number')
-                    ->label('Nomor Seri')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('status')
-                    ->badge()
-                    ->colors([
-                        'success' => 'aktif',
-                        'danger' => 'tidak_aktif',
-                        'warning' => 'perlu_perawatan',
-                    ])
-                    ->sortable(),
-            ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('user_id')
-                    ->label('Filter User')
-                    ->relationship('user', 'name'),
+                
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\Action::make('rincian')
+                    ->label('Rincian Device')
+                    ->icon('heroicon-o-computer-desktop')
+                    ->url(fn ($record) => route('filament.admin.resources.devices.rincian-device', ['record' => $record->id]))
+                    ->openUrlInNewTab(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->bulkActions([]);
     }
 
     public static function getRelations(): array
@@ -107,8 +91,7 @@ class DeviceResource extends Resource
     {
         return [
             'index' => Pages\ListDevices::route('/'),
-            'create' => Pages\CreateDevice::route('/create'),
-            'edit' => Pages\EditDevice::route('/{record}/edit'),
+            'rincian-device' => Pages\RincianDevice::route('/{record}/rincian-device'),
         ];
     }
 }
