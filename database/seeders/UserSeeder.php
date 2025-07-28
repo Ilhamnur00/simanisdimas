@@ -29,10 +29,14 @@ class UserSeeder extends Seeder
         $admin->assignRole('admin');
 
         $user = User::firstOrCreate([
-            'email' => '2211102295@ittelkom-pwt.ac.id.com',
+            'email' => 'hernandiradenbagus@gmail.com',
         ], [
             'name' => 'User Umum',
+<<<<<<< HEAD
             'nip' => '0987654321',
+=======
+            'nip' => '1122334455', // ← tambahkan NIP juga
+>>>>>>> 5b58d6f (Progres profesor)
             'password' => bcrypt('password'),
         ]);
         $user->assignRole('user');
