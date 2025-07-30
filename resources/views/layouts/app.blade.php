@@ -78,7 +78,7 @@
                 </div>
 
                 <!-- Kendaraan -->
-                        <a href="#" class="block px-3 py-1 hover:underline">kendaraan</a>
+                        <a href="{{ route('kendaraan.index') }}" class="block px-3 py-1 hover:underline">Kendaraan</a>
             </nav>
 
             <!-- Admin Section -->

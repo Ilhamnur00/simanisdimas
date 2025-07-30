@@ -4,15 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
-
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Kendaraan extends Model
 {
     use HasFactory;
 
     /**
-     * Kolom yang diizinkan untuk mass-assignment
+     * Kolom yang dapat diisi secara mass-assignment.
+     *
+     * @var array<int, string>
      */
     protected $fillable = [
         'user_id',
@@ -20,22 +22,26 @@ class Kendaraan extends Model
         'kategori',
         'spesifikasi',
         'tanggal_serah_terima',
-        'no_polisi'
+        'no_polisi',
     ];
 
     /**
-     * Casting otomatis – memudahkan manipulasi tanggal
+     * Casting otomatis untuk kolom tanggal.
+     *
+     * @var array<string, string>
      */
     protected $casts = [
         'tanggal_serah_terima' => 'date',
     ];
 
     /* -----------------------------------------------------------------
-     |  RELASI
+     |  RELASI MODEL
      |-----------------------------------------------------------------*/
 
     /**
-     * Kendaraan dimiliki oleh satu User.
+     * Relasi: Kendaraan dimiliki oleh satu User.
+     *
+     * @return BelongsTo
      */
     public function user(): BelongsTo
     {
@@ -43,7 +49,9 @@ class Kendaraan extends Model
     }
 
     /**
-     * Kendaraan memiliki banyak Maintenance.
+     * Relasi: Kendaraan memiliki banyak Maintenance.
+     *
+     * @return HasMany
      */
     public function maintenances(): HasMany
     {

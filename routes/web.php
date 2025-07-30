@@ -55,12 +55,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/history', [BarangController::class, 'history'])->name('barang.history');
 
     // ======================== KENDARAAN ========================
-    Route::get('/kendaraan', [KendaraanController::class, 'index'])->name('kendaraan.index');         // Tampilkan daftar kendaraan
-    Route::post('/kendaraan', [KendaraanController::class, 'store'])->name('kendaraan.store');
-    //Route::get('/kendaraan/{id}/bayar-pajak', [PajakController::class, 'bayar'])->name('pajak.bayar');
-    //Route::get('/kendaraan/{id}/perawatan', [PerawatanController::class, 'create'])->name('perawatan.create');
-    //Route::get('/maintenance/riwayat', [MaintenanceKendaraanController::class, 'riwayatAll'])->name('maintenance.riwayat.all');
+    Route::prefix('kendaraan')->group(function () {
+        Route::get('/', [KendaraanController::class, 'index'])->name('kendaraan.index'); // daftar kendaraan
+        Route::post('/', [KendaraanController::class, 'store'])->name('kendaraan.store');
 
+        // Form laporan perawatan kendaraan (pakai show)
+        Route::get('/{kendaraan}', [KendaraanController::class, 'show'])->name('perawatan.create');
+
+        // Riwayat perawatan kendaraan
+        Route::get('/{id}/riwayat', [KendaraanController::class, 'riwayat'])->name('kendaraan.riwayat');
+    });
 });
 
 // ======================== RUTE AUTENTIKASI (LOGIN, REGISTER, DLL) ========================

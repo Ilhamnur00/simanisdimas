@@ -38,9 +38,7 @@ class KendaraanResource extends Resource
                     ->label('Nomor Polisi')
                     ->required()
                     ->unique(ignoreRecord: true)
-                    ->rule('regex:/^[A-Z]{1}\s\d{1,4}\s[A-Z]{1,3}$/')
-                    ->placeholder('Contoh: R 1234 AB')
-                    ->helperText('Format: R 1234 AB (1 huruf, 1–4 angka, 1–3 huruf)')
+                    ->placeholder('Contoh: R1234AB')
                     ->maxLength(12),
 
                 Forms\Components\Select::make('kategori')

@@ -15,6 +15,7 @@
 
     <div class="py-10">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
             @if ($kendaraans->count())
                 <!-- Dropdown + Tombol -->
                 <div class="flex justify-end mb-6 items-center gap-2">
@@ -53,9 +54,11 @@
                 <table class="min-w-full divide-y divide-slate-200 text-sm text-left">
                     <thead class="bg-gradient-to-r from-sky-700 to-teal-600 text-white text-xs uppercase font-semibold">
                         <tr>
-                            <th class="px-6 py-4">ID Kendaraan</th>
+                            <th class="px-6 py-4">ID</th>
                             <th class="px-6 py-4">Nama User</th>
                             <th class="px-6 py-4">Nama Kendaraan</th>
+                            <th class="px-6 py-4">No. Polisi</th>
+                            <th class="px-6 py-4">Kategori</th>
                             <th class="px-6 py-4">Spesifikasi</th>
                             <th class="px-6 py-4">Tanggal Serah Terima</th>
                         </tr>
@@ -66,14 +69,16 @@
                                 <td class="px-6 py-4 font-semibold text-slate-800">{{ $kendaraan->id }}</td>
                                 <td class="px-6 py-4">{{ $kendaraan->user->name ?? '-' }}</td>
                                 <td class="px-6 py-4">{{ $kendaraan->nama }}</td>
-                                <td class="px-6 py-4 text-slate-600">{{ $kendaraan->spesifikasi }}</td>
+                                <td class="px-6 py-4">{{ $kendaraan->no_polisi }}</td>
+                                <td class="px-6 py-4">{{ $kendaraan->kategori ?? '-' }}</td>
+                                <td class="px-6 py-4 text-slate-600">{{ $kendaraan->spesifikasi ?? '-' }}</td>
                                 <td class="px-6 py-4 text-slate-600">
                                     {{ $kendaraan->tanggal_serah_terima ? \Carbon\Carbon::parse($kendaraan->tanggal_serah_terima)->translatedFormat('d F Y') : '-' }}
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-6 text-center text-slate-500 italic">
+                                <td colspan="7" class="px-6 py-6 text-center text-slate-500 italic">
                                     Tidak ada data kendaraan yang terdaftar.
                                 </td>
                             </tr>

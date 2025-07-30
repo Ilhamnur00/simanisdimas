@@ -18,33 +18,34 @@ class KendaraanSeeder extends Seeder
         $user = User::first();
 
         if (!$user) {
-            // Jika tidak ada user, seeder batal dijalankan
-            $this->command->warn('Tidak ada user ditemukan. Seeder Device tidak dijalankan.');
+            $this->command->warn('Tidak ada user ditemukan. Seeder Kendaraan tidak dijalankan.');
             return;
         }
 
-        // Isi data dummy kendaraan (semua kategori)
+        // Isi data dummy kendaraan (lengkap dengan no_polisi)
         $kendaraans = [
             [
                 'nama' => 'Motor Mio',
+                'no_polisi' => 'B1234MI',
                 'kategori' => 'Motor',
                 'spesifikasi' => '-',
                 'tanggal_serah_terima' => '2024-09-10',
             ],
             [
                 'nama' => 'Mobil Avanza',
+                'no_polisi' => 'D5678AV',
                 'kategori' => 'Mobil',
-                'spesifikasi' => '-',
+                'spesifikasi' => 'Manual',
                 'tanggal_serah_terima' => '2025-07-15',
             ],
             [
                 'nama' => 'Motor Bebek',
+                'no_polisi' => 'F9012BK',
                 'kategori' => 'Motor',
-                'spesifikasi' => 'I-',
+                'spesifikasi' => 'Injeksi',
                 'tanggal_serah_terima' => '2025-03-20',
             ],
         ];
-
 
         foreach ($kendaraans as $data) {
             Kendaraan::create(array_merge($data, [
