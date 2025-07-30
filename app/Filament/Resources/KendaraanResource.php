@@ -34,12 +34,25 @@ class KendaraanResource extends Resource
                     ->label('Nama Kendaraan')
                     ->required(),
 
-                Forms\Components\TextInput::make('kategori')
-                    ->label('Kategori Kendaraan')
-                    ->placeholder('Contoh: Motor, Mobil, dll'),
+                Forms\Components\TextInput::make('no_polisi')
+                    ->label('Nomor Polisi')
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->rule('regex:/^[A-Z]{1}\s\d{1,4}\s[A-Z]{1,3}$/')
+                    ->placeholder('Contoh: R 1234 AB')
+                    ->helperText('Format: R 1234 AB (1 huruf, 1–4 angka, 1–3 huruf)')
+                    ->maxLength(12),
+
+                Forms\Components\Select::make('kategori')
+                    ->label('Kategori')
+                    ->options([
+                        'Motor' => 'Motor',
+                        'Mobil' => 'Mobil',
+                    ])
+                ->required(),
 
                 Forms\Components\Textarea::make('spesifikasi')
-                    ->label('Spesifikasi / Keterangan Tambahan')
+                    ->label('Spesifikasi')
                     ->rows(4),
 
                 Forms\Components\DatePicker::make('tanggal_serah_terima')
@@ -53,7 +66,7 @@ class KendaraanResource extends Resource
     {
         return $table
             ->query(
-                \App\Models\User::query()->withCount('kendaraans') // User + jumlah kendaraan
+                User::query()->withCount('kendaraans')
             )
             ->columns([
                 Tables\Columns\TextColumn::make('name')

@@ -37,6 +37,9 @@ class RincianKendaraan extends Page implements HasTable
             Tables\Columns\TextColumn::make('nama')
                 ->label('Nama Kendaraan'),
 
+            Tables\Columns\TextColumn::make('no_polisi')
+                ->label('Nomor Polisi'),
+
             Tables\Columns\TextColumn::make('kategori')
                 ->label('Kategori'),
 

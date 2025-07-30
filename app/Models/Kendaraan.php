@@ -17,9 +17,10 @@ class Kendaraan extends Model
     protected $fillable = [
         'user_id',
         'nama',
-        'kategori',            // ← ditambahkan
+        'kategori',
         'spesifikasi',
         'tanggal_serah_terima',
+        'no_polisi'
     ];
 
     /**
