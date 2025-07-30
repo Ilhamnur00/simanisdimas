@@ -66,6 +66,12 @@ class User extends Authenticatable
         return method_exists($this, 'hasRole') && $this->hasRole('admin');
     }
 
+    public function kendaraans()
+    {
+        return $this->hasMany(\App\Models\Kendaraan::class);
+    }
+
+
     /**
      * Helper untuk mengecek apakah user adalah user biasa
      */

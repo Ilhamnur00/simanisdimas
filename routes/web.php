@@ -46,7 +46,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/device/{deviceId}/riwayat', [MaintenanceController::class, 'riwayat'])->name('device.riwayat');
     Route::get('/riwayat', [MaintenanceController::class, 'index'])->name('riwayat.index');
     Route::get('/riwayat', [MaintenanceController::class, 'riwayatAll'])->name('device.riwayatAll');
-    Route::get('/device/riwayat/all', [\App\Http\Controllers\Device\MaintenanceController::class, 'riwayatAll'])->name('device.riwayatAll');
+    Route::get('/device/riwayat/all', [MaintenanceController::class, 'riwayatAll'])->name('device.riwayatAll');
 
     // ======================== BARANG ========================
     Route::get('/', [BarangController::class, 'index'])->name('barang.index');
@@ -57,9 +57,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ======================== KENDARAAN ========================
     Route::get('/kendaraan', [KendaraanController::class, 'index'])->name('kendaraan.index');         // Tampilkan daftar kendaraan
     Route::post('/kendaraan', [KendaraanController::class, 'store'])->name('kendaraan.store');
-    Route::get('/kendaraan/{id}/bayar-pajak', [PajakController::class, 'bayar'])->name('pajak.bayar');
-    Route::get('/kendaraan/{id}/perawatan', [PerawatanController::class, 'create'])->name('perawatan.create');
-    Route::get('/maintenance/riwayat', [MaintenanceKendaraanController::class, 'riwayatAll'])->name('maintenance.riwayat.all');
+    //Route::get('/kendaraan/{id}/bayar-pajak', [PajakController::class, 'bayar'])->name('pajak.bayar');
+    //Route::get('/kendaraan/{id}/perawatan', [PerawatanController::class, 'create'])->name('perawatan.create');
+    //Route::get('/maintenance/riwayat', [MaintenanceKendaraanController::class, 'riwayatAll'])->name('maintenance.riwayat.all');
 
 });
 
