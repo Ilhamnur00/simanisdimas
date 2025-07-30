@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('maintenances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('device_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->date('tanggal'); // Tanggal perawatan
             $table->string('kategori_perawatan'); // Contoh: Ganti Part, Cleaning, Upgrade, dll
             $table->text('deskripsi'); // Penjelasan tambahan perawatan

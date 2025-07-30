@@ -30,6 +30,7 @@ class MaintenanceController extends Controller
 
         Maintenance::create([
             'device_id' => $deviceId,
+            'user_id' => Auth::id(), 
             'tanggal' => $request->tanggal,
             'kategori_perawatan' => $request->kategori_perawatan,
             'deskripsi' => $request->deskripsi,

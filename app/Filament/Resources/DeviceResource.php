@@ -17,6 +17,7 @@ class DeviceResource extends Resource
     protected static ?string $model = Device::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Manajemen Device';
 
     // Hapus form jika tidak ingin menambah device dari sini
     
@@ -76,8 +77,7 @@ class DeviceResource extends Resource
                 Tables\Actions\Action::make('rincian')
                     ->label('Rincian Device')
                     ->icon('heroicon-o-computer-desktop')
-                    ->url(fn ($record) => route('filament.admin.resources.devices.rincian-device', ['record' => $record->id]))
-                    ->openUrlInNewTab(),
+                    ->url(fn ($record) => route('filament.admin.resources.devices.rincian-device', ['record' => $record->id])),
             ])
             ->bulkActions([]);
     }
@@ -91,6 +91,8 @@ class DeviceResource extends Resource
     {
         return [
             'index' => Pages\ListDevices::route('/'),
+            'create' => Pages\CreateDevice::route('/create'),
+            'edit' => Pages\EditDevice::route('/{record}/edit'),
             'rincian-device' => Pages\RincianDevice::route('/{record}/rincian-device'),
         ];
     }

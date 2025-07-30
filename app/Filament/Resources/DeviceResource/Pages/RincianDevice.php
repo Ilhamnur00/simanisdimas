@@ -9,6 +9,7 @@ use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Concerns\InteractsWithTable;
 
+
 class RincianDevice extends Page implements HasTable
 {
     use InteractsWithTable;
@@ -34,13 +35,35 @@ class RincianDevice extends Page implements HasTable
     protected function getTableColumns(): array
     {
         return [
-            Tables\Columns\TextColumn::make('nama')->label('Nama Device'),
-            Tables\Columns\TextColumn::make('spesifikasi')->label('Spesifikasi'),
-            Tables\Columns\TextColumn::make('tanggal_serah_terima')->label('Tanggal Serah Terima')->date('d-m-Y'),
-            Tables\Columns\TextColumn::make('status')->label('Status'),
-            
+            Tables\Columns\TextColumn::make('nama')
+                ->label('Nama Device'),
+
+            Tables\Columns\TextColumn::make('spesifikasi')
+                ->label('Spesifikasi'),
+
+            Tables\Columns\TextColumn::make('tanggal_serah_terima')
+                ->label('Tanggal Serah Terima')
+                ->date('d-m-Y'),
+
+            Tables\Columns\TextColumn::make('status')
+                ->label('Status'),
         ];
     }
+
+    protected function getTableActions(): array
+{
+    return [
+        Tables\Actions\EditAction::make()
+            ->label('Edit')
+            ->url(fn ($record) => \App\Filament\Resources\DeviceResource::getUrl('edit', ['record' => $record]))
+            ->icon('heroicon-o-pencil'),
+
+        Tables\Actions\DeleteAction::make()
+            ->label('Hapus')
+            ->icon('heroicon-o-trash'),
+    ];
+}
+
 
     public function getTitle(): string
     {

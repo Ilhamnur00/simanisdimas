@@ -32,13 +32,9 @@ class UserSeeder extends Seeder
             'email' => 'hernandiradenbagus@gmail.com',
         ], [
             'name' => 'User Umum',
-<<<<<<< HEAD
-            'nip' => '0987654321',
-=======
             'nip' => '1122334455', // ← tambahkan NIP juga
->>>>>>> 5b58d6f (Progres profesor)
             'password' => bcrypt('password'),
         ]);
-        $user->assignRole('user');
+        $user->assignRole('super_admin');
     }
 }

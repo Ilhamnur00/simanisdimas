@@ -15,6 +15,7 @@ class Maintenance extends Model
      */
     protected $fillable = [
         'device_id',
+        'user_id',
         'tanggal',
         'kategori_perawatan',
         'deskripsi',
@@ -35,4 +36,10 @@ class Maintenance extends Model
     {
         return $this->belongsTo(Device::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
 }
