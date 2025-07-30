@@ -9,7 +9,6 @@ use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Concerns\InteractsWithTable;
 
-
 class RincianDevice extends Page implements HasTable
 {
     use InteractsWithTable;
@@ -63,8 +62,6 @@ class RincianDevice extends Page implements HasTable
             ->icon('heroicon-o-trash'),
     ];
 }
-
-
     public function getTitle(): string
     {
         return 'Device milik: ' . $this->user->name;
