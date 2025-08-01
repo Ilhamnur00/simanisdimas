@@ -17,36 +17,18 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             @if ($kendaraans->count())
-                <!-- Dropdown + Tombol -->
-                <div class="flex justify-end mb-6 items-center gap-2">
-                    <div class="flex gap-2">
-                        <select id="kendaraanSelect"
-                            class="border border-gray-300 rounded-md px-4 py-2 text-sm shadow-sm focus:ring focus:ring-indigo-200">
-                            <option value="">-- Pilih Kendaraan --</option>
-                            @foreach ($kendaraans as $kendaraan)
-                                <option value="{{ route('perawatan.create', $kendaraan->id) }}">
-                                    {{ $kendaraan->nama }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <button type="button" onclick="redirectToKendaraan()"
-                            class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-lg shadow hover:opacity-90 text-sm font-semibold">
-                            Laporkan Perawatan
-                        </button>
-                    </div>
-                </div>
+                <!-- Tombol kanan atas -->
+                <div class="flex justify-end mb-6 gap-3">
+                    <a href="{{ route('perawatan.index') }}"
+                        class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-lg shadow hover:opacity-90 text-sm font-semibold text-center">
+                        Laporkan Perawatan
+                    </a>
 
-                <script>
-                    function redirectToKendaraan() {
-                        const select = document.getElementById('kendaraanSelect');
-                        const url = select.value;
-                        if (url) {
-                            window.location.href = url;
-                        } else {
-                            alert('Silakan pilih kendaraan terlebih dahulu.');
-                        }
-                    }
-                </script>
+                    <a href="{{ route('pajak.index') }}"
+                        class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-lg shadow hover:opacity-90 text-sm font-semibold text-center">
+                        Laporkan Pajak
+                    </a>
+                </div>
             @endif
 
             <!-- Tabel Kendaraan -->
@@ -86,6 +68,7 @@
                     </tbody>
                 </table>
             </div>
+
         </div>
     </div>
 </x-app-layout>

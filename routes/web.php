@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Kendaraan\MaintenanceKendaraanController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Device\DeviceController;
@@ -55,16 +56,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/history', [BarangController::class, 'history'])->name('barang.history');
 
     // ======================== KENDARAAN ========================
-    Route::prefix('kendaraan')->group(function () {
-        Route::get('/', [KendaraanController::class, 'index'])->name('kendaraan.index'); // daftar kendaraan
-        Route::post('/', [KendaraanController::class, 'store'])->name('kendaraan.store');
+Route::prefix('kendaraan')->group(function () {
+    Route::get('/', [KendaraanController::class, 'index'])->name('kendaraan.index'); // daftar kendaraan
+    Route::post('/', [KendaraanController::class, 'store'])->name('kendaraan.store');
 
-        // Form laporan perawatan kendaraan (pakai show)
-        Route::get('/{kendaraan}', [KendaraanController::class, 'show'])->name('perawatan.create');
+    // Halaman perawatan & pajak (sementara pakai index)
+    Route::get('/perawatan', [KendaraanController::class, 'index'])->name('perawatan.index');
+    Route::get('/pajak', [KendaraanController::class, 'index'])->name('pajak.index');
 
-        // Riwayat perawatan kendaraan
-        Route::get('/{id}/riwayat', [KendaraanController::class, 'riwayat'])->name('kendaraan.riwayat');
-    });
+    // Tampilkan form laporan perawatan kendaraan (menggunakan show)
+    Route::get('/{kendaraan}', [KendaraanController::class, 'show'])->name('perawatan.create');
+
+    // Tampilkan riwayat perawatan kendaraan
+    Route::get('/{kendaraan}/riwayat', [KendaraanController::class, 'riwayat'])->name('kendaraan.riwayat');
+});
 });
 
 // ======================== RUTE AUTENTIKASI (LOGIN, REGISTER, DLL) ========================
