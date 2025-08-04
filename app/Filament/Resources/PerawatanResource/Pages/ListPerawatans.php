@@ -13,7 +13,12 @@ class ListPerawatans extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+           // Actions\CreateAction::make(),
         ];
+    }
+
+    public function getTitle(): string
+    {
+        return 'Riwayat Perawatan';
     }
 }

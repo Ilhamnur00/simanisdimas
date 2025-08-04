@@ -33,23 +33,22 @@
                     </div>
                 </div>
 
-                <!-- Riwayat Perawatan -->
+                <!-- Total Kendaraan -->
                 <div class="flex items-center p-6 bg-white rounded-xl shadow-md border-l-4 border-indigo-600 hover:shadow-lg transition">
                     <div class="p-3 bg-indigo-100 text-indigo-700 rounded-full mr-4">
+                        <!-- Ikon mobil -->
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
                              viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M8 7V3m8 4V3m-9 4h10M5 11h14M7 15h10M9 19h6" />
+                                  d="M3 13l1-3a1 1 0 011-1h14a1 1 0 011 1l1 3M5 13h14M6 16h.01M18 16h.01M6 16a2 2 0 104 0 2 2 0 00-4 0zM14 16a2 2 0 104 0 2 2 0 00-4 0z" />
                         </svg>
                     </div>
                     <div>
-                        <h4 class="text-sm font-semibold text-slate-600">Riwayat Perawatan</h4>
+                        <h4 class="text-sm font-semibold text-slate-600">Total Kendaraan yang Dimiliki</h4>
                         <div class="text-3xl font-bold text-indigo-700 mt-1">
-                            {{ \App\Models\Maintenance::whereHas('device', function ($q) {
-                                $q->where('user_id', auth()->id());
-                            })->count() }}
+                            {{ \App\Models\Kendaraan::where('user_id', auth()->id())->count() }}
                         </div>
-                        <p class="text-xs text-slate-400 mt-1">Laporan perawatan yang telah diajukan</p>
+                        <p class="text-xs text-slate-400 mt-1">Kendaraan tercatat atas nama Anda</p>
                     </div>
                 </div>
             </div>
