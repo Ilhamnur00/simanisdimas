@@ -7,23 +7,6 @@
 
     <div class="py-6">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            {{-- Notifikasi --}}
-            @if (session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 shadow-md animate-fade-in-down">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if ($errors->any())
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 shadow-md animate-fade-in-down">
-                    <ul class="list-disc list-inside space-y-1">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
             {{-- FORM --}}
             <form action="{{ route('barang.request.store') }}" method="POST"
                 class="bg-white/80 border border-slate-200 shadow-2xl backdrop-blur-sm rounded-2xl px-10 pt-8 pb-10 space-y-8 transition-all duration-300 ease-in-out">
@@ -33,7 +16,7 @@
                 <input type="hidden" name="jenis_transaksi" value="keluar">
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {{-- Kategori (untuk filter) --}}
+                    {{-- Kategori --}}
                     <div>
                         <label class="block text-sm font-semibold text-gray-800 mb-1">Kategori</label>
                         <select id="kategori"
@@ -97,7 +80,43 @@
         </div>
     </div>
 
-    {{-- SCRIPT --}}
+    {{-- SweetAlert2 CDN --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {{-- SweetAlert2 Notifikasi --}}
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: '{{ session('success') }}',
+                confirmButtonColor: '#3085d6',
+            });
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: '{{ session('error') }}',
+                confirmButtonColor: '#d33',
+            });
+        </script>
+    @endif
+
+    @if ($errors->any())
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Validasi Gagal',
+                html: `{!! implode('<br>', $errors->all()) !!}`,
+            });
+        </script>
+    @endif
+
+    {{-- SCRIPT: Filter Barang & Tampilkan Stok --}}
     <script>
         const kategoriSelect = document.getElementById('kategori');
         const barangSelect = document.getElementById('barang_id');
@@ -141,20 +160,4 @@
             }
         });
     </script>
-
-    <style>
-        @keyframes fade-in-down {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .animate-fade-in-down {
-            animation: fade-in-down 0.4s ease-out;
-        }
-    </style>
 </x-app-layout>

@@ -6,6 +6,8 @@ use App\Models\Barang;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\TransaksiBarangResource;
 use Illuminate\Support\Facades\Auth;
+use Filament\Notifications\Notification;
+use Illuminate\Validation\ValidationException;
 
 class CreateTransaksiBarang extends CreateRecord
 {
@@ -21,19 +23,30 @@ class CreateTransaksiBarang extends CreateRecord
         return 'Transaksi Baru';
     }
 
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $barang = Barang::findOrFail($data['barang_id']);
 
         // Validasi stok hanya jika transaksi keluar
         if ($data['jenis_transaksi'] === 'keluar' && $barang->stok < $data['jumlah_barang']) {
-            throw new \Exception('Stok barang tidak mencukupi untuk transaksi keluar.');
+            Notification::make()
+                ->title('Stok Tidak Cukup')
+                ->body('Stok barang tidak mencukupi untuk transaksi keluar.')
+                ->danger()
+                ->persistent() // agar tidak auto-close
+                ->send();
+
+            // Batalkan proses simpan dengan error validasi
+            throw ValidationException::withMessages([
+                'jumlah_barang' => 'Stok barang tidak mencukupi untuk transaksi keluar.',
+            ]);
         }
 
         // Isi data dasar
         $data['user_id'] = Auth::id();
 
-        // Field lain seperti detail_barang_id, harga_satuan, dll akan diisi oleh Observer
         return $data;
     }
+
 }

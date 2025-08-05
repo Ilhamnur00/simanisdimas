@@ -27,11 +27,22 @@ class BarangController extends Controller
     public function storeRequest()
     {
         try {
-            DB::transaction(function () {
+            $barang = Barang::findOrFail(request('barang_id'));
+            $jenisTransaksi = request('jenis_transaksi');
+            $jumlahBarang = (int) request('jumlah_barang');
+
+            // Cek stok jika transaksi keluar
+            if ($jenisTransaksi === 'keluar' && $barang->stok < $jumlahBarang) {
+                return redirect()->back()
+                    ->with('error', 'Stok barang tidak mencukupi untuk transaksi keluar.')
+                    ->withInput();
+            }
+
+            DB::transaction(function () use ($barang, $jenisTransaksi, $jumlahBarang) {
                 TransaksiBarang::create([
-                    'barang_id' => request('barang_id'),
-                    'jenis_transaksi' => request('jenis_transaksi'),
-                    'jumlah_barang' => request('jumlah_barang'),
+                    'barang_id' => $barang->id,
+                    'jenis_transaksi' => $jenisTransaksi,
+                    'jumlah_barang' => $jumlahBarang,
                     'tanggal' => now(),
                     'user_id' => Auth::id(),
                 ]);
@@ -42,6 +53,7 @@ class BarangController extends Controller
             return redirect()->back()->with('error', 'Gagal menyimpan transaksi: ' . $e->getMessage());
         }
     }
+
 
     public function history()
     {
