@@ -13,24 +13,50 @@
 <body>
     <h2>Laporan Transaksi - {{ $periode }}</h2>
     <p>Pengguna: {{ $user }}</p>
+
     <table>
         <thead>
             <tr>
+                <th>No Transaksi</th>
+                <th>Nama User</th>
                 <th>Tanggal</th>
-                <th>Jenis</th>
+                <th>Nama Barang</th>
+                <th>Jenis Transaksi</th>
                 <th>Jumlah</th>
                 <th>Total Harga</th>
+                <th>Status Asal</th>
+                <th>Nilai TKDN</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($transaksi as $item)
                 <tr>
+                    <td>TRX{{ str_pad($item->id, 3, '0', STR_PAD_LEFT) }}</td>
+                    <td>{{ $item->user->name ?? '-' }}</td>
                     <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
+                    <td>{{ $item->barang->nama_barang ?? '-' }}</td>
                     <td>{{ ucfirst($item->jenis_transaksi) }}</td>
                     <td>{{ $item->jumlah_barang }}</td>
                     <td>
                         @if ($item->jenis_transaksi === 'masuk')
                             Rp{{ number_format($item->total_harga, 0, ',', '.') }}
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td>
+                        @if ($item->jenis_transaksi === 'masuk')
+                            {{ $item->status_asal ?? ($item->detailBarang->status_asal ?? '-') }}
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td>
+                        @if (
+                            $item->jenis_transaksi === 'masuk' &&
+                            ($item->status_asal ?? $item->detailBarang->status_asal ?? '') === 'TKDN'
+                        )
+                            {{ $item->nilai_tkdn ?? ($item->detailBarang->nilai_tkdn ?? '-') }}%
                         @else
                             -
                         @endif

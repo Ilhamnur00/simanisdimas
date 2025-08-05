@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\PerawatanResource\Pages;
+namespace App\Filament\Resources\PerawatanDeviceResource\Pages;
 
-use App\Filament\Resources\PerawatanResource;
+use App\Filament\Resources\PerawatanDeviceResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
 class ListPerawatans extends ListRecords
 {
-    protected static string $resource = PerawatanResource::class;
+    protected static string $resource = PerawatanDeviceResource::class;
 
     protected function getHeaderActions(): array
     {

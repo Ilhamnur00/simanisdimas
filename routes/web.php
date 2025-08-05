@@ -69,7 +69,7 @@ Route::prefix('kendaraan')->group(function () {
 
     // Tampilkan riwayat perawatan kendaraan
     Route::get('/{kendaraan}/riwayat', [KendaraanController::class, 'riwayat'])->name('kendaraan.riwayat');
-});
+    });
 });
 
 // ======================== RUTE AUTENTIKASI (LOGIN, REGISTER, DLL) ========================

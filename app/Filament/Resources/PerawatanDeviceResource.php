@@ -2,14 +2,14 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PerawatanResource\Pages;
+use App\Filament\Resources\PerawatanDeviceResource\Pages;
 use App\Models\Maintenance;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 
-class PerawatanResource extends Resource
+class PerawatanDeviceResource extends Resource
 {
     protected static ?string $model = Maintenance::class;
 
@@ -62,7 +62,7 @@ class PerawatanResource extends Resource
             ])
             ->defaultSort('tanggal', 'desc')
             ->filters([])
-            ->actions([]); // Tidak menampilkan tombol edit/delete
+            ->actions([]);
     }
 
     public static function getPages(): array
