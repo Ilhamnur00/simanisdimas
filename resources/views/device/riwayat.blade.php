@@ -29,7 +29,7 @@
         {{-- Tabel Riwayat --}}
         <div class="bg-white border border-slate-200 shadow-xl rounded-2xl overflow-x-auto">
             <table class="min-w-full divide-y divide-slate-200 text-sm">
-                <thead class="bg-gradient-to-r from-sky-700 to-teal-600 text-white uppercase text-xs font-semibold">
+                <thead class="bg-gradient-to-r from-sky-700 to-sky-500 text-white uppercase text-xs font-semibold text-left">
                     <tr>
                         <th class="px-6 py-3 text-left">Tanggal</th>
                         <th class="px-6 py-3 text-left">Device</th>
@@ -63,7 +63,7 @@
                             </td>
                             <td class="px-6 py-4">
                                 <button onclick="openModal({{ $index }})"
-                                    class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-2 rounded-md shadow-md hover:opacity-90 transition text-sm">
+                                    class="bg-gradient-to-r from-sky-700 to-sky-500 text-white px-6 py-2 rounded-md shadow-md hover:from-sky-800 hover:to-sky-600 hover:opacity-90 transition text-sm">
                                     Lihat Detail
                                 </button>
                             </td>

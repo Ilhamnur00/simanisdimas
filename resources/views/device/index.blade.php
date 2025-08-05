@@ -29,7 +29,7 @@
                             @endforeach
                         </select>
                         <button type="button" onclick="redirectToDevice()"
-                            class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-lg shadow hover:opacity-90 text-sm font-semibold">
+                            class="bg-gradient-to-r from-sky-700 to-sky-500 text-white px-4 py-2 rounded-lg shadow hover:from-sky-800 hover:to-sky-600 text-sm font-semibold transition">
                             Laporkan Perawatan
                         </button>
                     </div>
@@ -51,7 +51,7 @@
             <!-- Tabel Device -->
             <div class="bg-white border border-slate-200 shadow-xl rounded-2xl overflow-x-auto">
                 <table class="min-w-full divide-y divide-slate-200 text-sm text-left">
-                    <thead class="bg-gradient-to-r from-sky-700 to-teal-600 text-white text-xs uppercase font-semibold">
+                    <thead class ="bg-gradient-to-r from-sky-700 to-sky-500 text-white uppercase text-xs font-semibold text-left">
                         <tr>
                             <th class="px-6 py-4">ID Device</th>
                             <th class="px-6 py-4">Nama User</th>

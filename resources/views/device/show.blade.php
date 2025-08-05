@@ -91,7 +91,7 @@
                 <!-- Tombol Submit -->
                 <div class="pt-6 text-right">
                     <button type="submit"
-                        class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-2 rounded-md shadow-md hover:opacity-90 transition text-sm">
+                        class="bg-gradient-to-r from-sky-700 to-sky-500 text-white px-6 py-2 rounded-md shadow-md hover:opacity-90 transition text-sm">
                         Kirim Laporan
                     </button>
                 </div>
