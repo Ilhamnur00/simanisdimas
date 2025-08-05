@@ -69,7 +69,7 @@
                         @if ($userDevice)
                             <a href="{{ route('devices.show', $userDevice->id) }}"
                             class="block px-3 py-1 hover:underline">Laporan Perawatan</a>
-                            <a href="{{ route('device.riwayat', $userDevice->id) }}"
+                            <a href="{{ route('device.riwayatAll', $userDevice->id) }}"
                             class="block px-3 py-1 hover:underline">Riwayat Device</a>
                         @else
                             <span class="block px-3 py-1 text-gray-400">Laporan Perawatan (belum ada device)</span>

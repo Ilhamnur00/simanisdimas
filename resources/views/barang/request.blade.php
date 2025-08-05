@@ -72,7 +72,7 @@
 
                 <div class="text-right pt-6">
                     <button type="submit"
-                        class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-2 rounded-md shadow-md hover:opacity-90 transition text-sm">
+                        class="bg-gradient-to-r from-sky-700 to-sky-500 text-white px-6 py-2 rounded-md shadow-md hover:from-sky-800 hover:to-sky-600 transition text-sm">
                         Konfirmasi
                     </button>
                 </div>

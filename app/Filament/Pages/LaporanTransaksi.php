@@ -25,7 +25,7 @@ class LaporanTransaksi extends Page implements HasForms
     protected static ?string $navigationLabel = 'Laporan Transaksi';
     protected static ?string $title = 'Laporan Transaksi';
 
-    public ?int $user_id = null;
+    public ?string $user_id = ''; // string kosong untuk 'semua pengguna'
     public string $jenis_laporan = 'bulanan';
     public ?string $bulan = null;
     public ?string $tahun = null;
@@ -33,7 +33,9 @@ class LaporanTransaksi extends Page implements HasForms
     public function mount(): void
     {
         $this->form->fill([
+            'user_id' => '',
             'jenis_laporan' => 'bulanan',
+            'bulan' => now()->month,
             'tahun' => now()->year,
         ]);
     }
@@ -47,22 +49,25 @@ class LaporanTransaksi extends Page implements HasForms
     {
         return [
             Section::make('Filter Laporan')
+                ->description('Gunakan filter ini untuk menghasilkan laporan transaksi yang sesuai.')
                 ->schema([
                     Select::make('user_id')
-                        ->label('Pilih User')
-                        ->options(User::all()->pluck('name', 'id')->toArray())
+                        ->label('Pilih Pengguna')
+                        ->options(['' => 'Semua Pengguna'] + User::all()->pluck('name', 'id')->toArray())
                         ->searchable()
-                        ->required()
-                        ->reactive(),
+                        ->default('')
+                        ->helperText('Kosongkan untuk mencetak laporan seluruh pengguna.')
+                        ->columnSpanFull(),
 
-                    Radio::make('jenis_laporan')
+                    Select::make('jenis_laporan')
                         ->label('Jenis Laporan')
                         ->options([
                             'bulanan' => 'Bulanan',
                             'tahunan' => 'Tahunan',
                         ])
-                        ->inline()
-                        ->reactive(),
+                        ->reactive()
+                        ->default('bulanan')
+                        ->columnSpanFull(),
 
                     Select::make('bulan')
                         ->label('Bulan')
@@ -81,22 +86,39 @@ class LaporanTransaksi extends Page implements HasForms
                             '12' => 'Desember',
                         ])
                         ->visible(fn ($get) => $get('jenis_laporan') === 'bulanan')
-                        ->requiredIf('jenis_laporan', 'bulanan'),
+                        ->requiredIf('jenis_laporan', 'bulanan')
+                        ->default((string) now()->month)
+                        ->columnSpan([
+                            'md' => 6,
+                        ]),
 
                     Select::make('tahun')
                         ->label('Tahun')
                         ->options(
-                            collect(range(now()->year, now()->year - 5))->mapWithKeys(fn ($y) => [$y => $y])->toArray()
+                            collect(range(now()->year, now()->year - 5))
+                                ->mapWithKeys(fn ($y) => [$y => $y])
+                                ->toArray()
                         )
-                        ->required(),
-                ]),
+                        ->default((string) now()->year)
+                        ->required()
+                        ->columnSpan([
+                            'md' => 6,
+                        ]),
+                ])
+                ->columns([
+                    'md' => 12,
+                ])
+                ->collapsible()
+                ->collapsed(false),
         ];
     }
 
     public function downloadPdf(): \Symfony\Component\HttpFoundation\StreamedResponse
     {
         $data = $this->getFilteredData();
-        $userName = User::find($this->user_id)?->name ?? '-';
+        $userName = $this->user_id
+            ? (User::find($this->user_id)?->name ?? '-')
+            : 'Semua Pengguna';
 
         $pdf = Pdf::loadView('pdf.laporan-transaksi', [
             'transaksi' => $this->utf8ize($data->toArray()),
@@ -109,39 +131,44 @@ class LaporanTransaksi extends Page implements HasForms
             'laporan-transaksi.pdf'
         );
     }
+
     public function kirimEmail(): void
     {
-        // Ambil data hasil filter
-        $data = $this->getFilteredData();
+        if (empty($this->user_id)) {
+            Notification::make()
+                ->title('Silakan pilih pengguna untuk mengirim email laporan.')
+                ->danger()
+                ->send();
+            return;
+        }
 
-        // Ambil user berdasarkan ID
+        $data = $this->getFilteredData();
         $user = User::findOrFail($this->user_id);
 
-        // Konversi ke array of object agar bisa dipakai di view pakai ->tanggal
         $transaksi = collect($this->utf8ize($data->toArray()))
                         ->map(fn ($item) => (object) $item);
 
-        // Generate PDF
         $pdfOutput = Pdf::loadView('pdf.laporan-transaksi', [
             'transaksi' => $transaksi,
             'periode' => $this->getPeriodeLabel(),
             'user' => $user->name,
         ])->output();
 
-        // Kirim notifikasi email
         $user->notify(new LaporanNotification($user, $pdfOutput));
 
-        // Tampilkan notifikasi sukses
         Notification::make()
             ->title('Laporan berhasil dikirim ke email user.')
             ->success()
             ->send();
     }
 
-
     private function getFilteredData()
     {
-        $query = TransaksiBarang::query()->where('user_id', $this->user_id);
+        $query = TransaksiBarang::query();
+
+        if (!empty($this->user_id)) {
+            $query->where('user_id', $this->user_id);
+        }
 
         if ($this->jenis_laporan === 'bulanan') {
             $query->whereYear('tanggal', $this->tahun)

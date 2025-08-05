@@ -1,11 +1,25 @@
 <x-filament::page>
-    <div class="flex justify-end space-x-2 mb-4">
-        <x-filament::button wire:click="downloadPdf" color="primary">
-            Download PDF
-        </x-filament::button>
-        <x-filament::button wire:click="kirimEmail" color="success">
-            Kirim Email
-        </x-filament::button>
+    <div class="space-y-6">
+        {{ $this->form }}
+
+        <div class="flex justify-end gap-4">
+            <x-filament::button
+                color="primary"
+                wire:click="downloadPdf"
+                icon="heroicon-o-document-arrow-down"
+            >
+                Download PDF
+            </x-filament::button>
+
+            @if (!empty($this->user_id))
+                <x-filament::button
+                    color="success"
+                    wire:click="kirimEmail"
+                    icon="heroicon-o-envelope"
+                >
+                    Kirim Email
+                </x-filament::button>
+            @endif
+        </div>
     </div>
-    {{ $this->form }}
 </x-filament::page>

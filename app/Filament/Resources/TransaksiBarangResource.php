@@ -60,7 +60,7 @@ class TransaksiBarangResource extends Resource
                         ->required(),
                 ])
 
-                ->createOptionAction(function (\Filament\Forms\Components\Actions\Action $action) {
+                ->createOptionAction(function (Action $action) {
                     return $action
                         ->label('Tambah Barang Baru')
                         ->modalHeading('Tambah Barang Baru')

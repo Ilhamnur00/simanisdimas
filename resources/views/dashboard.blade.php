@@ -54,7 +54,7 @@
             </div>
 
             {{-- Informasi Sistem --}}
-            <div class="rounded-2xl p-6 bg-gradient-to-r from-sky-900 via-indigo-900 to-slate-900 text-white shadow-lg">
+            <div class="rounded-2xl p-6 bg-gradient-to-r from-sky-700 via-sky-600 to-sky-500 text-white shadow-lg">
                 <h3 class="text-lg font-bold mb-3">📢 Informasi Sistem</h3>
                 <ul class="list-disc pl-6 text-sm text-sky-100 space-y-1 leading-relaxed">
                     <li>Gunakan sistem ini untuk mencatat dan melacak status perangkat Anda.</li>
