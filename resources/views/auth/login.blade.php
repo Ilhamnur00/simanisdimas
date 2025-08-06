@@ -55,11 +55,12 @@
         </div>
 
         <!-- Submit -->
-        <div class="flex justify-center items-center mt-1">
-            <x-primary-button class="bg-gradient-to-br from-sky-400 to-blue-600 hover:from-sky-500 hover:to-blue-700 
-                text-white font-semibold py-3 px-20 rounded-md text-center transition duration-300">
-                {{ __('Login') }}
+        <div class="w-full mt-4">
+            <x-primary-button class="w-full flex justify-center items-center bg-gradient-to-br from-sky-400 to-blue-600 
+                hover:from-sky-500 hover:to-blue-700 text-white font-semibold py-3 rounded-md text-center transition duration-300">
+                {{ __('LOGIN') }}
             </x-primary-button>
+        </div>
         </div>
     </form>
 </x-guest-layout>

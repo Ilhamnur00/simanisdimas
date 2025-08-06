@@ -1,9 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-sky-900 via-indigo-900 to-slate-800">
-                Daftar Stok Barang
+        <div class="space-y-1">
+            <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#003973] via-[#2980B9] to-[#6DD5FA] drop-shadow">
+                Inventaris Barang
             </h2>
+            <p class="text-slate-700 text-base">Aplikasi Inventaris Dinas Komunikasi dan Informatika</p>
+            <p class="text-sm italic text-slate-500">“Daftar Barang Inventaris yang Tersedia”</p>
         </div>
     </x-slot>
 

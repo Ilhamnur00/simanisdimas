@@ -19,8 +19,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Get;
-
-
+use Filament\Forms\Components\Placeholder;
 
 class TransaksiBarangResource extends Resource
 {
@@ -43,31 +42,44 @@ class TransaksiBarangResource extends Resource
                 ->live()
                 ->required(),
 
+Forms\Components\Group::make([
             Select::make('barang_id')
                 ->label('Nama Barang')
                 ->options(fn () => Barang::pluck('nama_barang', 'id'))
                 ->relationship('barang', 'nama_barang')
                 ->searchable()
+                ->live()
+                ->afterStateUpdated(fn ($state, callable $set) => 
+                    $set('stokBarang', Barang::find($state)?->stok ?? 0)
+                )
                 ->required()
                 ->createOptionForm([
                     Forms\Components\TextInput::make('nama_barang')
                         ->label('Nama Barang')
                         ->required(),
-
                     Forms\Components\Select::make('kategori_id')
                         ->relationship('kategori', 'nama_kategori')
                         ->label('Kategori')
                         ->required(),
                 ])
-
                 ->createOptionAction(function (Action $action) {
                     return $action
                         ->label('Tambah Barang Baru')
                         ->modalHeading('Tambah Barang Baru')
                         ->modalSubmitActionLabel('Simpan')
                         ->visible(fn (Get $get) => $get('jenis_transaksi') === 'masuk');
-
                 }),
+
+            Placeholder::make('stok_info')
+                ->label('')
+                ->content(fn ($get) =>
+                    $get('barang_id')
+                        ? 'Stok tersedia: ' . $get('stokBarang') . ' unit'
+                        : ''
+                )
+                ->extraAttributes(['class' => 'text-sm text-gray-500 -mt-2']),
+            ])
+            ->columnSpan(1),
 
             TextInput::make('jumlah_barang')
                 ->label('Jumlah Barang')
