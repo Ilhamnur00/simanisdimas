@@ -13,16 +13,21 @@ class BarangController extends Controller
 {
     public function index()
     {
-        $barang = Barang::with('detailBarang')->get();
+        $barang = Barang::all()->filter(function ($item) {
+        return $item->stok > 0;
+});
         return view('barang.index', compact('barang'));
     }
 
-    public function createRequest()
-    {
-        $barang = Barang::all();
-        $kategori = Kategori::all();
-        return view('barang.request', compact('barang', 'kategori'));
-    }
+public function createRequest()
+{
+    // Ambil hanya barang yang masih ada stok
+    $barang = Barang::all()->filter(function ($item) {
+        return $item->stok > 0;
+    });
+    $kategori = Kategori::all();
+    return view('barang.request', compact('barang', 'kategori'));
+}
 
     public function storeRequest()
     {
