@@ -19,15 +19,16 @@
             @if ($kendaraans->count())
                 <!-- Tombol kanan atas -->
                 <div class="flex justify-end mb-6 gap-3">
-                    <a href="{{ route('perawatan.index') }}"
-                        class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-lg shadow hover:opacity-90 text-sm font-semibold text-center">
-                        Laporkan Perawatan
-                    </a>
+                    <a
+    href="/kendaraan/laporan-perawatan"
+    class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+    Laporkan Perawatan
+</a>
 
-                    <a href="{{ route('pajak.index') }}"
-                        class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-lg shadow hover:opacity-90 text-sm font-semibold text-center">
-                        Laporkan Pajak
-                    </a>
+                    <a href="{{ route('kendaraan.lapor-pajak') }}"
+   class="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded">
+    Laporkan Pajak
+</a>
                 </div>
             @endif
 

@@ -67,18 +67,38 @@
                         @endphp
 
                         @if ($userDevice)
-                            <a href="{{ route('devices.show', $userDevice->id) }}"
-                            class="block px-3 py-1 hover:underline">Laporan Perawatan</a>
-                            <a href="{{ route('device.riwayatAll', $userDevice->id) }}"
+                            <a href="{{ route('device.riwayatAll') }}"
                             class="block px-3 py-1 hover:underline">Riwayat Device</a>
                         @else
-                            <span class="block px-3 py-1 text-gray-400">Laporan Perawatan (belum ada device)</span>
                             <span class="block px-3 py-1 text-gray-400">Riwayat Device (belum ada device)</span>
                         @endif
                 </div>
 
-                <!-- Kendaraan -->
-                        <a href="{{ route('kendaraan.index') }}" class="block px-3 py-1 hover:underline">Kendaraan</a>
+
+                <div x-data="{ open: false }" class="space-y-1">
+                    <button @click="open = !open"
+                            class="w-full text-left px-3 py-2 rounded hover:bg-sky-700 flex justify-between items-center transition">
+                        Kendaraan
+                        <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform"
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div x-show="open" x-cloak class="ml-4 space-y-1 text-white">
+                        <a href="{{ route('kendaraan.index') }}" class="block px-3 py-1 hover:underline">Manajemen Kendaraan</a>
+                        @php
+                            $userKendaraan = \App\Models\Kendaraan::where('user_id', auth()->id())->first();
+                        @endphp
+
+                        @if ($userKendaraan)
+                            <a href="{{ route('kendaraan.riwayat') }}"
+                            class="block px-3 py-1 hover:underline">Riwayat Kendaraan</a>
+                        @else
+                            <span class="block px-3 py-1 text-gray-400">Riwayat Kendaraan (belum ada Kendaraan)</span>
+                        @endif
+                </div>
+
             </nav>
 
             <!-- Admin Section -->

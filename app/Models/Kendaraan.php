@@ -40,21 +40,22 @@ class Kendaraan extends Model
 
     /**
      * Relasi: Kendaraan dimiliki oleh satu User.
-     *
-     * @return BelongsTo
      */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Relasi: Kendaraan memiliki banyak Maintenance.
-     *
-     * @return HasMany
-     */
-    public function maintenances(): HasMany
+    public function pajaks(): HasMany
     {
-        return $this->hasMany(Maintenance::class);
+        return $this->hasMany(LaporanPajak::class);
     }
+
+    /**
+     * Relasi: Kendaraan memiliki banyak Laporan Perawatan.
+     */
+    public function riwayatPerawatan()
+{
+    return $this->hasMany(LaporanPerawatan::class);
+}
 }

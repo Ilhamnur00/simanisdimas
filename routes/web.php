@@ -57,19 +57,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ======================== KENDARAAN ========================
 Route::prefix('kendaraan')->group(function () {
-    Route::get('/', [KendaraanController::class, 'index'])->name('kendaraan.index'); // daftar kendaraan
+
+    // Daftar & tambah kendaraan
+    Route::get('/', [KendaraanController::class, 'index'])->name('kendaraan.index');
     Route::post('/', [KendaraanController::class, 'store'])->name('kendaraan.store');
 
-    // Halaman perawatan & pajak (sementara pakai index)
-    Route::get('/perawatan', [KendaraanController::class, 'index'])->name('perawatan.index');
-    Route::get('/pajak', [KendaraanController::class, 'index'])->name('pajak.index');
+    // Formulir & simpan laporan perawatan
+    Route::get('/laporan-perawatan', [KendaraanController::class, 'formLaporanPerawatan'])->name('kendaraan.laporan-perawatan');
+    Route::post('/laporan-perawatan', [KendaraanController::class, 'storeLaporanPerawatan'])->name('kendaraan.laporan-perawatan.store');
 
-    // Tampilkan form laporan perawatan kendaraan (menggunakan show)
-    Route::get('/{kendaraan}', [KendaraanController::class, 'show'])->name('perawatan.create');
+    // Formulir pajak (GET) & simpan pajak (POST)
+    Route::get('/lapor-pajak', [KendaraanController::class, 'laporPajak'])->name('kendaraan.lapor-pajak');
+    Route::post('/lapor-pajak', [KendaraanController::class, 'storeLaporPajak'])->name('kendaraan.store-lapor-pajak');
 
-    // Tampilkan riwayat perawatan kendaraan
-    Route::get('/{kendaraan}/riwayat', [KendaraanController::class, 'riwayat'])->name('kendaraan.riwayat');
-    });
+    // Riwayat perawatan & pajak
+    Route::get('/riwayat', [KendaraanController::class, 'riwayat'])->name('kendaraan.riwayat');
+    Route::get('/riwayat/data/{jenis}', [KendaraanController::class, 'getRiwayatData'])->name('kendaraan.riwayat.data');
+
+    // Detail kendaraan
+    Route::get('/{kendaraan}', [KendaraanController::class, 'show'])->name('kendaraan.show');
+});
+
+
 });
 
 // ======================== RUTE AUTENTIKASI (LOGIN, REGISTER, DLL) ========================

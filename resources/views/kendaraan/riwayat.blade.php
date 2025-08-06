@@ -1,35 +1,29 @@
 <x-app-layout>
-    <x-slot name="title">Riwayat Perawatan Kendaraan</x-slot>
+    <x-slot name="title">Riwayat Kendaraan</x-slot>
 
     <div class="max-w-7xl mx-auto py-10 px-6">
         {{-- Header --}}
         <div class="mb-8">
             <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#003973] via-[#2980B9] to-[#6DD5FA] drop-shadow">
-                Riwayat Perawatan
+                Riwayat Kendaraan
             </h2>
-            <p class="text-slate-500 mt-1 text-base">
-                Daftar laporan perawatan untuk semua Kendaraan.
-            </p>
+            <p class="text-slate-500 mt-1 text-base">Daftar laporan perawatan dan pajak kendaraan dinas.</p>
         </div>
 
         {{-- Filter Dropdown --}}
-        <form method="GET" action="{{ route('kendaraan.riwayatAll') }}" class="mb-6">
-            <label for="kendaraan_id" class="block mb-2 text-sm font-medium text-slate-700">Filter Berdasarkan Kendaraan</label>
-            <select name="kendaraan_id" id="kendaraan_id" onchange="this.form.submit()"
+        <div class="mb-6">
+            <label for="filter" class="block mb-2 text-sm font-medium text-slate-700">Pilih Jenis Riwayat</label>
+            <select id="filter" onchange="filterTable(this.value)"
                 class="w-full md:w-1/3 border border-slate-300 rounded-md shadow-sm px-4 py-2 text-sm text-slate-700 focus:ring focus:ring-sky-200 focus:border-sky-400">
-                <option value="">Semua Kendaraan</option>
-                @foreach ($kendaraans as $kendaraan)
-                    <option value="{{ $kendaraan->id }}" {{ request('kendaraan_id') == $kendaraan->id ? 'selected' : '' }}>
-                        {{ $kendaraan->nama }}
-                    </option>
-                @endforeach
+                <option value="perawatan">Riwayat Perawatan Kendaraan</option>
+                <option value="pajak">Riwayat Laporan Pajak</option>
             </select>
-        </form>
+        </div>
 
-        {{-- Tabel Riwayat --}}
-        <div class="bg-white border border-slate-200 shadow-xl rounded-2xl overflow-x-auto">
+        {{-- Tabel Perawatan --}}
+        <div id="tabelPerawatan" class="bg-white border border-slate-200 shadow-xl rounded-2xl overflow-x-auto">
             <table class="min-w-full divide-y divide-slate-200 text-sm">
-                <thead class="bg-gradient-to-r from-sky-700 to-teal-600 text-white uppercase text-xs font-semibold">
+                <thead class="bg-gradient-to-r from-sky-700 to-sky-500 text-white uppercase text-xs font-semibold text-left">
                     <tr>
                         <th class="px-6 py-3 text-left">Tanggal</th>
                         <th class="px-6 py-3 text-left">Kendaraan</th>
@@ -40,98 +34,139 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-slate-100">
-                    @forelse ($riwayat as $index => $item)
+                    @forelse ($riwayatPerawatan as $data)
                         <tr class="hover:bg-sky-50 transition duration-150">
-                            <td class="px-6 py-4 text-slate-700">
-                                {{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') }}
-                            </td>
-                            <td class="px-6 py-4 font-semibold text-slate-800">
-                                {{ $item->kendaraan->nama ?? '-' }}
-                            </td>
-                            <td class="px-6 py-4 font-semibold text-teal-700">
-                                {{ $item->kategori_perawatan }}
-                            </td>
-                            <td class="px-6 py-4 text-slate-600">
-                                {{ $item->deskripsi }}
-                            </td>
+                            <td class="px-6 py-4 text-slate-700">{{ \Carbon\Carbon::parse($data->tanggal)->translatedFormat('d F Y') }}</td>
+                            <td class="px-6 py-4 font-semibold text-slate-800">{{ $data->kendaraan->nama }}</td>
+                            <td class="px-6 py-4 font-semibold text-teal-700">{{ $data->kategori_perawatan }}</td>
+                            <td class="px-6 py-4 text-slate-600">{{ $data->deskripsi }}</td>
                             <td class="px-6 py-4">
-                                @if ($item->bukti)
-                                    <a href="{{ asset('storage/' . $item->bukti) }}" target="_blank" class="text-sky-600 hover:underline">Lihat</a>
+                                @if ($data->bukti)
+                                    <a href="{{ asset('storage/' . $data->bukti) }}" target="_blank" class="text-sky-600 hover:underline">Lihat</a>
                                 @else
                                     <span class="text-slate-400 italic">-</span>
                                 @endif
                             </td>
                             <td class="px-6 py-4">
-                                <button onclick="openModal({{ $index }})"
-                                    class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-2 rounded-md shadow-md hover:opacity-90 transition text-sm">
+                                <button onclick="openModal({{ $loop->index }})"
+                                    class="bg-gradient-to-r from-sky-700 to-sky-500 text-white px-6 py-2 rounded-md shadow-md hover:from-sky-800 hover:to-sky-600 hover:opacity-90 transition text-sm">
                                     Lihat Detail
                                 </button>
                             </td>
                         </tr>
 
-                        {{-- Modal Detail --}}
-                        <div id="modal-{{ $index }}" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 hidden">
+                        {{-- Modal Perawatan --}}
+                        <div id="modal-{{ $loop->index }}" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 hidden">
                             <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl p-6 relative animate-fade-in-down overflow-y-auto max-h-screen">
-                                <button onclick="closeModal({{ $index }})"
+                                <button onclick="closeModal({{ $loop->index }})"
                                     class="absolute top-3 right-4 text-slate-500 hover:text-slate-800 text-xl font-bold">&times;</button>
-                                
-                                <h3 class="text-2xl font-bold text-slate-800 mb-4">Detail Perawatan Kendaraan</h3>
+
+                                <h3 class="text-2xl font-bold text-slate-800 mb-4">Detail Riwayat Perawatan</h3>
                                 <div class="space-y-3 text-sm text-slate-700">
-                                    <p><strong>Nama Kendaraan:</strong> {{ $item->kendaraan->nama ?? '-' }}</p>
-                                    <p><strong>ID Kendaraan:</strong> {{ $item->kendaraan->id ?? '-' }}</p>
-                                    <p><strong>Nama User:</strong> {{ $item->kendaraan->user->name ?? '-' }}</p>
-                                    <p><strong>Spesifikasi:</strong> {{ $item->kendaraan->spesifikasi ?? '-' }}</p>
-                                    <p><strong>Tanggal Perawatan:</strong> {{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') }}</p>
-                                    <p><strong>Kategori:</strong> {{ $item->kategori_perawatan }}</p>
-                                    <p><strong>Deskripsi:</strong> {{ $item->deskripsi }}</p>
-                                    <p>
-                                        <strong>Lampiran:</strong><br>
-                                        @if ($item->bukti)
-                                            @if (Str::endsWith($item->bukti, ['.jpg', '.jpeg', '.png']))
-                                                <img src="{{ asset('storage/' . $item->bukti) }}" alt="lampiran"
-                                                    class="w-full rounded-lg border shadow mt-2">
-                                            @else
-                                                <a href="{{ asset('storage/' . $item->bukti) }}" target="_blank" class="text-sky-600 underline">Lihat File</a>
-                                            @endif
+                                    <p><strong>Nama Kendaraan:</strong> {{ $data->kendaraan->nama ?? '-' }}</p>
+                                    <p><strong>ID Kendaraan:</strong> {{ $data->kendaraan->id ?? '-' }}</p>
+                                    <p><strong>Nomor Polisi:</strong> {{ $data->kendaraan->no_polisi ?? '-' }}</p>
+                                    <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($data->tanggal)->translatedFormat('d F Y') }}</p>
+                                    <p><strong>Kategori:</strong> {{ $data->kategori_perawatan }}</p>
+                                    <p><strong>Deskripsi:</strong> {{ $data->deskripsi }}</p>
+                                    <p><strong>Lampiran:</strong></p>
+                                    @php $lampiran = $data->bukti ?? $data->lampiran; @endphp
+                                    @if ($lampiran)
+                                        @if (Str::endsWith($lampiran, ['.jpg', '.jpeg', '.png']))
+                                            <img src="{{ asset('storage/' . $lampiran) }}" alt="lampiran" class="w-full rounded-lg border shadow mt-2">
                                         @else
-                                            <span class="text-slate-400 italic">Tidak ada lampiran</span>
+                                            <a href="{{ asset('storage/' . $lampiran) }}" target="_blank" class="text-sky-600 underline">Lihat File</a>
                                         @endif
-                                    </p>
+                                    @else
+                                        <span class="text-slate-400 italic">Tidak ada lampiran</span>
+                                    @endif
                                 </div>
                             </div>
                         </div>
                     @empty
-                        <tr>
-                            <td colspan="6" class="text-center py-6 text-slate-400 italic">Belum ada laporan perawatan.</td>
+                        <tr><td colspan="6" class="text-center py-6 text-slate-400 italic">Belum ada laporan perawatan.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Tabel Pajak --}}
+        <div id="tabelPajak" class="bg-white border border-slate-200 shadow-xl rounded-2xl overflow-x-auto hidden mt-10">
+            <table class="min-w-full divide-y divide-slate-200 text-sm">
+                <thead class="bg-gradient-to-r from-sky-700 to-sky-500 text-white uppercase text-xs font-semibold text-left">
+                    <tr>
+                        <th class="px-6 py-3 text-left">Tanggal Pajak</th>
+                        <th class="px-6 py-3 text-left">Kendaraan</th>
+                        <th class="px-6 py-3 text-left">Jenis Pajak</th>
+                        <th class="px-6 py-3 text-left">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-slate-100">
+                    @forelse ($riwayatPajak as $data)
+                        <tr class="hover:bg-sky-50 transition duration-150">
+                            <td class="px-6 py-4 text-slate-700">{{ \Carbon\Carbon::parse($data->tanggal)->translatedFormat('d F Y') }}</td>
+                            <td class="px-6 py-4 font-semibold text-slate-800">{{ $data->kendaraan->nama }}</td>
+                            <td class="px-6 py-4 font-semibold text-yellow-700">{{ $data->jenis_pajak ?? '-' }}</td>
+                            <td class="px-6 py-4">
+                                <button onclick="openModalPajak({{ $loop->index }})"
+                                    class="bg-gradient-to-r from-sky-700 to-sky-500 text-white px-6 py-2 rounded-md shadow-md hover:from-sky-800 hover:to-sky-600 hover:opacity-90 transition text-sm">
+                                    Lihat Detail
+                                </button>
+                            </td>
                         </tr>
+
+                        {{-- Modal Pajak --}}
+                        <div id="modal-pajak-{{ $loop->index }}" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 hidden">
+                            <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl p-6 relative animate-fade-in-down overflow-y-auto max-h-screen">
+                                <button onclick="closeModalPajak({{ $loop->index }})"
+                                    class="absolute top-3 right-4 text-slate-500 hover:text-slate-800 text-xl font-bold">&times;</button>
+
+                                <h3 class="text-2xl font-bold text-slate-800 mb-4">Detail Laporan Pajak</h3>
+                                <div class="space-y-3 text-sm text-slate-700">
+                                    <p><strong>Nama Kendaraan:</strong> {{ $data->kendaraan->nama ?? '-' }}</p>
+                                    <p><strong>ID Kendaraan:</strong> {{ $data->kendaraan->id ?? '-' }}</p>
+                                    <p><strong>Nomor Polisi:</strong> {{ $data->kendaraan->no_polisi ?? '-' }}</p>
+                                    <p><strong>Tanggal Pajak:</strong> {{ \Carbon\Carbon::parse($data->tanggal)->translatedFormat('d F Y') }}</p>
+                                    <p><strong>Jenis Pajak:</strong> {{ $data->jenis_pajak }}</p>
+                                    <p><strong>Deskripsi:</strong> {{ $data->deskripsi ?? '-' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <tr><td colspan="4" class="text-center py-6 text-slate-400 italic">Belum ada laporan pajak.</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
     </div>
 
-    {{-- Modal JS --}}
+    {{-- JS Filter & Modal --}}
     <script>
+        function filterTable(value) {
+            document.getElementById('tabelPerawatan').classList.add('hidden');
+            document.getElementById('tabelPajak').classList.add('hidden');
+            if (value === 'perawatan') {
+                document.getElementById('tabelPerawatan').classList.remove('hidden');
+            } else {
+                document.getElementById('tabelPajak').classList.remove('hidden');
+            }
+        }
+
         function openModal(index) {
             document.getElementById(`modal-${index}`).classList.remove('hidden');
             document.body.classList.add('overflow-hidden');
         }
-
         function closeModal(index) {
             document.getElementById(`modal-${index}`).classList.add('hidden');
             document.body.classList.remove('overflow-hidden');
         }
+        function openModalPajak(index) {
+            document.getElementById(`modal-pajak-${index}`).classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+        function closeModalPajak(index) {
+            document.getElementById(`modal-pajak-${index}`).classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
     </script>
-
-    {{-- Animasi --}}
-    <style>
-        @keyframes fade-in-down {
-            from { opacity: 0; transform: translateY(-10px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-fade-in-down {
-            animation: fade-in-down 0.25s ease-out;
-        }
-    </style>
 </x-app-layout>
