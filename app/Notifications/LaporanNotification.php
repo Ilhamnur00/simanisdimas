@@ -9,14 +9,15 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 class LaporanNotification extends Notification
 {
-
     protected $user;
     protected $pdfPath;
+    protected $jenisLaporan;
 
-    public function __construct($user, $pdfPath)
+    public function __construct($user, $pdfPath, $jenisLaporan = 'transaksi')
     {
         $this->user = $user;
-        $this->pdfPath = $pdfPath; // ⬅️ gunakan nama yang konsisten
+        $this->pdfPath = $pdfPath;
+        $this->jenisLaporan = $jenisLaporan;
     }
 
     public function via($notifiable)
@@ -26,11 +27,23 @@ class LaporanNotification extends Notification
 
     public function toMail($notifiable)
     {
+        $subject = $this->jenisLaporan === 'perawatan-device'
+            ? 'Laporan Perawatan Device'
+            : 'Laporan Transaksi Barang';
+
+        $fileName = $this->jenisLaporan === 'perawatan-device'
+            ? 'laporan-perawatan-device.pdf'
+            : 'laporan-transaksi.pdf';
+
+        $line = $this->jenisLaporan === 'perawatan-device'
+            ? 'Berikut adalah laporan perawatan device Anda.'
+            : 'Berikut adalah laporan transaksi Anda.';
+
         return (new MailMessage)
-            ->subject('Laporan Transaksi Barang')
+            ->subject($subject)
             ->greeting('Hai, ' . $this->user->name)
-            ->line('Berikut adalah laporan transaksi Anda.')
-            ->attachData($this->pdfPath, 'laporan-transaksi.pdf', [
+            ->line($line)
+            ->attachData($this->pdfPath, $fileName, [
                 'mime' => 'application/pdf',
             ])
             ->line('Terima kasih telah menggunakan aplikasi kami.');

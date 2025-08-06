@@ -11,15 +11,13 @@
                 Download PDF
             </x-filament::button>
 
-            @if (!empty($this->user_id))
-                <x-filament::button
-                    color="success"
-                    wire:click="kirimEmail"
-                    icon="heroicon-o-envelope"
-                >
-                    Kirim Email
+            <x-filament::button
+                color="success"
+                wire:click="kirimEmail"
+                icon="heroicon-o-envelope"
+            >
+                Kirim Email
                 </x-filament::button>
-            @endif
         </div>
     </div>
 </x-filament::page>
