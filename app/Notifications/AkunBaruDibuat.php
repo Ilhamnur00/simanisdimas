@@ -7,10 +7,9 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class AkunBaruDibuat extends Notification implements ShouldQueue
+class AkunBaruDibuat extends Notification
 
 {
-    use Queueable;
 
     protected $password;
 

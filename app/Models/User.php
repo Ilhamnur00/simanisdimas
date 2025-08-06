@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\HasDatabaseNotifications;
-use App\Notifications\ResetPasswordNotification;
+use App\Notifications\ResetPassword;
 
 class User extends Authenticatable
 {
@@ -37,7 +37,7 @@ class User extends Authenticatable
 
     public function sendPasswordResetNotification($token)
     {
-        $this->notify(new ResetPasswordNotification($token));
+        $this->notify(new ResetPassword($token));
     }
 
     /**
