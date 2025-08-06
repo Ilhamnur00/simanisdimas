@@ -121,7 +121,7 @@ class LaporanTransaksi extends Page implements HasForms
             : 'Semua Pengguna';
 
         $pdf = Pdf::loadView('pdf.laporan-transaksi', [
-            'transaksi' => $this->utf8ize($data->toArray()),
+            'transaksi' => $data,
             'periode' => $this->getPeriodeLabel(),
             'user' => $userName,
         ]);
@@ -182,8 +182,10 @@ class LaporanTransaksi extends Page implements HasForms
 
     private function getPeriodeLabel(): string
     {
+        Carbon::setLocale('id');
+
         if ($this->jenis_laporan === 'bulanan') {
-            $bulanNama = Carbon::create()->month($this->bulan)->translatedFormat('F');
+            $bulanNama = Carbon::create()->month((int) $this->bulan)->translatedFormat('F');
             return "$bulanNama $this->tahun";
         }
 

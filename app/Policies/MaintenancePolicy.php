@@ -15,7 +15,7 @@ class MaintenancePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_perawatan');
+        return $user->can('view_any_perawatan::device');
     }
 
     /**
@@ -23,7 +23,7 @@ class MaintenancePolicy
      */
     public function view(User $user, Maintenance $maintenance): bool
     {
-        return $user->can('view_perawatan');
+        return $user->can('view_perawatan::device');
     }
 
     /**
@@ -31,7 +31,7 @@ class MaintenancePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_perawatan');
+        return $user->can('create_perawatan::device');
     }
 
     /**
@@ -39,7 +39,7 @@ class MaintenancePolicy
      */
     public function update(User $user, Maintenance $maintenance): bool
     {
-        return $user->can('update_perawatan');
+        return $user->can('update_perawatan::device');
     }
 
     /**
@@ -47,7 +47,7 @@ class MaintenancePolicy
      */
     public function delete(User $user, Maintenance $maintenance): bool
     {
-        return $user->can('delete_perawatan');
+        return $user->can('delete_perawatan::device');
     }
 
     /**
@@ -55,7 +55,7 @@ class MaintenancePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_perawatan');
+        return $user->can('delete_any_perawatan::device');
     }
 
     /**
@@ -63,7 +63,7 @@ class MaintenancePolicy
      */
     public function forceDelete(User $user, Maintenance $maintenance): bool
     {
-        return $user->can('force_delete_perawatan');
+        return $user->can('force_delete_perawatan::device');
     }
 
     /**
@@ -71,7 +71,7 @@ class MaintenancePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_perawatan');
+        return $user->can('force_delete_any_perawatan::device');
     }
 
     /**
@@ -79,7 +79,7 @@ class MaintenancePolicy
      */
     public function restore(User $user, Maintenance $maintenance): bool
     {
-        return $user->can('restore_perawatan');
+        return $user->can('restore_perawatan::device');
     }
 
     /**
@@ -87,7 +87,7 @@ class MaintenancePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_perawatan');
+        return $user->can('restore_any_perawatan::device');
     }
 
     /**
@@ -95,7 +95,7 @@ class MaintenancePolicy
      */
     public function replicate(User $user, Maintenance $maintenance): bool
     {
-        return $user->can('replicate_perawatan');
+        return $user->can('replicate_perawatan::device');
     }
 
     /**
@@ -103,6 +103,6 @@ class MaintenancePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_perawatan');
+        return $user->can('reorder_perawatan::device');
     }
 }
