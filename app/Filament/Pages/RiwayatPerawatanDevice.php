@@ -1,29 +1,28 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Pages;
 
-use App\Filament\Resources\PerawatanDeviceResource\Pages;
-use App\Models\Maintenance;
-use Filament\Resources\Resource;
+use Filament\Pages\Page;
 use Filament\Tables;
+use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use App\Models\Maintenance;
 
-class PerawatanDeviceResource extends Resource
+class RiwayatPerawatanDevice extends Page implements HasTable
 {
-    protected static ?string $model = Maintenance::class;
+    use Tables\Concerns\InteractsWithTable;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
     protected static ?string $navigationLabel = 'Riwayat Perawatan';
     protected static ?string $navigationGroup = 'Manajemen Device';
 
-    protected static ?string $label = 'Riwayat Perawatan';
-    protected static ?string $pluralLabel = 'Riwayat Perawatan';
+    protected static string $view = 'filament.pages.riwayat-perawatan-device';
 
-
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
+            ->query(Maintenance::query())
             ->columns([
                 TextColumn::make('user.name')
                     ->label('Nama User')
@@ -63,13 +62,5 @@ class PerawatanDeviceResource extends Resource
             ->defaultSort('tanggal', 'desc')
             ->filters([])
             ->actions([]);
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListPerawatans::route('/'),
-            'edit' => Pages\EditPerawatan::route('/{record}/edit'),
-        ];
     }
 }
