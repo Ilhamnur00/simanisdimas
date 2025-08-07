@@ -7,16 +7,18 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class LaporanNotification extends Notification
+class LaporanNotification extends Notification implements ShouldQueue
 {
+    use Queueable;
+
     protected $user;
-    protected $pdfPath;
+    protected $pdfData;
     protected $jenisLaporan;
 
-    public function __construct($user, $pdfPath, $jenisLaporan = 'transaksi')
+    public function __construct($user, $pdfData, $jenisLaporan = 'transaksi')
     {
         $this->user = $user;
-        $this->pdfPath = $pdfPath;
+        $this->pdfData = $pdfData;
         $this->jenisLaporan = $jenisLaporan;
     }
 
@@ -27,23 +29,36 @@ class LaporanNotification extends Notification
 
     public function toMail($notifiable)
     {
-        $subject = $this->jenisLaporan === 'perawatan-device'
-            ? 'Laporan Perawatan Device'
-            : 'Laporan Transaksi Barang';
+        $laporanInfo = [
+            'transaksi' => [
+                'subject' => 'Laporan Transaksi Barang',
+                'fileName' => 'laporan-transaksi.pdf',
+                'line' => 'Berikut adalah laporan transaksi barang Anda.'
+            ],
+            'perawatan' => [
+                'subject' => 'Laporan Perawatan Device',
+                'fileName' => 'laporan-perawatan-device.pdf',
+                'line' => 'Berikut adalah laporan perawatan device Anda.'
+            ],
+            'perawatan_kendaraan' => [
+                'subject' => 'Laporan Perawatan Kendaraan',
+                'fileName' => 'laporan-perawatan-kendaraan.pdf',
+                'line' => 'Berikut adalah laporan perawatan kendaraan Anda.'
+            ],
+            'pajak_kendaraan' => [
+                'subject' => 'Laporan Pajak Kendaraan',
+                'fileName' => 'laporan-pajak-kendaraan.pdf',
+                'line' => 'Berikut adalah laporan pajak kendaraan Anda.'
+            ],
+        ];
 
-        $fileName = $this->jenisLaporan === 'perawatan-device'
-            ? 'laporan-perawatan-device.pdf'
-            : 'laporan-transaksi.pdf';
-
-        $line = $this->jenisLaporan === 'perawatan-device'
-            ? 'Berikut adalah laporan perawatan device Anda.'
-            : 'Berikut adalah laporan transaksi Anda.';
+        $info = $laporanInfo[$this->jenisLaporan] ?? $laporanInfo['transaksi'];
 
         return (new MailMessage)
-            ->subject($subject)
+            ->subject($info['subject'])
             ->greeting('Hai, ' . $this->user->name)
-            ->line($line)
-            ->attachData($this->pdfPath, $fileName, [
+            ->line($info['line'])
+            ->attachData($this->pdfData, $info['fileName'], [
                 'mime' => 'application/pdf',
             ])
             ->line('Terima kasih telah menggunakan aplikasi kami.');
