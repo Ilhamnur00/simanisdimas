@@ -42,7 +42,7 @@ class TransaksiBarangResource extends Resource
                 ->live()
                 ->required(),
 
-Forms\Components\Group::make([
+            Forms\Components\Group::make([
             Select::make('barang_id')
                 ->label('Nama Barang')
                 ->options(fn () => Barang::pluck('nama_barang', 'id'))

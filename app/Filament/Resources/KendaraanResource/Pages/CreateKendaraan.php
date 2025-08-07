@@ -6,7 +6,14 @@ use App\Filament\Resources\KendaraanResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
+use Filament\Support\Enums\MaxWidth;
+
 class CreateKendaraan extends CreateRecord
 {
     protected static string $resource = KendaraanResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }
