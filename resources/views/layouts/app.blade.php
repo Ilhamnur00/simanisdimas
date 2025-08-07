@@ -11,8 +11,38 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-    <!-- Scripts -->
+    <!-- Styles & Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Prevent flicker & hide scrollbar -->
+    <style>
+        /* Hide scrollbar globally but allow scroll */
+        ::-webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+        }
+
+        html, body {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE */
+            overflow-x: hidden;
+        }
+
+        /* Prevent Alpine flicker */
+        [x-cloak] {
+            display: none !important;
+        }
+
+        /* Prevent full page flicker */
+        body {
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        body.loaded {
+            opacity: 1;
+        }
+    </style>
 </head>
 <body class="font-sans antialiased bg-gray-100 h-screen overflow-hidden">
     <div class="h-screen flex">
@@ -26,14 +56,11 @@
                 Simanis Dimas
             </div>
 
-            <nav class="p-4 space-y-2 text-sm flex-1 overflow-y-auto">
-                <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded hover:bg-sky-700 transition">
-                    Dashboard
-                </a>
-
-                <!-- Barang Dropdown -->
-                <div x-data="{ open: false }" class="space-y-1">
-                    <button @click="open = !open"
+            <nav class="p-4 space-y-2 text-sm flex-1 overflow-y-auto no-scrollbar">
+                <!-- Sidebar items here (unchanged) -->
+                {{-- Barang Dropdown --}}
+                <div x-data="{ open: localStorage.getItem('dropdown-barang') === 'true' }" x-init="open = localStorage.getItem('dropdown-barang') === 'true'" class="space-y-1">
+                    <button @click="open = !open; localStorage.setItem('dropdown-barang', open)"
                             class="w-full text-left px-3 py-2 rounded hover:bg-sky-700 flex justify-between items-center transition">
                         Barang
                         <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform"
@@ -49,9 +76,9 @@
                     </div>
                 </div>
 
-                <!-- Device Dropdown -->
-                <div x-data="{ open: false }" class="space-y-1">
-                    <button @click="open = !open"
+                {{-- Device Dropdown --}}
+                <div x-data="{ open: localStorage.getItem('dropdown-device') === 'true' }" x-init="open = localStorage.getItem('dropdown-device') === 'true'" class="space-y-1">
+                    <button @click="open = !open; localStorage.setItem('dropdown-device', open)"
                             class="w-full text-left px-3 py-2 rounded hover:bg-sky-700 flex justify-between items-center transition">
                         Device
                         <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform"
@@ -65,18 +92,17 @@
                         @php
                             $userDevice = \App\Models\Device::where('user_id', auth()->id())->first();
                         @endphp
-
                         @if ($userDevice)
-                            <a href="{{ route('device.riwayatAll') }}"
-                            class="block px-3 py-1 hover:underline">Riwayat Device</a>
+                            <a href="{{ route('device.riwayatAll') }}" class="block px-3 py-1 hover:underline">Riwayat Device</a>
                         @else
                             <span class="block px-3 py-1 text-gray-400">Riwayat Device (belum ada device)</span>
                         @endif
+                    </div>
                 </div>
 
-
-                <div x-data="{ open: false }" class="space-y-1">
-                    <button @click="open = !open"
+                {{-- Kendaraan Dropdown --}}
+                <div x-data="{ open: localStorage.getItem('dropdown-kendaraan') === 'true' }" x-init="open = localStorage.getItem('dropdown-kendaraan') === 'true'" class="space-y-1">
+                    <button @click="open = !open; localStorage.setItem('dropdown-kendaraan', open)"
                             class="w-full text-left px-3 py-2 rounded hover:bg-sky-700 flex justify-between items-center transition">
                         Kendaraan
                         <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform"
@@ -90,21 +116,20 @@
                         @php
                             $userKendaraan = \App\Models\Kendaraan::where('user_id', auth()->id())->first();
                         @endphp
-
                         @if ($userKendaraan)
-                            <a href="{{ route('kendaraan.riwayat') }}"
-                            class="block px-3 py-1 hover:underline">Riwayat Kendaraan</a>
+                            <a href="{{ route('kendaraan.riwayat') }}" class="block px-3 py-1 hover:underline">Riwayat Kendaraan</a>
                         @else
                             <span class="block px-3 py-1 text-gray-400">Riwayat Kendaraan (belum ada Kendaraan)</span>
                         @endif
+                    </div>
                 </div>
-
             </nav>
 
             <!-- Admin Section -->
-            <div x-data="{ open: false }" class="px-4 mb-6">
+            <div x-data="{ open: localStorage.getItem('dropdown-user') === 'true' }" x-init="open = localStorage.getItem('dropdown-user') === 'true'" class="px-4 mb-6">
                 <hr class="border-t border-sky-500 mb-4">
-                <button @click="open = !open" class="w-full text-left flex justify-between items-center px-3 py-2 rounded hover:bg-sky-700 transition">
+                <button @click="open = !open; localStorage.setItem('dropdown-user', open)"
+                        class="w-full text-left flex justify-between items-center px-3 py-2 rounded hover:bg-sky-700 transition">
                     {{ Auth::user()->name }}
                     <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform"
                          fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,22 +137,18 @@
                               d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
-
                 <div x-show="open" x-cloak class="mt-3 ml-2 space-y-2 text-sm text-white">
                     <div class="text-xs text-sky-200">{{ Auth::user()->email }}</div>
                     <a href="{{ route('profile.edit') }}" class="block hover:underline">Edit Profil</a>
-
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="hover:underline">
-                            Logout
-                        </button>
+                        <button type="submit" class="hover:underline">Logout</button>
                     </form>
                 </div>
             </div>
         </aside>
 
-        <!-- Konten Utama Scrollable -->
+        <!-- Main Content -->
         <div class="flex-1 flex flex-col h-screen overflow-hidden">
             @isset($header)
                 <header class="bg-white shadow shrink-0">
@@ -137,7 +158,7 @@
                 </header>
             @endisset
 
-            <main class="flex-1 overflow-y-auto py-6 px-4 sm:px-6 lg:px-8 bg-gray-100">
+            <main class="flex-1 overflow-y-auto no-scrollbar py-6 px-4 sm:px-6 lg:px-8 bg-gray-100">
                 {{ $slot }}
             </main>
         </div>
@@ -145,5 +166,12 @@
 
     <!-- Alpine.js -->
     <script src="//unpkg.com/alpinejs" defer></script>
+
+    <!-- Load body only when ready -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            document.body.classList.add('loaded');
+        });
+    </script>
 </body>
 </html>
