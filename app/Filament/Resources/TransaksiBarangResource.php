@@ -24,7 +24,7 @@ use Filament\Forms\Components\Placeholder;
 class TransaksiBarangResource extends Resource
 {
     protected static ?string $model = TransaksiBarang::class;
-    protected static ?string $navigationGroup = 'Inventaris Barang';
+    protected static ?string $navigationGroup = 'Manajemen Barang';
     protected static ?string $navigationIcon = 'heroicon-o-arrows-right-left';
     protected static ?string $navigationLabel = 'Transaksi';
     protected static ?string $pluralModelLabel = 'Transaksi';
@@ -201,7 +201,8 @@ Forms\Components\Group::make([
 
             TextColumn::make('tanggal')
                 ->label('Tanggal')
-                ->date(),
+                ->date()
+                ->date(format: 'd-m-Y'),
         ])
 
         ->filters([

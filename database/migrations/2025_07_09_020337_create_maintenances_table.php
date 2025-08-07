@@ -18,7 +18,6 @@ return new class extends Migration
             $table->date('tanggal'); // Tanggal perawatan
             $table->string('kategori_perawatan'); // Contoh: Ganti Part, Cleaning, Upgrade, dll
             $table->text('deskripsi'); // Penjelasan tambahan perawatan
-            $table->string('status')->default('Selesai'); // Status pengerjaan: Selesai / Pending / Dalam Proses
             $table->string('bukti')->nullable(); // Path file bukti, bisa PDF, JPG, PNG
             $table->timestamps(); // created_at & updated_at
         });

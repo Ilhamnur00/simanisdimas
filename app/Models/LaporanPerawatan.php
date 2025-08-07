@@ -13,9 +13,9 @@ class LaporanPerawatan extends Model
  protected $fillable = [
     'kendaraan_id',
     'tanggal',
-    'kategori_perawatan', // harus sama dengan nama kolom di tabel
+    'kategori_perawatan',
     'deskripsi',
-    'bukti',              // harus 'bukti', bukan 'lampiran'
+    'bukti',
 ];
 
 

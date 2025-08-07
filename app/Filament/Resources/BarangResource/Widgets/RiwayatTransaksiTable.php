@@ -31,7 +31,8 @@ class RiwayatTransaksiTable extends TableWidget
             TextColumn::make('tanggal')
                 ->label('Tanggal')
                 ->date()
-                ->sortable(),
+                ->sortable()
+                ->date(format: 'd-m-Y'),
 
             TextColumn::make('jenis_transaksi')
                 ->label('Jenis')

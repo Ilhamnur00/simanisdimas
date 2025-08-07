@@ -43,9 +43,6 @@ class RincianDevice extends Page implements HasTable
             Tables\Columns\TextColumn::make('tanggal_serah_terima')
                 ->label('Tanggal Serah Terima')
                 ->date('d-m-Y'),
-
-            Tables\Columns\TextColumn::make('status')
-                ->label('Status'),
         ];
     }
 

@@ -2,43 +2,46 @@
 
 namespace App\Filament\Pages;
 
+use App\Models\LaporanPajak;
 use Filament\Pages\Page;
 use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
-use App\Models\Maintenance;
 
-class RiwayatPerawatanDevice extends Page implements HasTable
+class RiwayatPajakKendaraan extends Page implements HasTable
 {
     use Tables\Concerns\InteractsWithTable;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
-    protected static ?string $navigationLabel = 'Riwayat Perawatan';
-    protected static ?string $navigationGroup = 'Manajemen Device';
-
-    protected static string $view = 'filament.pages.riwayat-perawatan-device';
+    protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
+    protected static ?string $navigationLabel = 'Riwayat Pajak';
+    protected static ?string $navigationGroup = 'Manajemen Kendaraan';
+    protected static string $view = 'filament.pages.riwayat-pajak-kendaraan';
 
     public function table(Table $table): Table
     {
         return $table
-            ->query(Maintenance::query())
+            ->query(LaporanPajak::query()->with(['kendaraan.user']))
+            ->defaultSort('tanggal', 'desc')
             ->columns([
-                TextColumn::make('user.name')
+                TextColumn::make('kendaraan.user.name')
                     ->label('Nama User')
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('device.nama')
-                    ->label('Nama Device')
+                TextColumn::make('kendaraan.nama')
+                    ->label('Nama Kendaraan')
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('kategori_perawatan')
+                TextColumn::make('jenis_pajak')
+                    ->label('Jenis Pajak')
+                    ->searchable()
                     ->sortable(),
 
                 TextColumn::make('deskripsi')
-                    ->limit(30)
+                    ->label('Deskripsi')
+                    ->limit(40)
                     ->wrap(),
 
                 TextColumn::make('bukti')
@@ -55,13 +58,9 @@ class RiwayatPerawatanDevice extends Page implements HasTable
                     ->html(),
 
                 TextColumn::make('tanggal')
-                    ->date()
                     ->label('Tanggal')
-                    ->sortable()
-                    ->date(format: 'd-m-Y'),
-            ])
-            ->defaultSort('tanggal', 'desc')
-            ->filters([])
-            ->actions([]);
+                    ->date()
+                    ->sortable(),
+            ]);
     }
 }
