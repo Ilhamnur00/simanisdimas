@@ -56,13 +56,17 @@
             {{-- Informasi Sistem --}}
             <div class="rounded-2xl p-6 bg-gradient-to-r from-sky-700 via-sky-600 to-sky-500 text-white shadow-lg">
                 <h3 class="text-lg font-bold mb-3">📢 Informasi Sistem</h3>
-                <ul class="list-disc pl-6 text-sm text-sky-100 space-y-1 leading-relaxed">
-                    <li>Gunakan sistem ini untuk mencatat dan melacak status perangkat Anda.</li>
-                    <li>Selalu perbarui data perangkat dan riwayat perawatannya.</li>
-                    <li>Ajukan laporan jika perangkat mengalami kerusakan.</li>
-                    <li>Periksa kembali data Anda secara berkala untuk menjaga keakuratan.</li>
-                    <li>Hubungi admin jika terdapat kendala dalam penggunaan sistem.</li>
-                </ul>
+            <ul class="list-disc pl-6 text-sm text-sky-100 space-y-1 leading-relaxed">
+                <li>Selamat datang di sistem manajemen inventaris barang, perangkat, dan kendaraan Anda.</li>
+                <li>Gunakan sistem ini untuk mencatat, memantau, dan mengelola semua aset yang Anda miliki.</li>
+                <li>Silakan ajukan laporan perawatan jika terdapat kerusakan atau membutuhkan pengecekan rutin.</li>
+                <li>Pastikan data inventaris dan riwayat perawatan Anda selalu diperbarui untuk menjaga akurasi.</li>
+                <li>Jika mengalami kendala, segera hubungi admin melalui menu bantuan atau kontak yang tersedia.</li>
+            </ul>
+
+                <div class="mt-4 border-t border-sky-400 pt-3 text-sm text-sky-100">
+                    <p>📞 Kontak Admin: <span class="font-semibold">admin@inventaris.com</span> atau WhatsApp <span class="font-semibold">+62 812-3456-7890</span></p>
+                </div>
             </div>
 
         </div>

@@ -1,15 +1,17 @@
 <x-app-layout>
     <x-slot name="title">Riwayat Kendaraan</x-slot>
 
-    <div class="max-w-7xl mx-auto py-10 px-6">
-        {{-- Header --}}
-        <div class="mb-8">
+    <x-slot name="header">
+        <div class="space-y-1">
             <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#003973] via-[#2980B9] to-[#6DD5FA] drop-shadow">
-                Riwayat Kendaraan
+                Riwayat Kendaraan Dinas
             </h2>
-            <p class="text-slate-500 mt-1 text-base">Daftar laporan perawatan dan pajak kendaraan dinas.</p>
+            <p class="text-slate-700 text-base">Aplikasi Inventaris Dinas Komunikasi dan Informatika</p>
+            <p class="text-sm italic text-slate-500">“Daftar Laporan Perawatan & Pajak Kendaraan Dinas”</p>
         </div>
+    </x-slot>
 
+    <div class="bg-white shadow-xl rounded-xl p-6">
         {{-- Filter Dropdown --}}
         <div class="mb-6">
             <label for="filter" class="block mb-2 text-sm font-medium text-slate-700">Pilih Jenis Riwayat</label>

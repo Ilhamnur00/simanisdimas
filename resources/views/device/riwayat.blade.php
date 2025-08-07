@@ -2,16 +2,17 @@
     <x-slot name="title">Riwayat Perawatan Device</x-slot>
 
     <div class="max-w-7xl mx-auto py-10 px-6">
-        {{-- Header --}}
-        <div class="mb-8">
+        
+        <x-slot name="header">
+        <div class="space-y-1">
             <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#003973] via-[#2980B9] to-[#6DD5FA] drop-shadow">
-                Riwayat Perawatan
+                Riwayat Perawatan Device
             </h2>
-            <p class="text-slate-500 mt-1 text-base">
-                Daftar laporan perawatan untuk semua perangkat.
-            </p>
+            <p class="text-slate-700 text-base">Aplikasi Inventaris Dinas Komunikasi dan Informatika</p>
+            <p class="text-sm italic text-slate-500">“Daftar laporan perawatan untuk semua perangkat.”</p>
         </div>
-
+    </x-slot>
+<div class="bg-white shadow-xl rounded-xl p-6">
         {{-- Filter Dropdown --}}
         <form method="GET" action="{{ route('device.riwayatAll') }}" class="mb-6">
             <label for="device_id" class="block mb-2 text-sm font-medium text-slate-700">Filter Berdasarkan Device</label>

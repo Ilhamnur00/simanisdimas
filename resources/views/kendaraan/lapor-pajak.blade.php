@@ -2,10 +2,10 @@
     <x-slot name="title">Laporan Pajak Kendaraan</x-slot>
 
     <div class="max-w-5xl mx-auto mt-10 space-y-6">
-        <!-- Judul -->
-        <div class="text-center">
-            <h1 class="text-2xl font-bold text-blue-800">Laporan Pajak Kendaraan</h1>
-            <p class="text-sm text-gray-500">Formulir pelaporan pajak kendaraan Diskominfo</p>
+         <!-- Header -->
+        <div class="mb-10 text-center">
+            <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#003973] via-[#2980B9] to-[#6DD5FA] drop-shadow">Laporan Perawatan Kendaraan Dinas</h2>
+            <p class="text-slate-500 mt-2 text-lg">Formulir pelaporan untuk perawatan kendaraan dinas Diskominfo</p>
         </div>
 
         <!-- Alert -->
