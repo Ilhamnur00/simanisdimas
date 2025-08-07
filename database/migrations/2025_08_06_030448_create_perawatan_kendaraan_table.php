@@ -17,7 +17,7 @@ return new class extends Migration
             $table->date('tanggal');
             $table->string('kategori_perawatan');
             $table->text('deskripsi')->nullable();
-            $table->string('bukti')->nullable(); // untuk file bukti perawatan
+            $table->string('bukti')->nullable();
             $table->timestamps();
 
             // foreign key ke tabel kendaraan

@@ -26,4 +26,10 @@ class LaporanPerawatan extends Model
     {
         return $this->belongsTo(Kendaraan::class);
     }
+
+    public function getUserNameAttribute()
+    {
+        return $this->kendaraan?->user?->name ?? '-';
+    }
+
 }

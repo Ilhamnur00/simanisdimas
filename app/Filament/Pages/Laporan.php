@@ -5,6 +5,8 @@ namespace App\Filament\Pages;
 use App\Models\User;
 use App\Models\Maintenance;
 use App\Models\TransaksiBarang;
+use App\Models\LaporanPerawatan;
+use App\Models\LaporanPajak;
 use App\Notifications\LaporanNotification;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Forms\Components\Select;
@@ -52,6 +54,8 @@ class Laporan extends Page implements HasForms
                         ->options([
                             'transaksi' => 'Laporan Transaksi',
                             'perawatan' => 'Laporan Perawatan Device',
+                            'perawatan_kendaraan' => 'Laporan Perawatan Kendaraan',
+                            'pajak_kendaraan' => 'Laporan Pajak Kendaraan',
                         ])
                         ->reactive(),
                 ]),
@@ -114,12 +118,16 @@ class Laporan extends Page implements HasForms
 
         $viewName = match ($this->jenis_laporan) {
             'perawatan' => 'pdf.laporan-perawatan-device',
+            'perawatan_kendaraan' => 'pdf.laporan-perawatan-kendaraan',
+            'pajak_kendaraan' => 'pdf.laporan-pajak-kendaraan',
             default => 'pdf.laporan-transaksi',
         };
 
         $pdf = Pdf::loadView($viewName, [
             'transaksi' => $this->jenis_laporan === 'transaksi' ? $data : null,
             'perawatan' => $this->jenis_laporan === 'perawatan' ? $data : null,
+            'perawatan_kendaraan' => $this->jenis_laporan === 'perawatan_kendaraan' ? $data : null,
+            'pajak_kendaraan' => $this->jenis_laporan === 'pajak_kendaraan' ? $data : null,
             'periode' => $this->getPeriodeLabel(),
             'user' => $userName,
         ]);
@@ -145,12 +153,16 @@ class Laporan extends Page implements HasForms
 
         $viewName = match ($this->jenis_laporan) {
             'perawatan' => 'pdf.laporan-perawatan-device',
+            'perawatan_kendaraan' => 'pdf.laporan-perawatan-kendaraan',
+            'pajak_kendaraan' => 'pdf.laporan-pajak-kendaraan',
             default => 'pdf.laporan-transaksi',
         };
 
         $pdfOutput = Pdf::loadView($viewName, [
             'transaksi' => $this->jenis_laporan === 'transaksi' ? $data : null,
             'perawatan' => $this->jenis_laporan === 'perawatan' ? $data : null,
+            'perawatan_kendaraan' => $this->jenis_laporan === 'perawatan_kendaraan' ? $data : null,
+            'pajak_kendaraan' => $this->jenis_laporan === 'pajak_kendaraan' ? $data : null,
             'periode' => $this->getPeriodeLabel(),
             'user' => $user->name,
         ])->output();
@@ -158,21 +170,35 @@ class Laporan extends Page implements HasForms
         $user->notify(new LaporanNotification($user, $pdfOutput, $this->jenis_laporan));
 
         Notification::make()
-            ->title('Laporan ' . ucfirst($this->jenis_laporan) . ' berhasil dikirim ke email user.')
+            ->title('Laporan ' . ucfirst(str_replace('_', ' ', $this->jenis_laporan)) . ' berhasil dikirim ke email user.')
             ->success()
             ->send();
     }
 
     private function getFilteredData()
     {
-        $query = $this->jenis_laporan === 'transaksi'
-            ? TransaksiBarang::query()
-            : Maintenance::query();
+        $query = match ($this->jenis_laporan) {
+            'transaksi' => TransaksiBarang::query(),
+            'perawatan' => Maintenance::query(),
+            'perawatan_kendaraan' => LaporanPerawatan::query(),
+            'pajak_kendaraan' => LaporanPajak::query(),
+            default => null,
+        };
 
+        if (!$query) return collect();
+
+        // Filtering berdasarkan user ID, tergantung jenis laporan
         if (!empty($this->user_id)) {
-            $query->where('user_id', $this->user_id);
+            $query = match ($this->jenis_laporan) {
+                'transaksi', 'perawatan' => $query->where('user_id', $this->user_id),
+                'perawatan_kendaraan', 'pajak_kendaraan' => $query->whereHas('kendaraan', fn ($q) =>
+                    $q->where('user_id', $this->user_id)
+                ),
+                default => $query,
+            };
         }
 
+        // Filter berdasarkan waktu
         if ($this->jenis_waktu === 'bulanan') {
             $query->whereYear('tanggal', $this->tahun)
                 ->whereMonth('tanggal', $this->bulan);
@@ -180,12 +206,15 @@ class Laporan extends Page implements HasForms
             $query->whereYear('tanggal', $this->tahun);
         }
 
-        if ($this->jenis_laporan === 'transaksi') {
-            return $query->with(['user'])->get();
-        }
-
-        return $query->with(['user', 'device'])->get();
+        // Eager load relasi sesuai jenis laporan
+        return match ($this->jenis_laporan) {
+            'transaksi' => $query->with(['user'])->get(),
+            'perawatan' => $query->with(['user', 'device'])->get(),
+            'perawatan_kendaraan', 'pajak_kendaraan' => $query->with(['kendaraan.user'])->get(),
+            default => $query->get(),
+        };
     }
+
 
     private function getPeriodeLabel(): string
     {
