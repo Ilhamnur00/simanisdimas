@@ -17,6 +17,7 @@ class RiwayatPajakKendaraan extends Page implements HasTable
     protected static ?string $navigationLabel = 'Riwayat Pajak';
     protected static ?string $navigationGroup = 'Manajemen Kendaraan';
     protected static string $view = 'filament.pages.riwayat-pajak-kendaraan';
+    protected static ?int $navigationSort = 3;
 
     public function table(Table $table): Table
     {

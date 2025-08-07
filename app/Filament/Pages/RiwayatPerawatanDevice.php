@@ -16,6 +16,7 @@ class RiwayatPerawatanDevice extends Page implements HasTable
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
     protected static ?string $navigationLabel = 'Riwayat Perawatan';
     protected static ?string $navigationGroup = 'Manajemen Device';
+    protected static ?int $navigationSort = 2;
 
     protected static string $view = 'filament.pages.riwayat-perawatan-device';
 

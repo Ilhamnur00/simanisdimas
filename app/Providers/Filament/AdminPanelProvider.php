@@ -24,6 +24,9 @@ use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
 use Filament\Features\NotificationsFeature;
 use App\Filament\Pages\Dashboard;
+use App\Filament\Pages\RiwayatPerawatanKendaraan;
+use App\Filament\Pages\RiwayatPajakKendaraan;
+use App\Filament\Pages\RiwayatPerawatanDevice;
 
 
 
@@ -39,10 +42,19 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Blue,
             ])
+            ->navigationGroups([
+            'Manajemen Barang',
+            'Manajemen Device',
+            'Manajemen Kendaraan',
+            'Manajemen Pengguna',
+            ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Dashboard::class,
+                RiwayatPerawatanKendaraan::class,
+                RiwayatPajakKendaraan::class,
+                RiwayatPerawatanDevice::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
@@ -67,8 +79,7 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
                 RoleMiddleware::class . ':admin|super_admin',
-            ])
-             ->databaseNotifications();
+            ]);
         }
 
     public function boot()

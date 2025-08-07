@@ -19,6 +19,7 @@ class KendaraanResource extends Resource
     protected static ?string $navigationGroup = 'Manajemen Kendaraan';
     protected static ?string $label = 'Kendaraan';
     protected static ?string $pluralLabel = 'Kendaraan';
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {

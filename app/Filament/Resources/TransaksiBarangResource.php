@@ -28,7 +28,7 @@ class TransaksiBarangResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-arrows-right-left';
     protected static ?string $navigationLabel = 'Transaksi';
     protected static ?string $pluralModelLabel = 'Transaksi';
-    protected static ?int $NavigationSort = 3;
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {

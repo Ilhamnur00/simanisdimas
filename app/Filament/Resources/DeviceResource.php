@@ -18,6 +18,8 @@ class DeviceResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Manajemen Device';
+    protected static ?string $label = 'Device';
+    protected static ?int $navigationSort = 1;
 
     // Hapus form jika tidak ingin menambah device dari sini
     
