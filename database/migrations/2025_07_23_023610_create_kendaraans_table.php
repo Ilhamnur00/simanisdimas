@@ -16,6 +16,7 @@ return new class extends Migration
         $table->string('kategori')->nullable();
         $table->text('spesifikasi')->nullable();
         $table->date('tanggal_serah_terima')->nullable();
+        $table->date('tanggal_pajak')->nullable();
         $table->timestamps();
     });
 

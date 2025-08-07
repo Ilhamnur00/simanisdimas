@@ -8,6 +8,14 @@
             <p class="text-sm text-gray-500">Formulir pelaporan perawatan kendaraan Diskominfo</p>
         </div>
 
+        <!-- Flash Message -->
+        @if (session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
+                <strong class="font-bold">Sukses!</strong>
+                <span class="block sm:inline">{{ session('success') }}</span>
+            </div>
+        @endif
+
         <!-- Pilih Kendaraan -->
         <div class="bg-white p-6 rounded-xl shadow">
             <label class="block font-semibold text-gray-700 mb-2">Pilih Kendaraan untuk Laporan</label>
@@ -40,7 +48,7 @@
         <div id="form-laporan" class="bg-white p-6 rounded-xl shadow hidden">
             <h2 class="text-xl font-semibold text-gray-700 mb-4">Formulir Laporan Perawatan</h2>
 
-            <form method="POST" enctype="multipart/form-data" action="{{ route('kendaraan.laporan-perawatan.store') }}">
+            <form method="POST" enctype="multipart/form-data" action="{{ route('kendaraan.laporan-perawatan.store') }}" onsubmit="return validateForm()">
                 @csrf
                 <input type="hidden" name="kendaraan_id" id="input-kendaraan-id">
 
@@ -48,7 +56,7 @@
                     <!-- Tanggal -->
                     <div>
                         <label for="tanggal" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Perawatan</label>
-                        <input type="date" name="tanggal" id="tanggal" required class="w-full border border-gray-300 rounded px-3 py-2">
+                        <input type="date" name="tanggal" id="tanggal" value="{{ old('tanggal') }}" required class="w-full border border-gray-300 rounded px-3 py-2">
                     </div>
 
                     <!-- Kategori -->
@@ -56,9 +64,9 @@
                         <label for="kategori_perawatan" class="block text-sm font-medium text-gray-700 mb-1">Kategori Perawatan</label>
                         <select name="kategori_perawatan" id="kategori_perawatan" required class="w-full border border-gray-300 rounded px-3 py-2">
                             <option value="">-- Pilih Kategori --</option>
-                            <option value="Service">Service</option>
-                            <option value="Ganti Oli">Ganti Oli</option>
-                            <option value="Perbaikan">Perbaikan</option>
+                            <option value="Service" {{ old('kategori_perawatan') == 'Service' ? 'selected' : '' }}>Service</option>
+                            <option value="Ganti Oli" {{ old('kategori_perawatan') == 'Ganti Oli' ? 'selected' : '' }}>Ganti Oli</option>
+                            <option value="Perbaikan" {{ old('kategori_perawatan') == 'Perbaikan' ? 'selected' : '' }}>Perbaikan</option>
                         </select>
                     </div>
 
@@ -69,7 +77,8 @@
                                class="w-full border border-gray-300 rounded px-3 py-2"
                                onchange="previewLampiran(event)">
                         <div id="preview-container" class="mt-3 hidden">
-                            <img id="preview-image" class="max-w-xs rounded border shadow">
+                            <img id="preview-image" class="max-w-xs rounded border shadow hidden">
+                            <p id="preview-filename" class="text-sm text-gray-700"></p>
                             <button type="button" onclick="hapusLampiran()"
                                     class="mt-2 px-4 py-1 bg-red-600 text-white text-sm rounded">
                                 Hapus File
@@ -82,7 +91,7 @@
                         <label for="deskripsi" class="block text-sm font-medium text-gray-700 mb-1">Deskripsi Perawatan</label>
                         <textarea name="deskripsi" id="deskripsi" rows="4"
                                   class="w-full border border-gray-300 rounded px-3 py-2"
-                                  placeholder="Contoh: Ganti oli, perawatan rutin, dll" required></textarea>
+                                  placeholder="Contoh: Ganti oli, perawatan rutin, dll" required>{{ old('deskripsi') }}</textarea>
                     </div>
                 </div>
 
@@ -128,24 +137,55 @@
         function previewLampiran(event) {
             const file = event.target.files[0];
             const previewImage = document.getElementById('preview-image');
+            const previewFilename = document.getElementById('preview-filename');
             const previewContainer = document.getElementById('preview-container');
 
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    previewImage.src = e.target.result;
-                    previewContainer.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
+            const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+            const maxSize = 2 * 1024 * 1024; // 2MB
+
+            if (file) {
+                if (!validTypes.includes(file.type)) {
+                    alert("File harus berupa .jpg, .jpeg, .png, atau .pdf");
+                    event.target.value = '';
+                    return;
+                }
+
+                if (file.size > maxSize) {
+                    alert("Ukuran file maksimal 2MB.");
+                    event.target.value = '';
+                    return;
+                }
+
+                previewContainer.classList.remove('hidden');
+                previewFilename.textContent = file.name;
+
+                if (file.type.startsWith('image/')) {
+                    previewImage.src = URL.createObjectURL(file);
+                    previewImage.classList.remove('hidden');
+                } else {
+                    previewImage.src = '';
+                    previewImage.classList.add('hidden');
+                }
             } else {
                 previewContainer.classList.add('hidden');
-                previewImage.src = '';
             }
         }
 
         function hapusLampiran() {
             document.getElementById('bukti').value = '';
+            document.getElementById('preview-image').src = '';
+            document.getElementById('preview-image').classList.add('hidden');
             document.getElementById('preview-container').classList.add('hidden');
+            document.getElementById('preview-filename').textContent = '';
+        }
+
+        function validateForm() {
+            const kendaraanId = document.getElementById('select-kendaraan').value;
+            if (!kendaraanId) {
+                alert("Silakan pilih kendaraan terlebih dahulu.");
+                return false;
+            }
+            return true;
         }
     </script>
 </x-app-layout>

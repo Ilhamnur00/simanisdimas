@@ -25,28 +25,21 @@
             <table class="min-w-full divide-y divide-slate-200 text-sm">
                 <thead class="bg-gradient-to-r from-sky-700 to-sky-500 text-white uppercase text-xs font-semibold text-left">
                     <tr>
-                        <th class="px-6 py-3 text-left">Tanggal</th>
-                        <th class="px-6 py-3 text-left">Kendaraan</th>
-                        <th class="px-6 py-3 text-left">Kategori</th>
-                        <th class="px-6 py-3 text-left">Deskripsi</th>
-                        <th class="px-6 py-3 text-left">Lampiran</th>
-                        <th class="px-6 py-3 text-left">Aksi</th>
+                        <th class="px-6 py-3">Tanggal</th>
+                        <th class="px-6 py-3">Kendaraan</th>
+                        <th class="px-6 py-3">No Polisi</th>
+                        <th class="px-6 py-3">Jenis Perawatan</th>
+                        <th class="px-6 py-3">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-slate-100">
                     @forelse ($riwayatPerawatan as $data)
                         <tr class="hover:bg-sky-50 transition duration-150">
-                            <td class="px-6 py-4 text-slate-700">{{ \Carbon\Carbon::parse($data->tanggal)->translatedFormat('d F Y') }}</td>
-                            <td class="px-6 py-4 font-semibold text-slate-800">{{ $data->kendaraan->nama }}</td>
+                            <td class="px-6 py-4">{{ \Carbon\Carbon::parse($data->tanggal)->translatedFormat('d F Y') }}</td>
+                            <td class="px-6 py-4 font-semibold">{{ $data->kendaraan->nama }}</td>
+                            <td class="px-6 py-4">{{ $data->kendaraan->no_polisi ?? '-' }}</td>
                             <td class="px-6 py-4 font-semibold text-teal-700">{{ $data->kategori_perawatan }}</td>
-                            <td class="px-6 py-4 text-slate-600">{{ $data->deskripsi }}</td>
-                            <td class="px-6 py-4">
-                                @if ($data->bukti)
-                                    <a href="{{ asset('storage/' . $data->bukti) }}" target="_blank" class="text-sky-600 hover:underline">Lihat</a>
-                                @else
-                                    <span class="text-slate-400 italic">-</span>
-                                @endif
-                            </td>
+
                             <td class="px-6 py-4">
                                 <button onclick="openModal({{ $loop->index }})"
                                     class="bg-gradient-to-r from-sky-700 to-sky-500 text-white px-6 py-2 rounded-md shadow-md hover:from-sky-800 hover:to-sky-600 hover:opacity-90 transition text-sm">
@@ -61,7 +54,7 @@
                                 <button onclick="closeModal({{ $loop->index }})"
                                     class="absolute top-3 right-4 text-slate-500 hover:text-slate-800 text-xl font-bold">&times;</button>
 
-                                <h3 class="text-2xl font-bold text-slate-800 mb-4">Detail Riwayat Perawatan</h3>
+                                <h3 class="text-2xl font-bold mb-4">Detail Riwayat Perawatan</h3>
                                 <div class="space-y-3 text-sm text-slate-700">
                                     <p><strong>Nama Kendaraan:</strong> {{ $data->kendaraan->nama ?? '-' }}</p>
                                     <p><strong>ID Kendaraan:</strong> {{ $data->kendaraan->id ?? '-' }}</p>
@@ -84,28 +77,30 @@
                             </div>
                         </div>
                     @empty
-                        <tr><td colspan="6" class="text-center py-6 text-slate-400 italic">Belum ada laporan perawatan.</td></tr>
+                        <tr><td colspan="5" class="text-center py-6 text-slate-400 italic">Belum ada laporan perawatan.</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
 
         {{-- Tabel Pajak --}}
-        <div id="tabelPajak" class="bg-white border border-slate-200 shadow-xl rounded-2xl overflow-x-auto hidden mt-10">
+        <div id="tabelPajak" class="bg-white border border-slate-200 shadow-xl rounded-2xl overflow-x-auto hidden">
             <table class="min-w-full divide-y divide-slate-200 text-sm">
                 <thead class="bg-gradient-to-r from-sky-700 to-sky-500 text-white uppercase text-xs font-semibold text-left">
                     <tr>
-                        <th class="px-6 py-3 text-left">Tanggal Pajak</th>
-                        <th class="px-6 py-3 text-left">Kendaraan</th>
-                        <th class="px-6 py-3 text-left">Jenis Pajak</th>
-                        <th class="px-6 py-3 text-left">Aksi</th>
+                        <th class="px-6 py-3">Tanggal</th>
+                        <th class="px-6 py-3">Kendaraan</th>
+                        <th class="px-6 py-3">No Polisi</th>
+                        <th class="px-6 py-3">Jenis Pajak</th>
+                        <th class="px-6 py-3">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-slate-100">
                     @forelse ($riwayatPajak as $data)
                         <tr class="hover:bg-sky-50 transition duration-150">
-                            <td class="px-6 py-4 text-slate-700">{{ \Carbon\Carbon::parse($data->tanggal)->translatedFormat('d F Y') }}</td>
-                            <td class="px-6 py-4 font-semibold text-slate-800">{{ $data->kendaraan->nama }}</td>
+                            <td class="px-6 py-4">{{ \Carbon\Carbon::parse($data->tanggal)->translatedFormat('d F Y') }}</td>
+                            <td class="px-6 py-4 font-semibold">{{ $data->kendaraan->nama }}</td>
+                            <td class="px-6 py-4">{{ $data->kendaraan->no_polisi ?? '-' }}</td>
                             <td class="px-6 py-4 font-semibold text-yellow-700">{{ $data->jenis_pajak ?? '-' }}</td>
                             <td class="px-6 py-4">
                                 <button onclick="openModalPajak({{ $loop->index }})"
@@ -121,7 +116,7 @@
                                 <button onclick="closeModalPajak({{ $loop->index }})"
                                     class="absolute top-3 right-4 text-slate-500 hover:text-slate-800 text-xl font-bold">&times;</button>
 
-                                <h3 class="text-2xl font-bold text-slate-800 mb-4">Detail Laporan Pajak</h3>
+                                <h3 class="text-2xl font-bold mb-4">Detail Laporan Pajak</h3>
                                 <div class="space-y-3 text-sm text-slate-700">
                                     <p><strong>Nama Kendaraan:</strong> {{ $data->kendaraan->nama ?? '-' }}</p>
                                     <p><strong>ID Kendaraan:</strong> {{ $data->kendaraan->id ?? '-' }}</p>
@@ -129,11 +124,21 @@
                                     <p><strong>Tanggal Pajak:</strong> {{ \Carbon\Carbon::parse($data->tanggal)->translatedFormat('d F Y') }}</p>
                                     <p><strong>Jenis Pajak:</strong> {{ $data->jenis_pajak }}</p>
                                     <p><strong>Deskripsi:</strong> {{ $data->deskripsi ?? '-' }}</p>
+                                    <p><strong>Lampiran:</strong></p>
+                                    @if ($data->bukti)
+                                        @if (Str::endsWith($data->bukti, ['.jpg', '.jpeg', '.png']))
+                                            <img src="{{ asset('storage/' . $data->bukti) }}" alt="lampiran" class="w-full rounded-lg border shadow mt-2">
+                                        @else
+                                            <a href="{{ asset('storage/' . $data->bukti) }}" target="_blank" class="text-sky-600 underline">Lihat File</a>
+                                        @endif
+                                    @else
+                                        <span class="text-slate-400 italic">Tidak ada lampiran</span>
+                                    @endif
                                 </div>
                             </div>
                         </div>
                     @empty
-                        <tr><td colspan="4" class="text-center py-6 text-slate-400 italic">Belum ada laporan pajak.</td></tr>
+                        <tr><td colspan="5" class="text-center py-6 text-slate-400 italic">Belum ada laporan pajak.</td></tr>
                     @endforelse
                 </tbody>
             </table>

@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             KategoriSeeder::class,
             DeviceSeeder::class,
-            KendaraanSeeder::class,
         ]);
     }
 

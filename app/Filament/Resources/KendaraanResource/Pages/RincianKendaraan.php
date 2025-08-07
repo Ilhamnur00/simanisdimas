@@ -45,6 +45,10 @@ class RincianKendaraan extends Page implements HasTable
 
             Tables\Columns\TextColumn::make('spesifikasi')
                 ->label('Spesifikasi'),
+            
+            Tables\Columns\TextColumn::make('tanggal_pajak')
+                ->label('Tanggal Pajak')
+                ->date(format: 'd-m-Y'),
 
             Tables\Columns\TextColumn::make('tanggal_serah_terima')
                 ->label('Tanggal Serah Terima')

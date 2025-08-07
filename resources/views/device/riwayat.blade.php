@@ -33,9 +33,8 @@
                     <tr>
                         <th class="px-6 py-3 text-left">Tanggal</th>
                         <th class="px-6 py-3 text-left">Device</th>
-                        <th class="px-6 py-3 text-left">Kategori</th>
-                        <th class="px-6 py-3 text-left">Deskripsi</th>
-                        <th class="px-6 py-3 text-left">Lampiran</th>
+                        <th class="px-6 py-3 text-left">Jenis Perawatan</th>
+
                         <th class="px-6 py-3 text-left">Aksi</th>
                     </tr>
                 </thead>
@@ -50,16 +49,6 @@
                             </td>
                             <td class="px-6 py-4 font-semibold text-teal-700">
                                 {{ $item->kategori_perawatan }}
-                            </td>
-                            <td class="px-6 py-4 text-slate-600">
-                                {{ $item->deskripsi }}
-                            </td>
-                            <td class="px-6 py-4">
-                                @if ($item->bukti)
-                                    <a href="{{ asset('storage/' . $item->bukti) }}" target="_blank" class="text-sky-600 hover:underline">Lihat</a>
-                                @else
-                                    <span class="text-slate-400 italic">-</span>
-                                @endif
                             </td>
                             <td class="px-6 py-4">
                                 <button onclick="openModal({{ $index }})"

@@ -53,22 +53,20 @@
                 <table class="min-w-full divide-y divide-slate-200 text-sm text-left">
                     <thead class ="bg-gradient-to-r from-sky-700 to-sky-500 text-white uppercase text-xs font-semibold text-left">
                         <tr>
-                            <th class="px-6 py-4">ID Device</th>
-                            <th class="px-6 py-4">Nama User</th>
+                            <th class="px-6 py-4">ID</th>
                             <th class="px-6 py-4">Nama Device</th>
                             <th class="px-6 py-4">Spesifikasi</th>
-                            <th class="px-6 py-4">Tanggal Serah Terima</th>
+                            <th class="px-6 py-4">Serah Terima</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-800 divide-y divide-slate-100">
                         @forelse ($devices as $device)
                             <tr class="hover:bg-gray-50 transition">
                                 <td class="px-6 py-4 font-semibold text-slate-800">{{ $device->id }}</td>
-                                <td class="px-6 py-4">{{ $device->user->name ?? '-' }}</td>
                                 <td class="px-6 py-4">{{ $device->nama }}</td>
                                 <td class="px-6 py-4 text-slate-600">{{ $device->spesifikasi }}</td>
                                 <td class="px-6 py-4 text-slate-600">
-                                    {{ $device->tanggal_serah_terima ? \Carbon\Carbon::parse($device->tanggal_serah_terima)->translatedFormat('d F Y') : '-' }}
+                                    {{ $device->tanggal_serah_terima ? \Carbon\Carbon::parse($device->tanggal_serah_terima)->translatedFormat('d-m-Y') : '-' }}
                                 </td>
                             </tr>
                         @empty

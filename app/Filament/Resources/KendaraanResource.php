@@ -47,7 +47,7 @@ class KendaraanResource extends Resource
                         'Motor' => 'Motor',
                         'Mobil' => 'Mobil',
                     ])
-                ->required(),
+                    ->required(),
 
                 Forms\Components\Textarea::make('spesifikasi')
                     ->label('Spesifikasi')
@@ -57,6 +57,11 @@ class KendaraanResource extends Resource
                     ->label('Tanggal Serah Terima')
                     ->default(now())
                     ->required(),
+
+                Forms\Components\DatePicker::make('tanggal_pajak')
+                    ->label('Tanggal Pajak Tahunan')
+                    ->required()
+                    ->default(now()->addYear()),
             ]);
     }
 

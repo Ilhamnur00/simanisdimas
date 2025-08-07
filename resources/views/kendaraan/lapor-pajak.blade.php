@@ -8,7 +8,7 @@
             <p class="text-sm text-gray-500">Formulir pelaporan pajak kendaraan Diskominfo</p>
         </div>
 
-        <!-- Alert Success/Error -->
+        <!-- Alert -->
         @if(session('success'))
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow">
                 {{ session('success') }}
@@ -38,7 +38,8 @@
                     onchange="tampilkanDetailKendaraan(this)">
                 <option value="">-- Pilih Kendaraan --</option>
                 @foreach($kendaraans as $k)
-                    <option value="{{ $k->id }}" data-kendaraan='@json($k)'>
+                    <option value="{{ $k->id }}" data-kendaraan='@json($k)'
+                        {{ old('kendaraan_id') == $k->id ? 'selected' : '' }}>
                         {{ $k->nama ?? '-' }} ({{ $k->no_polisi ?? 'N/A' }})
                     </option>
                 @endforeach
@@ -55,42 +56,60 @@
                 <div><strong>Kategori:</strong> <span id="info-kategori"></span></div>
                 <div><strong>No Polisi:</strong> <span id="info-polisi"></span></div>
                 <div><strong>Spesifikasi:</strong> <span id="info-spesifikasi"></span></div>
+                <div class="col-span-2">
+                    <strong>Tanggal Pajak:</strong>
+                    <span id="info-tanggal-pajak" class="font-semibold"></span>
+                </div>
             </div>
         </div>
 
-        <!-- Formulir Pajak -->
-        <div class="bg-white p-6 rounded-xl shadow">
+        <!-- Formulir Perawatan -->
+        <div id="form-laporan" class="bg-white p-6 rounded-xl shadow hidden">
             <h2 class="text-xl font-semibold text-gray-700 mb-4">Formulir Laporan Pajak</h2>
 
-            <form action="{{ route('kendaraan.store-lapor-pajak') }}" method="POST">
+            <form action="{{ route('kendaraan.store-lapor-pajak') }}" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
                 @csrf
+                <input type="hidden" name="kendaraan_id" id="input-kendaraan-id" value="{{ old('kendaraan_id') }}">
 
-                <!-- Hidden input kendaraan_id -->
-                <input type="hidden" name="kendaraan_id" id="input-kendaraan-id">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="tanggal" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Bayar</label>
+                        <input type="date" name="tanggal" id="tanggal" value="{{ old('tanggal') }}" required class="w-full border border-gray-300 rounded px-3 py-2">
+                    </div>
 
-                <!-- Jenis Pajak -->
-                <div class="mb-4">
-                    <label for="jenis_pajak" class="block text-sm font-medium text-gray-700">Jenis Pajak</label>
-                    <select name="jenis_pajak" id="jenis_pajak" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                        <option value="">-- Pilih Jenis Pajak --</option>
-                        <option value="Tahunan">Tahunan</option>
-                        <option value="Lima Tahunan">Lima Tahunan</option>
-                    </select>
-                </div>
+                    <!-- Jenis Pajak -->
+                    <div>
+                        <label for="jenis_pajak" class="block text-sm font-medium text-gray-700">Jenis Pajak</label>
+                        <select name="jenis_pajak" id="jenis_pajak" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                            <option value="">-- Pilih Jenis Pajak --</option>
+                            <option value="Tahunan" {{ old('jenis_pajak') == 'Tahunan' ? 'selected' : '' }}>Tahunan</option>
+                            <option value="Lima Tahunan" {{ old('jenis_pajak') == 'Lima Tahunan' ? 'selected' : '' }}>Lima Tahunan</option>
+                        </select>
+                    </div>
 
-                <!-- Tanggal Pajak -->
-                <div class="mb-4">
-                    <label for="tanggal" class="block text-sm font-medium text-gray-700">Tanggal Pajak</label>
-                    <input type="date" name="tanggal" id="tanggal"
-                           class="w-full border border-gray-300 rounded px-3 py-2" required>
-                </div>
+                    <!-- Bukti Upload -->
+                    <div class="sm:col-span-2">
+                        <label for="bukti" class="block text-sm font-medium text-gray-700">Upload Bukti (opsional)</label>
+                        <input type="file" name="bukti" id="bukti" accept=".jpg,.jpeg,.png,.pdf"
+                            class="w-full border border-gray-300 rounded px-3 py-2"
+                            onchange="previewLampiran(event)">
+                        <div id="preview-container" class="mt-3 hidden">
+                            <img id="preview-image" class="max-w-xs rounded border shadow hidden">
+                            <p id="preview-filename" class="text-sm text-gray-700"></p>
+                            <button type="button" onclick="hapusLampiran()"
+                                    class="mt-2 px-4 py-1 bg-red-600 text-white text-sm rounded">
+                                Hapus File
+                            </button>
+                        </div>
+                    </div>
 
-                <!-- Deskripsi / Keterangan -->
-                <div class="mb-4">
-                    <label for="deskripsi" class="block text-sm font-medium text-gray-700">Keterangan</label>
-                    <textarea name="deskripsi" id="deskripsi" rows="3"
-                              class="w-full border border-gray-300 rounded px-3 py-2"
-                              placeholder="Contoh: Pajak kendaraan ini untuk tahun berjalan..."></textarea>
+                    <!-- Deskripsi -->
+                    <div class="sm:col-span-2">
+                        <label for="deskripsi" class="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
+                        <textarea name="deskripsi" id="deskripsi" rows="4"
+                                  class="w-full border border-gray-300 rounded px-3 py-2"
+                                  placeholder="Contoh: Ganti oli, perawatan rutin, dll" required>{{ old('deskripsi') }}</textarea>
+                    </div>
                 </div>
 
                 <!-- Tombol Submit -->
@@ -104,7 +123,6 @@
         </div>
     </div>
 
-    <!-- Script: Menampilkan detail kendaraan -->
     <script>
         function tampilkanDetailKendaraan(select) {
             const selectedOption = select.options[select.selectedIndex];
@@ -114,19 +132,85 @@
             if (kendaraanData && kendaraanId) {
                 const kendaraan = JSON.parse(kendaraanData);
 
-                document.getElementById('info-kendaraan').classList.remove('hidden');
                 document.getElementById('info-id').textContent = kendaraan.id || '-';
                 document.getElementById('info-nama').textContent = kendaraan.nama || '-';
-                document.getElementById('info-user').textContent = kendaraan.nama_user || '-';
+                document.getElementById('info-user').textContent = kendaraan.user?.name || '-';
                 document.getElementById('info-kategori').textContent = kendaraan.kategori || '-';
                 document.getElementById('info-polisi').textContent = kendaraan.no_polisi || '-';
                 document.getElementById('info-spesifikasi').textContent = kendaraan.spesifikasi || '-';
 
                 document.getElementById('input-kendaraan-id').value = kendaraanId;
+
+                document.getElementById('info-kendaraan').classList.remove('hidden');
+                document.getElementById('form-laporan').classList.remove('hidden');
             } else {
                 document.getElementById('info-kendaraan').classList.add('hidden');
+                document.getElementById('form-laporan').classList.add('hidden');
                 document.getElementById('input-kendaraan-id').value = '';
             }
         }
+
+        function previewLampiran(event) {
+            const file = event.target.files[0];
+            const previewImage = document.getElementById('preview-image');
+            const previewContainer = document.getElementById('preview-container');
+            const previewFilename = document.getElementById('preview-filename');
+
+            if (file) {
+                const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+                const maxSize = 2 * 1024 * 1024;
+
+                if (!validTypes.includes(file.type)) {
+                    alert("File harus berupa .jpg, .jpeg, .png, atau .pdf");
+                    event.target.value = '';
+                    return;
+                }
+
+                if (file.size > maxSize) {
+                    alert("Ukuran file maksimal 2MB.");
+                    event.target.value = '';
+                    return;
+                }
+
+                previewContainer.classList.remove('hidden');
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                        previewImage.classList.remove('hidden');
+                        previewFilename.textContent = '';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    previewImage.src = '';
+                    previewImage.classList.add('hidden');
+                    previewFilename.textContent = `File: ${file.name}`;
+                }
+            }
+        }
+
+        function hapusLampiran() {
+            document.getElementById('bukti').value = '';
+            document.getElementById('preview-container').classList.add('hidden');
+            document.getElementById('preview-image').src = '';
+            document.getElementById('preview-filename').textContent = '';
+        }
+
+        function validateForm() {
+            const kendaraanId = document.getElementById('select-kendaraan').value;
+            if (!kendaraanId) {
+                alert("Silakan pilih kendaraan terlebih dahulu.");
+                return false;
+            }
+            return true;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectKendaraan = document.getElementById('select-kendaraan');
+            if (selectKendaraan.value) {
+                tampilkanDetailKendaraan(selectKendaraan);
+            }
+        });
     </script>
+
 </x-app-layout>

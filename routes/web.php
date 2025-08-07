@@ -73,9 +73,6 @@ Route::prefix('kendaraan')->group(function () {
     // Riwayat perawatan & pajak
     Route::get('/riwayat', [KendaraanController::class, 'riwayat'])->name('kendaraan.riwayat');
     Route::get('/riwayat/data/{jenis}', [KendaraanController::class, 'getRiwayatData'])->name('kendaraan.riwayat.data');
-
-    // Detail kendaraan
-    Route::get('/{kendaraan}', [KendaraanController::class, 'show'])->name('kendaraan.show');
 });
 
 

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('jenis_pajak');
             $table->date('tanggal');
             $table->text('deskripsi')->nullable();
+            $table->string('bukti')->nullable();
             $table->timestamps();
 
             // Foreign key ke tabel kendaraan

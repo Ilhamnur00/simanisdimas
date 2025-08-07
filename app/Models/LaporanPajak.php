@@ -16,6 +16,8 @@ class LaporanPajak extends Model
     'jenis_pajak',
     'tanggal',
     'deskripsi',
+    'tanggal_pajak',
+    'bukti',
 ];
 
     public function kendaraan()

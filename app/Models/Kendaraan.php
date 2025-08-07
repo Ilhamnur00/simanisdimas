@@ -23,6 +23,7 @@ class Kendaraan extends Model
         'spesifikasi',
         'tanggal_serah_terima',
         'no_polisi',
+        'tanggal_pajak'
     ];
 
     /**

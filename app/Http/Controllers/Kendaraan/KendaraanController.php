@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Kendaraan;
 use App\Models\LaporanPajak;
 use App\Models\LaporanPerawatan;
+use Carbon\Carbon;
 
 class KendaraanController extends Controller
 {
@@ -19,13 +20,28 @@ class KendaraanController extends Controller
 
     public function formLaporanPerawatan()
     {
-        $kendaraans = Kendaraan::where('user_id', Auth::id())->get();
+        $kendaraans = Kendaraan::where('user_id', Auth::id())
+            ->with('user')
+            ->get()
+            ->map(function ($k) {
+                $k->nama_user = $k->user->name ?? '-';
+                return $k;
+            });
+
         return view('kendaraan.laporan-perawatan', compact('kendaraans'));
     }
 
+
     public function laporPajak()
     {
-        $kendaraans = Kendaraan::where('user_id', Auth::id())->get();
+        $kendaraans = Kendaraan::where('user_id', Auth::id())
+            ->with('user')
+            ->get()
+            ->map(function ($k) {
+                $k->nama_user = $k->user->name ?? '-';
+                return $k;
+            });
+
         return view('kendaraan.lapor-pajak', compact('kendaraans'));
     }
 
@@ -36,7 +52,7 @@ class KendaraanController extends Controller
             'tanggal' => 'required|date',
             'kategori_perawatan' => 'required|string|max:100',
             'deskripsi' => 'required|string',
-            'bukti' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'bukti' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         try {
@@ -65,21 +81,42 @@ class KendaraanController extends Controller
             'jenis_pajak' => 'required|string',
             'tanggal' => 'required|date',
             'deskripsi' => 'nullable|string',
+            'bukti' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         try {
-            LaporanPajak::create([
+            $filePath = $request->hasFile('bukti')
+                ? $request->file('bukti')->store('pajak', 'public')
+                : null;
+
+            $laporan = LaporanPajak::create([
                 'kendaraan_id' => $request->kendaraan_id,
                 'jenis_pajak' => $request->jenis_pajak,
                 'tanggal' => $request->tanggal,
                 'deskripsi' => $request->deskripsi,
+                'bukti' => $filePath,
             ]);
 
-            return redirect()->route('kendaraan.riwayat')->with('success', 'Laporan pajak berhasil disimpan.');
+            // Ambil kendaraan
+            $kendaraan = Kendaraan::find($request->kendaraan_id);
+
+            if ($kendaraan && $kendaraan->tanggal_pajak) {
+                $tanggalPajakSaatIni = Carbon::parse($kendaraan->tanggal_pajak);
+                $tanggalLaporan = Carbon::parse($request->tanggal);
+
+                // Update jika laporan dilakukan di tahun yang sama dengan tanggal pajak
+                if ($tanggalLaporan->year === $tanggalPajakSaatIni->year) {
+                    $kendaraan->tanggal_pajak = $tanggalPajakSaatIni->copy()->addYear();
+                    $kendaraan->save();
+                }
+            }
+
+            return redirect()->route('kendaraan.riwayat')->with('success', 'Laporan pajak berhasil disimpan dan jatuh tempo diperbarui.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan laporan pajak.');
         }
     }
+
 
     public function riwayat()
     {
@@ -116,12 +153,6 @@ class KendaraanController extends Controller
         };
 
         return response()->json($data);
-    }
-
-    public function show(Kendaraan $kendaraan)
-    {
-        $this->authorizeAccess($kendaraan);
-        return view('kendaraan.show', compact('kendaraan'));
     }
 
     protected function authorizeAccess(Kendaraan $kendaraan): void
