@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="title">Laporan Perawatan Kendaraan</x-slot>
-
+    
     <div class="max-w-5xl mx-auto mt-10 space-y-6">
-        <!-- Header -->
+         <!-- Header -->
         <div class="mb-10 text-center">
-            <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#003973] via-[#2980B9] to-[#6DD5FA] drop-shadow">Laporan Pajak Kendaraan Dinas</h2>
-            <p class="text-slate-500 mt-2 text-lg">Formulir pelaporan untuk pajak kendaraan dinas Diskominfo</p>
+            <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#003973] via-[#2980B9] to-[#6DD5FA] drop-shadow">Laporan Perawatan Kendaraan Dinas</h2>
+            <p class="text-slate-500 mt-2 text-lg">Formulir pelaporan untuk perawatan kendaraan dinas Diskominfo</p>
         </div>
 
         <!-- Flash Message -->

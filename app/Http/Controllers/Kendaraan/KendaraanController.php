@@ -9,6 +9,8 @@ use App\Models\Kendaraan;
 use App\Models\LaporanPajak;
 use App\Models\LaporanPerawatan;
 use Carbon\Carbon;
+use App\Notifications\PajakReminderNotification;
+use Illuminate\Support\Facades\Notification;
 
 class KendaraanController extends Controller
 {
@@ -45,34 +47,64 @@ class KendaraanController extends Controller
         return view('kendaraan.lapor-pajak', compact('kendaraans'));
     }
 
-    public function storeLaporanPerawatan(Request $request)
+    public function storeLaporPajak(Request $request)
     {
         $request->validate([
             'kendaraan_id' => 'required|exists:kendaraans,id',
+            'jenis_pajak' => 'required|string',
             'tanggal' => 'required|date',
-            'kategori_perawatan' => 'required|string|max:100',
-            'deskripsi' => 'required|string',
+            'deskripsi' => 'nullable|string',
             'bukti' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         try {
             $filePath = $request->hasFile('bukti')
-                ? $request->file('bukti')->store('perawatan', 'public')
+                ? $request->file('bukti')->store('pajak', 'public')
                 : null;
 
-            LaporanPerawatan::create([
+            $laporan = LaporanPajak::create([
                 'kendaraan_id' => $request->kendaraan_id,
+                'jenis_pajak' => $request->jenis_pajak,
                 'tanggal' => $request->tanggal,
-                'kategori_perawatan' => $request->kategori_perawatan,
                 'deskripsi' => $request->deskripsi,
                 'bukti' => $filePath,
             ]);
 
-            return redirect()->route('kendaraan.riwayat')->with('success', 'Laporan perawatan berhasil disimpan.');
+            // Ambil kendaraan
+            $kendaraan = Kendaraan::find($request->kendaraan_id);
+
+            if ($kendaraan && $kendaraan->tanggal_pajak) {
+                $tanggalPajakSaatIni = Carbon::parse($kendaraan->tanggal_pajak);
+                $tanggalLaporan = Carbon::parse($request->tanggal);
+
+                // Update tanggal_pajak hanya jika pembayaran dilakukan di tahun yang sama dengan tanggal pajak saat ini
+                if ($tanggalLaporan->year === $tanggalPajakSaatIni->year) {
+                    // Update tanggal_pajak ke tahun berikutnya
+                    $kendaraan->tanggal_pajak = $tanggalPajakSaatIni->copy()->addYear();
+
+                    // Reset flag reminder agar pengingat bisa dikirim ulang di periode berikutnya
+                    $kendaraan->reminder_h7_sent = false;
+                    $kendaraan->reminder_h0_sent = false;
+
+                    $kendaraan->save();
+
+                    // Kirim notifikasi pemberitahuan pajak terbaru
+                    if ($kendaraan->user && $kendaraan->user->email) {
+                        $kendaraan->user->notify(new PajakReminderNotification(
+                            $kendaraan,
+                            'Pemberitahuan Pajak Kendaraan Baru'
+                        ));
+                    }
+                }
+            }
+
+            return redirect()->route('kendaraan.riwayat')
+                ->with('success', 'Laporan pajak berhasil disimpan, jatuh tempo diperbarui, dan notifikasi dikirim.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan laporan perawatan.');
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
 
     public function storeLaporPajak(Request $request)
     {
@@ -108,15 +140,25 @@ class KendaraanController extends Controller
                 if ($tanggalLaporan->year === $tanggalPajakSaatIni->year) {
                     $kendaraan->tanggal_pajak = $tanggalPajakSaatIni->copy()->addYear();
                     $kendaraan->save();
+
+                    // Kirim notifikasi awal setelah update tanggal pajak
+                    if ($kendaraan->user && $kendaraan->user->email) {
+                        Notification::route('mail', $kendaraan->user->email)
+                            ->notify(new PajakReminderNotification(
+                                $kendaraan,
+                                $kendaraan->tanggal_pajak,
+                                'Pemberitahuan Pajak Kendaraan Baru'
+                            ));
+                    }
                 }
             }
 
-            return redirect()->route('kendaraan.riwayat')->with('success', 'Laporan pajak berhasil disimpan dan jatuh tempo diperbarui.');
+            return redirect()->route('kendaraan.riwayat')
+                ->with('success', 'Laporan pajak berhasil disimpan, jatuh tempo diperbarui, dan notifikasi dikirim.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan laporan pajak.');
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
-
 
     public function riwayat()
     {
