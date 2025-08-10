@@ -47,6 +47,42 @@ class KendaraanController extends Controller
         return view('kendaraan.lapor-pajak', compact('kendaraans'));
     }
 
+    public function storeLaporanPerawatan(Request $request)
+    {
+        $request->validate([
+            'kendaraan_id' => 'required|exists:kendaraans,id',
+            'tanggal' => 'required|date',
+            'kategori_perawatan' => 'required|string|max:100',
+            'deskripsi' => 'required|string',
+            'bukti' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        ]);
+
+        try {
+
+            $filePath = $request->hasFile('bukti')
+                ? $request->file('bukti')->store('perawatan', 'public')
+                : null;
+
+            LaporanPerawatan::create([
+
+                'kendaraan_id' => $request->kendaraan_id,
+                'tanggal' => $request->tanggal,
+                'kategori_perawatan' => $request->kategori_perawatan,
+                'deskripsi' => $request->deskripsi,
+                'bukti' => $filePath,
+
+            ]);
+
+            return redirect()->route('kendaraan.riwayat')->with('success', 'Laporan perawatan berhasil disimpan.');
+
+        } catch (\Exception $e) {
+
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan laporan perawatan.');
+
+        }
+
+    }
+
     public function storeLaporPajak(Request $request)
     {
         $request->validate([
@@ -54,7 +90,7 @@ class KendaraanController extends Controller
             'jenis_pajak' => 'required|string',
             'tanggal' => 'required|date',
             'deskripsi' => 'nullable|string',
-            'bukti' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'bukti' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
         try {
