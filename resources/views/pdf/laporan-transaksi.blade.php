@@ -23,6 +23,7 @@
             margin: 0 auto;
         }
 
+        /* Header */
         .header {
             display: flex;
             align-items: center;
@@ -64,6 +65,7 @@
             font-weight: 500;
         }
 
+        /* Judul Laporan */
         .report-title {
             text-align: center;
             font-size: 18pt;
@@ -75,6 +77,7 @@
             letter-spacing: 0.5px;
         }
 
+        /* Meta Info */
         .meta-container {
             display: table;
             width: 100%;
@@ -106,41 +109,41 @@
             color: #1a202c;
         }
 
-        .table-container {
-            margin-top: 15px;
-        }
-
+        /* Tabel mengikuti referensi */
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        thead {
-            background: #2c5282;
-            color: white;
-            position: sticky;
-            top: 0;
-            box-shadow: 0 2px 2px -1px rgba(0,0,0,0.1);
+            margin-top: 15px;
         }
 
         th, td {
-            padding: 8px;
+            border: 1px solid #cbd5e0;
+            padding: 6px;
             text-align: left;
-            border: 1px solid #e2e8f0;
+            font-size: 12px;
         }
 
         th {
+            background-color: #2c5282;
+            color: white;
             font-weight: bold;
-            text-transform: uppercase;
-            font-size: 11px;
+            text-transform: none;
         }
 
         tbody tr:nth-child(even) {
-            background-color: #f8fafc;
+            background-color: #fafafa;
         }
 
+        .text-center {
+            text-align: center;
+        }
+
+        .italic {
+            font-style: italic;
+            color: #666;
+        }
+
+        /* Footer */
         .footer {
             margin-top: 40px;
             text-align: right;
@@ -186,59 +189,61 @@
         </div>
 
         <!-- Tabel Transaksi -->
-        <div class="table-container">
-            <table>
-                <thead>
+        <table>
+            <thead>
+                <tr>
+                    <th>No Transaksi</th>
+                    <th>Nama User</th>
+                    <th>Tanggal</th>
+                    <th>Nama Barang</th>
+                    <th>Jenis Transaksi</th>
+                    <th>Jumlah</th>
+                    <th>Total Harga</th>
+                    <th>Status Asal</th>
+                    <th>Nilai TKDN</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($transaksi as $item)
                     <tr>
-                        <th>No Transaksi</th>
-                        <th>Nama User</th>
-                        <th>Tanggal</th>
-                        <th>Nama Barang</th>
-                        <th>Jenis Transaksi</th>
-                        <th>Jumlah</th>
-                        <th>Total Harga</th>
-                        <th>Status Asal</th>
-                        <th>Nilai TKDN</th>
+                        <td>TRX{{ str_pad($item->id, 3, '0', STR_PAD_LEFT) }}</td>
+                        <td>{{ $item->user->name ?? '-' }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('j F Y') }}</td>
+                        <td>{{ $item->barang->nama_barang ?? '-' }}</td>
+                        <td>{{ ucfirst($item->jenis_transaksi) }}</td>
+                        <td>{{ $item->jumlah_barang }}</td>
+                        <td>
+                            @if ($item->jenis_transaksi === 'masuk')
+                                Rp{{ number_format($item->total_harga, 0, ',', '.') }}
+                            @else
+                                -
+                            @endif
+                        </td>
+                        <td>
+                            @if ($item->jenis_transaksi === 'masuk')
+                                {{ $item->status_asal ?? ($item->detailBarang->status_asal ?? '-') }}
+                            @else
+                                -
+                            @endif
+                        </td>
+                        <td>
+                            @if (
+                                $item->jenis_transaksi === 'masuk' &&
+                                ($item->status_asal ?? $item->detailBarang->status_asal ?? '') === 'TKDN'
+                            )
+                                {{ $item->nilai_tkdn ?? ($item->detailBarang->nilai_tkdn ?? '-') }}%
+                            @else
+                                -
+                            @endif
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach ($transaksi as $item)
-                        <tr>
-                            <td>TRX{{ str_pad($item->id, 3, '0', STR_PAD_LEFT) }}</td>
-                            <td>{{ $item->user->name ?? '-' }}</td>
-                            <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
-                            <td>{{ $item->barang->nama_barang ?? '-' }}</td>
-                            <td>{{ ucfirst($item->jenis_transaksi) }}</td>
-                            <td>{{ $item->jumlah_barang }}</td>
-                            <td>
-                                @if ($item->jenis_transaksi === 'masuk')
-                                    Rp{{ number_format($item->total_harga, 0, ',', '.') }}
-                                @else
-                                    -
-                                @endif
-                            </td>
-                            <td>
-                                @if ($item->jenis_transaksi === 'masuk')
-                                    {{ $item->status_asal ?? ($item->detailBarang->status_asal ?? '-') }}
-                                @else
-                                    -
-                                @endif
-                            </td>
-                            <td>
-                                @if (
-                                    $item->jenis_transaksi === 'masuk' &&
-                                    ($item->status_asal ?? $item->detailBarang->status_asal ?? '') === 'TKDN'
-                                )
-                                    {{ $item->nilai_tkdn ?? ($item->detailBarang->nilai_tkdn ?? '-') }}%
-                                @else
-                                    -
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                @empty
+                    <tr>
+                        <td colspan="9" class="text-center italic">Tidak ada data transaksi ditemukan.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
 
         <!-- Footer -->
         <div class="footer">

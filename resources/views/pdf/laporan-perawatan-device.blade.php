@@ -23,6 +23,7 @@
             margin: 0 auto;
         }
 
+        /* Header */
         .header {
             display: flex;
             align-items: center;
@@ -64,6 +65,7 @@
             font-weight: 500;
         }
 
+        /* Judul Laporan */
         .report-title {
             text-align: center;
             font-size: 18pt;
@@ -75,6 +77,7 @@
             letter-spacing: 0.5px;
         }
 
+        /* Meta Info */
         .meta-container {
             display: table;
             width: 100%;
@@ -106,39 +109,33 @@
             color: #1a202c;
         }
 
-        .table-container {
-            margin-top: 15px;
-        }
-
+        /* Tabel mengikuti referensi */
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        thead {
-            background: #2c5282;
-            color: white;
-            position: sticky;
-            top: 0;
-            box-shadow: 0 2px 2px -1px rgba(0,0,0,0.1);
+            margin-top: 20px;
         }
 
         th, td {
-            padding: 8px;
+            border: 1px solid #cbd5e0;
+            padding: 6px;
             text-align: left;
-            border: 1px solid #e2e8f0;
+            font-size: 12px;
         }
 
         th {
+            background-color: #2c5282;
+            color: white;
             font-weight: bold;
-            text-transform: uppercase;
-            font-size: 11px;
+            text-transform: none;
         }
 
         tbody tr:nth-child(even) {
-            background-color: #f8fafc;
+            background-color: #fafafa;
+        }
+
+        .text-center {
+            text-align: center;
         }
 
         .italic {
@@ -146,10 +143,7 @@
             color: #666;
         }
 
-        .text-center {
-            text-align: center;
-        }
-
+        /* Footer */
         .footer {
             margin-top: 40px;
             text-align: right;
@@ -195,40 +189,38 @@
         </div>
 
         <!-- Tabel Perawatan -->
-        <div class="table-container">
-            <table>
-                <thead>
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama User</th>
+                    <th>Nama Device</th>
+                    <th>Kategori Perawatan</th>
+                    <th>Deskripsi</th>
+                    <th>Tanggal Perawatan</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($perawatan as $index => $item)
                     <tr>
-                        <th>#</th>
-                        <th>Nama User</th>
-                        <th>Nama Device</th>
-                        <th>Kategori Perawatan</th>
-                        <th>Deskripsi</th>
-                        <th>Tanggal Perawatan</th>
+                        <td class="text-center">{{ $index + 1 }}</td>
+                        <td>{{ $item->user->name ?? '-' }}</td>
+                        <td>{{ $item->device->nama ?? '-' }}</td>
+                        <td>{{ $item->kategori_perawatan }}</td>
+                        <td>{{ $item->deskripsi }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') }}</td>
                     </tr>
-                </thead>
-                <tbody>
-                    @forelse ($perawatan as $index => $item)
-                        <tr>
-                            <td class="text-center">{{ $index + 1 }}</td>
-                            <td>{{ $item->user->name ?? '-' }}</td>
-                            <td>{{ $item->device->nama ?? '-' }}</td>
-                            <td>{{ $item->kategori_perawatan }}</td>
-                            <td>{{ $item->deskripsi }}</td>
-                            <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="text-center italic">Tidak ada data perawatan ditemukan.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center italic">Tidak ada data perawatan ditemukan.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
 
         <!-- Footer -->
         <div class="footer">
-            <strong>Dicetak pada:</strong> {{ \Carbon\Carbon::now()->format('d-m-Y H:i') }}
+            <strong>Dicetak pada:</strong> {{ \Carbon\Carbon::now()->translatedFormat('d F Y H:i') }}
         </div>
 
     </div>
