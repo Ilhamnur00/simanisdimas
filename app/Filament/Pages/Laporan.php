@@ -113,15 +113,10 @@ class Laporan extends Page implements HasForms
 
     public function downloadPdf()
     {
-        $data = $this->getFilteredData();
-        $userName = $this->user_id ? (User::find($this->user_id)?->name ?? '-') : 'Semua Pengguna';
+        $data = $this->sanitizeData($this->getFilteredData());
+        $userName = $this->user_id ? $this->sanitizeData(User::find($this->user_id)?->name ?? '-') : 'Semua Pengguna';
 
-        $viewName = match ($this->jenis_laporan) {
-            'perawatan' => 'pdf.laporan-perawatan-device',
-            'perawatan_kendaraan' => 'pdf.laporan-perawatan-kendaraan',
-            'pajak_kendaraan' => 'pdf.laporan-pajak-kendaraan',
-            default => 'pdf.laporan-transaksi',
-        };
+        $viewName = $this->getViewName();
 
         $pdf = Pdf::loadView($viewName, [
             'transaksi' => $this->jenis_laporan === 'transaksi' ? $data : null,
@@ -148,17 +143,13 @@ class Laporan extends Page implements HasForms
             return;
         }
 
-        $data = $this->getFilteredData();
+        $data = $this->sanitizeData($this->getFilteredData());
         $user = User::findOrFail($this->user_id);
+        $user->name = $this->sanitizeData($user->name);
 
-        $viewName = match ($this->jenis_laporan) {
-            'perawatan' => 'pdf.laporan-perawatan-device',
-            'perawatan_kendaraan' => 'pdf.laporan-perawatan-kendaraan',
-            'pajak_kendaraan' => 'pdf.laporan-pajak-kendaraan',
-            default => 'pdf.laporan-transaksi',
-        };
+        $viewName = $this->getViewName();
 
-        $pdfOutput = Pdf::loadView($viewName, [
+        $pdfBinary = Pdf::loadView($viewName, [
             'transaksi' => $this->jenis_laporan === 'transaksi' ? $data : null,
             'perawatan' => $this->jenis_laporan === 'perawatan' ? $data : null,
             'perawatan_kendaraan' => $this->jenis_laporan === 'perawatan_kendaraan' ? $data : null,
@@ -167,12 +158,25 @@ class Laporan extends Page implements HasForms
             'user' => $user->name,
         ])->output();
 
-        $user->notify(new LaporanNotification($user, $pdfOutput, $this->jenis_laporan));
+        // Encode PDF binary jadi Base64 agar aman di-queue
+        $pdfBase64 = base64_encode($pdfBinary);
+
+        $user->notify(new LaporanNotification($user, $pdfBase64, $this->jenis_laporan));
 
         Notification::make()
             ->title('Laporan ' . ucfirst(str_replace('_', ' ', $this->jenis_laporan)) . ' berhasil dikirim ke email user.')
             ->success()
             ->send();
+    }
+
+    private function getViewName(): string
+    {
+        return match ($this->jenis_laporan) {
+            'perawatan' => 'pdf.laporan-perawatan-device',
+            'perawatan_kendaraan' => 'pdf.laporan-perawatan-kendaraan',
+            'pajak_kendaraan' => 'pdf.laporan-pajak-kendaraan',
+            default => 'pdf.laporan-transaksi',
+        };
     }
 
     private function getFilteredData()
@@ -187,7 +191,6 @@ class Laporan extends Page implements HasForms
 
         if (!$query) return collect();
 
-        // Filtering berdasarkan user ID, tergantung jenis laporan
         if (!empty($this->user_id)) {
             $query = match ($this->jenis_laporan) {
                 'transaksi', 'perawatan' => $query->where('user_id', $this->user_id),
@@ -198,7 +201,6 @@ class Laporan extends Page implements HasForms
             };
         }
 
-        // Filter berdasarkan waktu
         if ($this->jenis_waktu === 'bulanan') {
             $query->whereYear('tanggal', $this->tahun)
                 ->whereMonth('tanggal', $this->bulan);
@@ -206,7 +208,6 @@ class Laporan extends Page implements HasForms
             $query->whereYear('tanggal', $this->tahun);
         }
 
-        // Eager load relasi sesuai jenis laporan
         return match ($this->jenis_laporan) {
             'transaksi' => $query->with(['user'])->get(),
             'perawatan' => $query->with(['user', 'device'])->get(),
@@ -214,7 +215,6 @@ class Laporan extends Page implements HasForms
             default => $query->get(),
         };
     }
-
 
     private function getPeriodeLabel(): string
     {
@@ -226,5 +226,42 @@ class Laporan extends Page implements HasForms
         }
 
         return "Tahun $this->tahun";
+    }
+
+    private function sanitizeData($data)
+    {
+        if (is_array($data)) {
+            return array_map(fn($item) => $this->sanitizeData($item), $data);
+        }
+
+        if ($data instanceof \Illuminate\Support\Collection) {
+            return $data->map(fn($item) => $this->sanitizeData($item));
+        }
+
+        if (is_object($data)) {
+            foreach ($data as $key => $value) {
+                $data->$key = $this->sanitizeData($value);
+            }
+            return $data;
+        }
+
+        if (is_string($data)) {
+            // Konversi ke UTF-8 jika tidak valid
+            if (!mb_check_encoding($data, 'UTF-8')) {
+                $data = mb_convert_encoding($data, 'UTF-8', 'auto');
+            }
+
+            // Hapus karakter kontrol kecuali newline/tab
+            $data = preg_replace('/[^\P{C}\n\t]+/u', '', $data) ?? '';
+
+            // Pastikan tetap UTF-8 valid
+            if (!mb_check_encoding($data, 'UTF-8')) {
+                $data = mb_convert_encoding($data, 'UTF-8', 'UTF-8');
+            }
+
+            return $data;
+        }
+
+        return $data;
     }
 }

@@ -12,13 +12,13 @@ class LaporanNotification extends Notification implements ShouldQueue
     use Queueable;
 
     protected $user;
-    protected $pdfData;
+    protected $pdfBase64;
     protected $jenisLaporan;
 
-    public function __construct($user, $pdfData, $jenisLaporan = 'transaksi')
+    public function __construct($user, string $pdfBase64, $jenisLaporan = 'transaksi')
     {
         $this->user = $user;
-        $this->pdfData = $pdfData;
+        $this->pdfBase64 = $pdfBase64;
         $this->jenisLaporan = $jenisLaporan;
     }
 
@@ -54,11 +54,14 @@ class LaporanNotification extends Notification implements ShouldQueue
 
         $info = $laporanInfo[$this->jenisLaporan] ?? $laporanInfo['transaksi'];
 
+        // Decode dari Base64 ke binary sebelum attach
+        $pdfBinary = base64_decode($this->pdfBase64);
+
         return (new MailMessage)
             ->subject($info['subject'])
             ->greeting('Hai, ' . $this->user->name)
             ->line($info['line'])
-            ->attachData($this->pdfData, $info['fileName'], [
+            ->attachData($pdfBinary, $info['fileName'], [
                 'mime' => 'application/pdf',
             ])
             ->line('Terima kasih telah menggunakan aplikasi kami.');
