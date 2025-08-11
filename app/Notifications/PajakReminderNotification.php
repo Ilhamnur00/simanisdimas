@@ -23,22 +23,26 @@ class PajakReminderNotification extends Notification implements ShouldQueue
         return ['mail'];
     }
 
-    public function toMail(object $notifiable): MailMessage
-    {
-        $tanggal = Carbon::parse($this->kendaraan->tanggal_pajak)
-            ->locale('id')
-            ->translatedFormat('d F Y');
+public function toMail(object $notifiable): MailMessage
+{
+    $tanggal = $this->kendaraan->tanggal_pajak
+        ->locale('id')
+        ->translatedFormat('d F Y');
 
-        $pesan = $this->tipe === 'H-7'
-            ? "Pajak kendaraan *{$this->kendaraan->nama}* akan jatuh tempo pada {$tanggal}. Segera lakukan pembayaran untuk menghindari denda."
-            : "Hari ini adalah batas akhir pembayaran pajak kendaraan *{$this->kendaraan->nama}*.";
+    $namaKendaraan = $this->kendaraan->nama ?? 'kendaraan Anda';
 
-        return (new MailMessage)
-            ->subject("Pengingat Pajak Kendaraan ({$this->tipe})")
-            ->greeting("Halo {$notifiable->name},")
-            ->line($pesan)
-            ->action('Lihat Detail Kendaraan', route('kendaraan.index'))
-            ->line('Terima kasih telah menggunakan SIMANIS.')
-            ->salutation('Hormat kami, Tim SIMANIS');
-    }
+    $pesan = $this->tipe === 'H-7'
+        ? "Pajak kendaraan *{$namaKendaraan}* akan jatuh tempo pada {$tanggal}. Segera lakukan pembayaran untuk menghindari denda."
+        : "Hari ini adalah batas akhir pembayaran pajak kendaraan *{$namaKendaraan}*.";
+
+    return (new MailMessage)
+        ->subject("Pengingat Pajak Kendaraan ({$this->tipe})")
+        ->greeting("Halo {$notifiable->name},")
+        ->line($pesan)
+        ->action('Lihat Detail Kendaraan', route('kendaraan.index', $this->kendaraan->id))
+        ->line('Terima kasih telah menggunakan SIMANIS.')
+        ->salutation('Hormat kami, Tim SIMANIS');
+}
+
+
 }

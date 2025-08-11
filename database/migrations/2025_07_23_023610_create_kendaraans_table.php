@@ -17,6 +17,8 @@ return new class extends Migration
         $table->text('spesifikasi')->nullable();
         $table->date('tanggal_serah_terima')->nullable();
         $table->date('tanggal_pajak')->nullable();
+        $table->boolean('reminder_h7_sent')->default(false);
+        $table->boolean('reminder_h0_sent')->default(false);
         $table->timestamps();
     });
 

@@ -32,8 +32,10 @@ class Kendaraan extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'tanggal_serah_terima' => 'date',
+        'tanggal_serah_terima' => 'datetime',
+        'tanggal_pajak' => 'datetime',
     ];
+
 
     /* -----------------------------------------------------------------
      |  RELASI MODEL
@@ -56,7 +58,7 @@ class Kendaraan extends Model
      * Relasi: Kendaraan memiliki banyak Laporan Perawatan.
      */
     public function riwayatPerawatan()
-{
-    return $this->hasMany(LaporanPerawatan::class);
-}
+    {
+        return $this->hasMany(LaporanPerawatan::class);
+    }
 }
