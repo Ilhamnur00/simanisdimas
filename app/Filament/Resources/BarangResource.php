@@ -7,18 +7,21 @@ use App\Models\Barang;
 use App\Models\Kategori;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Forms\Components\{TextInput, Select, Hidden};
+use Filament\Forms\Components\{TextInput, Select};
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\TrashedFilter;
+use Illuminate\Database\Eloquent\Builder;
 
 class BarangResource extends Resource
 {
     protected static ?string $model = Barang::class;
-    protected static ?string $navigationGroup = 'Manajemen Barang' ;
+    protected static ?string $navigationGroup = 'Manajemen Barang';
     protected static ?string $navigationIcon = 'heroicon-o-archive-box';
-    protected static ?string $navigationLabel= 'Barang';
+    protected static ?string $navigationLabel = 'Barang';
     protected static ?string $pluralModelLabel = 'Daftar Barang';
     protected static ?int $navigationSort = 1;
 
@@ -55,22 +58,54 @@ class BarangResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->columns([
-            TextColumn::make('kode_barang')->searchable(),
-            TextColumn::make('nama_barang')
-                ->label('Nama Barang')
-                ->searchable()
-                ->url(fn (Barang $record) => static::getUrl('edit', ['record' => $record])),
-            TextColumn::make('kategori.nama_kategori')->label('Kategori'),
-            TextColumn::make('stok')
-                ->label('Stok Tersedia'),
-        ])->actions([
-            Tables\Actions\Action::make('Lihat Detail')
-                ->icon('heroicon-s-document-magnifying-glass')
-                ->label('Rincian')
-                ->url(fn (Barang $record) => static::getUrl('rincian', ['record' => $record]))
-                ->openUrlInNewTab(false),
-        ]);
+        return $table
+            ->columns([
+                TextColumn::make('kode_barang')
+                    ->searchable(),
+
+                TextColumn::make('nama_barang')
+                    ->label('Nama Barang')
+                    ->searchable()
+                    ->url(fn (Barang $record) => static::getUrl('edit', ['record' => $record])),
+
+                TextColumn::make('kategori.nama_kategori')
+                    ->label('Kategori'),
+
+                TextColumn::make('detail_barang_sum_jumlah')
+                    ->label('Stok Tersedia')
+                    ->sortable()
+                    ->formatStateUsing(fn ($state) => $state ?? 0),
+            ])
+            ->filters([
+                Filter::make('stok_habis')
+                    ->label('Stok Habis')
+                    ->query(fn (Builder $query) =>
+                        $query->having('detail_barang_sum_jumlah', '=', 0)
+                    ),
+
+                TrashedFilter::make(),
+            ])
+            ->actions([
+                Tables\Actions\ViewAction::make()
+                    ->label('Rincian')
+                    ->icon('heroicon-s-document-magnifying-glass')
+                    ->url(fn (Barang $record) => static::getUrl('rincian', ['record' => $record])),
+
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(), // Soft delete
+                Tables\Actions\RestoreAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\RestoreBulkAction::make(),
+            ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        // Query utama barang + stok sum
+        return parent::getEloquentQuery()
+            ->withSum('detailBarang', 'jumlah');
     }
 
     public static function getPages(): array

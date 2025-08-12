@@ -21,8 +21,6 @@ class DeviceResource extends Resource
     protected static ?string $label = 'Device';
     protected static ?int $navigationSort = 1;
 
-    // Hapus form jika tidak ingin menambah device dari sini
-    
     public static function form(Form $form): Form
     {
         return $form
@@ -65,8 +63,6 @@ class DeviceResource extends Resource
                 Tables\Columns\TextColumn::make('devices_count')
                     ->label('Jumlah Device')
                     ->sortable(),
-
-                
             ])
             ->actions([
                 Tables\Actions\Action::make('rincian')
