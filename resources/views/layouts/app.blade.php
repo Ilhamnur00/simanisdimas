@@ -49,8 +49,8 @@
 
         <!-- Sidebar -->
         <aside class="w-64 bg-gradient-to-b from-blue-900 via-sky-800 to-sky-600 text-white flex flex-col">
-            <div class="p-6 flex justify-center border-b border-sky-500">
-                <img src="{{ asset('images/logo-dinkominfo.png') }}" alt="Logo Kominfo" class="h-12">
+            <div class="py-3 flex justify-center border-b border-sky-500">
+                <img src="{{ asset('images/logo6SM.png') }}" alt="Logo Kominfo" class="w-24 md:w-28 h-auto object-contain">
             </div>
             <div class="p-4 text-xl font-bold border-b border-sky-500 text-center">
                 Simanis Dimas

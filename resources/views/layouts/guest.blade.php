@@ -25,9 +25,9 @@
     <div class="flex items-center justify-center h-screen w-screen bg-gray-100">
         <div class="w-full max-w-5xl h-[80%] flex shadow-md rounded-2xl overflow-hidden border border-sky-100 bg-gradient-to-br from-sky-50 to-white p-6">
             <!-- Kiri -->
-            <div class="hidden md:flex w-1/2 bg-gradient-to-br from-sky-400 to-blue-600 text-white items-center justify-center text-center rounded-l-2xl">
+            <div class="hidden md:flex w-1/2 bg-gradient-to-br from-sky-50 to-sky-50 text-gray-900 items-center justify-center text-center rounded-l-2xl">
                 <div class="flex flex-col items-center text-center px-10">
-                    <img src="{{ asset('images/j2.png') }}" alt="Ilustrasi Login" class="w-100 mb-4">
+                    <img src="{{ asset('images/lg1.png') }}" alt="Ilustrasi Login" class="w-60 mb-4">
                     <h1 class="text-2xl font-semibold mb-3">Selamat Datang di Simanis Dimas</h1>
                     <h4 class="text-sm italic">"Sistem Manajemen dan Inventaris Dinas Komunikasi dan Informasi Kabupaten Banyumas"</h4>
                 </div>
