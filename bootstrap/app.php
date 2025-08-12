@@ -22,13 +22,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('pajak:reminder')
             ->everyMinute()
             ->before(function () {
-                \Illuminate\Support\Facades\Log::info('⏰ Scheduler pajak:reminder dimulai');
+                \Illuminate\Support\Facades\Log::info('Scheduler pajak:reminder dimulai');
             })
             ->after(function () {
-                \Illuminate\Support\Facades\Log::info('✅ Scheduler pajak:reminder selesai');
+                \Illuminate\Support\Facades\Log::info('Scheduler pajak:reminder selesai');
             })
             ->onFailure(function (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('❌ Error scheduler: ' . $e->getMessage());
+                \Illuminate\Support\Facades\Log::error('Error scheduler: ' . $e->getMessage());
             });
     })
     ->create();

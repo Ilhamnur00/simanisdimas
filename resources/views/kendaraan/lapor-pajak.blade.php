@@ -108,7 +108,7 @@
                         <label for="deskripsi" class="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
                         <textarea name="deskripsi" id="deskripsi" rows="4"
                                   class="w-full border border-gray-300 rounded px-3 py-2"
-                                  placeholder="Contoh: Ganti oli, perawatan rutin, dll" required>{{ old('deskripsi') }}</textarea>
+                                  placeholder="Contoh: Tepat waktu, denda, ganti plat" required>{{ old('deskripsi') }}</textarea>
                     </div>
                 </div>
 

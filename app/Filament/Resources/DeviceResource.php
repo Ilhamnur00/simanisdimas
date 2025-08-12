@@ -45,14 +45,7 @@ class DeviceResource extends Resource
                     ->label('Tanggal Serah Terima')
                     ->required(),
 
-                Forms\Components\Select::make('status')
-                    ->label('Status')
-                    ->options([
-                        'aktif' => 'Aktif',
-                        'tidak_aktif' => 'Tidak Aktif',
-                        'perlu_perawatan' => 'Perlu Perawatan',
-                    ])
-                    ->required(),
+               
             ]);
     }
 
