@@ -61,6 +61,7 @@ class BarangResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('kode_barang')
+                    ->label('Kode Barang')
                     ->searchable(),
 
                 TextColumn::make('nama_barang')
@@ -77,13 +78,25 @@ class BarangResource extends Resource
                     ->formatStateUsing(fn ($state) => $state ?? 0),
             ])
             ->filters([
-                Filter::make('stok_habis')
-                    ->label('Stok Habis')
-                    ->query(fn (Builder $query) =>
-                        $query->having('detail_barang_sum_jumlah', '=', 0)
-                    ),
+                Tables\Filters\SelectFilter::make('stok')
+                    ->label('Status Stok')
+                    ->options([
+                        'tersedia' => 'Tersedia',
+                        'habis' => 'Habis',
+                    ])
+                    ->default('tersedia')
+                    ->query(function (Builder $query, array $data) {
+                        if (($data['value'] ?? null) === 'habis') {
+                            return $query->having('detail_barang_sum_jumlah', '=', 0);
+                        }
+                        if (($data['value'] ?? null) === 'tersedia') {
+                            return $query->having('detail_barang_sum_jumlah', '>', 0);
+                        }
+                        return $query;
+                    }),
 
-                TrashedFilter::make(),
+                Tables\Filters\TrashedFilter::make()
+                    ->label('Data Terhapus'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
@@ -91,19 +104,23 @@ class BarangResource extends Resource
                     ->icon('heroicon-s-document-magnifying-glass')
                     ->url(fn (Barang $record) => static::getUrl('rincian', ['record' => $record])),
 
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(), // Soft delete
-                Tables\Actions\RestoreAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(fn (Barang $record) => ($record->detail_barang_sum_jumlah ?? 0) == 0),
+
+                Tables\Actions\DeleteAction::make()
+                    ->visible(fn (Barang $record) => ($record->detail_barang_sum_jumlah ?? 0) == 0),
+
+                Tables\Actions\RestoreAction::make()
+                    ->label('Pulihkan'),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
-                Tables\Actions\RestoreBulkAction::make(),
+                Tables\Actions\DeleteBulkAction::make()->label('Hapus Terpilih'),
+                Tables\Actions\RestoreBulkAction::make()->label('Pulihkan Terpilih'),
             ]);
     }
 
     public static function getEloquentQuery(): Builder
     {
-        // Query utama barang + stok sum
         return parent::getEloquentQuery()
             ->withSum('detailBarang', 'jumlah');
     }
