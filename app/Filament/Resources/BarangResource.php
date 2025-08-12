@@ -12,9 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\TrashedFilter;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Actions\DeleteAction;
 
 class BarangResource extends Resource
 {
@@ -38,6 +36,9 @@ class BarangResource extends Resource
             TextInput::make('nama_barang')
                 ->label('Nama Barang')
                 ->required()
+                ->unique(ignoreRecord: true, modifyRuleUsing: function ($rule) {
+                    return $rule->whereRaw('LOWER(nama_barang) = LOWER(?)');
+                })
                 ->afterStateUpdated(function ($state, callable $set, callable $get) {
                     $kategori = Kategori::find($get('kategori_id'));
                     if ($kategori) {
@@ -51,6 +52,9 @@ class BarangResource extends Resource
             TextInput::make('kode_barang')
                 ->label('Kode Barang')
                 ->required()
+                ->unique(ignoreRecord: true, modifyRuleUsing: function ($rule) {
+                    return $rule->whereRaw('LOWER(kode_barang) = LOWER(?)');
+                })
                 ->readOnly()
                 ->disabledOn('edit'),
         ]);
@@ -60,69 +64,54 @@ class BarangResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('kode_barang')
-                    ->label('Kode Barang')
-                    ->searchable(),
-
+                TextColumn::make('kode_barang')->label('Kode')->searchable(),
                 TextColumn::make('nama_barang')
                     ->label('Nama Barang')
                     ->searchable()
                     ->url(fn (Barang $record) => static::getUrl('edit', ['record' => $record])),
-
-                TextColumn::make('kategori.nama_kategori')
-                    ->label('Kategori'),
-
-                TextColumn::make('detail_barang_sum_jumlah')
-                    ->label('Stok Tersedia')
-                    ->sortable()
-                    ->formatStateUsing(fn ($state) => $state ?? 0),
+                TextColumn::make('kategori.nama_kategori')->label('Kategori'),
+                TextColumn::make('stok')
+                    ->label('Stok Tersedia'),
             ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('stok')
-                    ->label('Status Stok')
-                    ->options([
-                        'tersedia' => 'Tersedia',
-                        'habis' => 'Habis',
-                    ])
-                    ->default('tersedia')
-                    ->query(function (Builder $query, array $data) {
-                        if (($data['value'] ?? null) === 'habis') {
-                            return $query->having('detail_barang_sum_jumlah', '=', 0);
-                        }
-                        if (($data['value'] ?? null) === 'tersedia') {
-                            return $query->having('detail_barang_sum_jumlah', '>', 0);
-                        }
-                        return $query;
-                    }),
-
-                Tables\Filters\TrashedFilter::make()
-                    ->label('Data Terhapus'),
+            ->headerActions([
+                Tables\Actions\Action::make('stok_aktif')
+                    ->label('Stok Aktif')
+                    ->button()
+                    ->action(fn ($livewire) => $livewire->redirect(static::getUrl('index', ['status' => 'aktif']))),
+                Tables\Actions\Action::make('stok_habis')
+                    ->label('Stok Habis')
+                    ->color('danger')
+                    ->button()
+                    ->action(fn ($livewire) => $livewire->redirect(static::getUrl('index', ['status' => 'habis']))),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()
-                    ->label('Rincian')
+                
+                Tables\Actions\Action::make('Lihat Detail')
                     ->icon('heroicon-s-document-magnifying-glass')
+                    ->label('Rincian')
                     ->url(fn (Barang $record) => static::getUrl('rincian', ['record' => $record])),
 
-                Tables\Actions\EditAction::make()
-                    ->visible(fn (Barang $record) => ($record->detail_barang_sum_jumlah ?? 0) == 0),
-
-                Tables\Actions\DeleteAction::make()
-                    ->visible(fn (Barang $record) => ($record->detail_barang_sum_jumlah ?? 0) == 0),
-
-                Tables\Actions\RestoreAction::make()
-                    ->label('Pulihkan'),
+                DeleteAction::make()
+                    ->label('Hapus')
+                    ->action(function (Barang $record) {
+                        $hasRelasi = $record->detailBarang()->exists() || $record->transaksiBarang()->exists();
+                        if ($hasRelasi) {
+                            $record->delete(); // soft delete
+                        } else {
+                            $record->forceDelete(); // hapus permanen
+                        }
+                    })
+                    ->visible(fn (Barang $record) => $record->stok === 0),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make()->label('Hapus Terpilih'),
-                Tables\Actions\RestoreBulkAction::make()->label('Pulihkan Terpilih'),
-            ]);
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withSum('detailBarang', 'jumlah');
+            ->modifyQueryUsing(function ($query) {
+                $status = request()->query('status', 'aktif');
+                if ($status === 'habis') {
+                    $query->whereDoesntHave('detailBarang')
+                          ->orWhereHas('detailBarang', fn ($q) => $q->selectRaw('SUM(jumlah) as total')->havingRaw('total = 0'));
+                } else {
+                    $query->whereHas('detailBarang', fn ($q) => $q->where('jumlah', '>', 0));
+                }
+            });
     }
 
     public static function getPages(): array
