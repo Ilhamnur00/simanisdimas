@@ -96,6 +96,7 @@ class DeviceResource extends Resource
         return [
             'index' => Pages\ListDevices::route('/'),
             'create' => Pages\CreateDevice::route('/create'),
+            'edit' => Pages\EditDevice::route('/{record}/edit'),
             'rincian-device' => Pages\RincianDevice::route('/{record}/rincian-device'),
         ];
     }

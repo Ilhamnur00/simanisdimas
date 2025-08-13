@@ -112,6 +112,7 @@ class KendaraanResource extends Resource
         return [
             'index' => Pages\ListKendaraans::route('/'),
             'create' => Pages\CreateKendaraan::route('/create'),
+            'edit' => Pages\EditKendaraan::route('/{record}/edit'),
             'rincian-kendaraan' => Pages\RincianKendaraan::route('/{record}/rincian-kendaraan'),
         ];
     }
