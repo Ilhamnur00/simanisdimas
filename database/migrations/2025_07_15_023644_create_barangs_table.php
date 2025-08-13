@@ -9,7 +9,9 @@ return new class extends Migration {
         Schema::create('barang', function (Blueprint $table) {
             $table->id();
             $table->foreignId('kategori_id')->constrained('kategori')->onDelete('cascade');
-            $table->string('nama_barang');
+            $table->string('nama_barang')
+                ->collation('utf8mb4_unicode_ci')
+                ->unique();
             $table->string('kode_barang')->unique()->nullable();
             $table->softDeletes();
             $table->timestamps();

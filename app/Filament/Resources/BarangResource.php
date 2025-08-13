@@ -13,6 +13,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\DeleteAction;
+use Illuminate\Validation\Rule;
+use Closure;
 
 class BarangResource extends Resource
 {
@@ -36,9 +38,19 @@ class BarangResource extends Resource
             TextInput::make('nama_barang')
                 ->label('Nama Barang')
                 ->required()
-                ->unique(ignoreRecord: true, modifyRuleUsing: function ($rule) {
-                    return $rule->whereRaw('LOWER(nama_barang) = LOWER(?)');
-                })
+                ->rules([
+                    function (string $attribute, $value, Closure $fail) {
+                        $exists = Barang::whereRaw('LOWER(nama_barang) = ?', [strtolower($value)])
+                            ->when(request()->route('record'), fn($q) =>
+                                $q->where('id', '!=', request()->route('record'))
+                            )
+                            ->exists();
+
+                        if ($exists) {
+                            $fail('Nama barang sudah ada, silakan gunakan nama lain.');
+                        }
+                    }
+                ])
                 ->afterStateUpdated(function ($state, callable $set, callable $get) {
                     $kategori = Kategori::find($get('kategori_id'));
                     if ($kategori) {
@@ -52,13 +64,24 @@ class BarangResource extends Resource
             TextInput::make('kode_barang')
                 ->label('Kode Barang')
                 ->required()
-                ->unique(ignoreRecord: true, modifyRuleUsing: function ($rule) {
-                    return $rule->whereRaw('LOWER(kode_barang) = LOWER(?)');
-                })
+                ->rules([
+                    function (string $attribute, $value, Closure $fail) {
+                        $exists = Barang::whereRaw('LOWER(kode_barang) = ?', [strtolower($value)])
+                            ->when(request()->route('record'), fn($q) =>
+                                $q->where('id', '!=', request()->route('record'))
+                            )
+                            ->exists();
+
+                        if ($exists) {
+                            $fail('Kode barang sudah ada, silakan gunakan kode lain.');
+                        }
+                    }
+                ])
                 ->readOnly()
                 ->disabledOn('edit'),
         ]);
     }
+
 
     public static function table(Table $table): Table
     {
