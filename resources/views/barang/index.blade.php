@@ -96,17 +96,28 @@
         const searchInput = document.getElementById('searchInput');
         const kategoriSelect = document.getElementById('kategoriSelect');
 
+        // Jalankan filter saat kategori diubah
         kategoriSelect.addEventListener('change', applyFilters);
 
         function applyFilters() {
-            const search = encodeURIComponent(searchInput.value);
-            const kategori = encodeURIComponent(kategoriSelect.value);
+            const params = new URLSearchParams(window.location.search);
 
-            const params = new URLSearchParams();
-            if (search) params.append('search', search);
-            if (kategori) params.append('kategori', kategori);
+            const search = searchInput.value.trim();
+            const kategori = kategoriSelect.value;
 
-            window.location.href = `?${params.toString()}`;
+            if (search) {
+                params.set('search', search);
+            } else {
+                params.delete('search');
+            }
+
+            if (kategori) {
+                params.set('kategori', kategori);
+            } else {
+                params.delete('kategori');
+            }
+
+            window.location.search = params.toString();
         }
     </script>
 </x-app-layout>

@@ -21,6 +21,12 @@ class DeviceResource extends Resource
     protected static ?string $label = 'Device';
     protected static ?int $navigationSort = 1;
 
+
+public static function getPluralLabel(): string
+{
+    return 'Daftar Device'; // plural
+}
+
     public static function form(Form $form): Form
     {
         return $form

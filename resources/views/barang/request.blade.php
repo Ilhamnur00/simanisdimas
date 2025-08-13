@@ -125,6 +125,8 @@
         const kategoriSelect = document.getElementById('kategori');
         const barangSelect = document.getElementById('barang_id');
         const allBarangOption = Array.from(barangSelect.options);
+        const stokSpan = document.getElementById('stok_tersedia');
+        const jumlahInput = document.getElementById('jumlah');
 
         kategoriSelect.addEventListener('change', function () {
             const selected = this.value;
@@ -132,35 +134,50 @@
             const filtered = allBarangOption.filter(opt => opt.dataset.kategori == selected);
             if (filtered.length > 0) {
                 barangSelect.innerHTML = '<option value="">-- Pilih --</option>';
-                filtered.forEach(opt => barangSelect.appendChild(opt));
+                filtered.forEach(opt => barangSelect.appendChild(opt.cloneNode(true)));
             } else {
                 barangSelect.innerHTML = '<option value="">Tidak ada barang</option>';
             }
+            stokSpan.textContent = '-';
         });
 
+        function tampilkanStok(select) {
+            const stok = select.options[select.selectedIndex]?.dataset?.stok ?? '-';
+            stokSpan.textContent = stok !== '-' ? `${stok} unit` : '-';
+            jumlahInput.max = stok !== '-' ? stok : '';
+        }
+
+        // Cegah input jumlah melebihi stok
+        jumlahInput.addEventListener('input', () => {
+            const stokMaks = parseInt(jumlahInput.max);
+            if (stokMaks && jumlahInput.value > stokMaks) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Jumlah Melebihi Stok',
+                    text: `Stok tersedia hanya ${stokMaks} unit`,
+                    confirmButtonColor: '#3085d6',
+                });
+                jumlahInput.value = stokMaks;
+            }
+        });
+
+        // Saat halaman load
         window.addEventListener('DOMContentLoaded', () => {
             const selectedKategori = kategoriSelect.value;
             const oldBarangId = "{{ old('barang_id') }}";
+
             if (selectedKategori) {
                 const filtered = allBarangOption.filter(opt => opt.dataset.kategori == selectedKategori);
                 barangSelect.innerHTML = '<option value="">-- Pilih --</option>';
                 filtered.forEach(opt => {
-                    if (opt.value === oldBarangId) opt.selected = true;
-                    barangSelect.appendChild(opt);
+                    const clone = opt.cloneNode(true);
+                    if (clone.value === oldBarangId) clone.selected = true;
+                    barangSelect.appendChild(clone);
                 });
             }
-        });
 
-        const stokSpan = document.getElementById('stok_tersedia');
-        function tampilkanStok(select) {
-            const stok = select.options[select.selectedIndex]?.dataset?.stok ?? '-';
-            stokSpan.textContent = `${stok} unit`;
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const selectedOption = document.querySelector('#barang_id option:checked');
-            if (selectedOption && selectedOption.dataset.stok) {
-                tampilkanStok(document.getElementById('barang_id'));
+            if (barangSelect.value) {
+                tampilkanStok(barangSelect);
             }
         });
     </script>

@@ -21,7 +21,6 @@
                 <table class="min-w-full divide-y divide-slate-200 text-sm text-left">
                     <thead class="bg-gradient-to-r from-sky-700 to-sky-500 text-white uppercase text-xs font-semibold text-left">
                         <tr>
-                            <th class="px-6 py-4">#</th>
                             <th class="px-6 py-4">Tanggal</th>
                             <th class="px-6 py-4">Kategori</th>
                             <th class="px-6 py-4">Nama Barang</th>
@@ -32,7 +31,6 @@
                     <tbody class="text-gray-800 divide-y divide-slate-100">
                         @forelse ($transaksi as $index => $item)
                             <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4">{{ $index + 1 }}</td>
                                 <td class="px-6 py-4">{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
                                 <td class="px-6 py-4">{{ $item->barang->kategori->nama_kategori ?? '-' }}</td>
                                 <td class="px-6 py-4">{{ $item->barang->nama_barang ?? '-' }}</td>
@@ -59,7 +57,7 @@
     {{-- MODAL DETAIL --}}
     <div id="detailModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm hidden transition-opacity duration-300 ease-in-out">
         <div class="bg-white/90 backdrop-blur-xl w-full max-w-md mx-auto rounded-2xl shadow-2xl p-6 border border-gray-200 animate-fade-in">
-            <h3 class="text-xl font-bold mb-4 text-slate-800">📦 Detail Transaksi Barang</h3>
+            <h3 class="text-xl font-bold mb-4 text-slate-800">Detail Transaksi Barang</h3>
 
             <div class="space-y-2 text-sm text-gray-700">
                 <p><strong>Tanggal:</strong> <span id="detailTanggal"></span></p>
@@ -69,7 +67,7 @@
             </div>
 
             <div class="text-right mt-5">
-                <button onclick="closeModal()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow">
+                <button onclick="closeModal()" class="bg-gradient-to-r from-sky-700 to-sky-500 text-white px-6 py-2 rounded-md shadow-md hover:from-sky-800 hover:to-sky-600 hover:opacity-90 transition text-sm">
                     Tutup
                 </button>
             </div>

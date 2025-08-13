@@ -8,16 +8,31 @@ use App\Models\Kategori;
 use App\Models\TransaksiBarang;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request; // tambahkan di atas
 
 class BarangController extends Controller
 {
-    public function index()
-    {
-        $barang = Barang::all()->filter(function ($item) {
-        return $item->stok > 0;
-});
-        return view('barang.index', compact('barang'));
-    }
+public function index(Request $request)
+{
+    $barang = Barang::with('kategori')
+        ->select('barang.*')
+        ->selectRaw('(SELECT SUM(jumlah) FROM detail_barang WHERE detail_barang.barang_id = barang.id) as stok')
+        ->when($request->search, function ($query, $search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_barang', 'like', "%{$search}%")
+                  ->orWhere('kode_barang', 'like', "%{$search}%");
+            });
+        })
+        ->when($request->kategori, function ($query, $kategori) {
+            $query->where('kategori_id', $kategori);
+        })
+        ->having('stok', '>', 0)
+        ->orderBy('nama_barang')
+        ->get();
+
+    return view('barang.index', compact('barang'));
+}
+
 
 public function createRequest()
 {

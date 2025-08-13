@@ -115,7 +115,7 @@
                 <!-- Tombol Submit -->
                 <div class="pt-2">
                     <button type="submit"
-                            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded">
+                            class="bg-gradient-to-r from-sky-700 to-sky-500 hover:from-sky-800 hover:to-sky-600 text-white font-semibold px-4 py-2 rounded">
                         Simpan Laporan Pajak
                     </button>
                 </div>
