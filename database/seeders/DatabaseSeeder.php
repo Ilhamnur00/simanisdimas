@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             KategoriSeeder::class,
             DeviceSeeder::class,
+            BarangSeeder::class,
+            KendaraanSeeder::class,
         ]);
     }
 

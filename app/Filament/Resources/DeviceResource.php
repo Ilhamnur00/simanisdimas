@@ -21,11 +21,18 @@ class DeviceResource extends Resource
     protected static ?string $label = 'Device';
     protected static ?int $navigationSort = 1;
 
+    public static function getPluralLabel(): string
+    {
+        return 'Daftar Device'; // plural
+    }
 
-public static function getPluralLabel(): string
-{
-    return 'Daftar Device'; // plural
-}
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereHas('user', function ($query) {
+                $query->whereHas('devices');
+            });
+    }
 
     public static function form(Form $form): Form
     {
@@ -57,8 +64,9 @@ public static function getPluralLabel(): string
     {
         return $table
             ->query(
-                // Ambil data unik berdasarkan user
-                User::query()->withCount('devices')
+                User::query()
+                    ->withCount('devices')
+                    ->having('devices_count', '>', 0) // filter hanya yang punya device
             )
             ->columns([
                 Tables\Columns\TextColumn::make('name')
@@ -75,8 +83,7 @@ public static function getPluralLabel(): string
                     ->label('Rincian Device')
                     ->icon('heroicon-o-computer-desktop')
                     ->url(fn ($record) => route('filament.admin.resources.devices.rincian-device', ['record' => $record->id])),
-            ])
-            ->bulkActions([]);
+            ]);
     }
 
     public static function getRelations(): array
@@ -89,7 +96,6 @@ public static function getPluralLabel(): string
         return [
             'index' => Pages\ListDevices::route('/'),
             'create' => Pages\CreateDevice::route('/create'),
-            'edit' => Pages\EditDevice::route('/{record}/edit'),
             'rincian-device' => Pages\RincianDevice::route('/{record}/rincian-device'),
         ];
     }

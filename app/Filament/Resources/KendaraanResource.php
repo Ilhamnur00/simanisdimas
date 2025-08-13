@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class KendaraanResource extends Resource
 {
@@ -20,6 +21,15 @@ class KendaraanResource extends Resource
     protected static ?string $label = 'Kendaraan';
     protected static ?string $pluralLabel = 'Kendaraan';
     protected static ?int $navigationSort = 1;
+
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereHas('user', function ($query) {
+                $query->whereHas('kendaraans');
+            });
+    }
 
     public static function form(Form $form): Form
     {
@@ -70,7 +80,9 @@ class KendaraanResource extends Resource
     {
         return $table
             ->query(
-                User::query()->withCount('kendaraans')
+                User::query()
+                    ->withCount('kendaraans')
+                    ->having('kendaraans_count', '>', 0)
             )
             ->columns([
                 Tables\Columns\TextColumn::make('name')
@@ -87,8 +99,7 @@ class KendaraanResource extends Resource
                     ->label('Rincian Kendaraan')
                     ->icon('heroicon-o-eye')
                     ->url(fn ($record) => route('filament.admin.resources.kendaraans.rincian-kendaraan', ['record' => $record->id])),
-            ])
-            ->bulkActions([]);
+            ]);
     }
 
     public static function getRelations(): array
@@ -101,7 +112,6 @@ class KendaraanResource extends Resource
         return [
             'index' => Pages\ListKendaraans::route('/'),
             'create' => Pages\CreateKendaraan::route('/create'),
-            'edit' => Pages\EditKendaraan::route('/{record}/edit'),
             'rincian-kendaraan' => Pages\RincianKendaraan::route('/{record}/rincian-kendaraan'),
         ];
     }
