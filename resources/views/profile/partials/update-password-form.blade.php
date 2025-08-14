@@ -1,10 +1,10 @@
 <section class="bg-white rounded-2xl shadow p-6 space-y-6">
     <header class="mb-4">
         <h2 class="text-xl font-bold text-sky-800">
-            {{ __('Update Password') }}
+            {{ __('Perbarui Kata Sandi') }}
         </h2>
         <p class="mt-1 text-sm text-gray-600">
-            {{ __('Ensure your account is using a long, random password to stay secure.') }}
+            {{ __('Pastikan akun Anda menggunakan kata sandi yang panjang dan acak untuk menjaga keamanan.') }}
         </p>
     </header>
 
@@ -12,9 +12,9 @@
         @csrf
         @method('put')
 
-        {{-- Current Password --}}
+        {{-- Kata Sandi Saat Ini --}}
         <div>
-            <x-input-label for="update_password_current_password" :value="__('Current Password')" class="text-sky-700 font-medium" />
+            <x-input-label for="update_password_current_password" :value="__('Kata Sandi Saat Ini')" class="text-sky-700 font-medium" />
             <x-text-input
                 id="update_password_current_password"
                 name="current_password"
@@ -24,9 +24,9 @@
             <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
         </div>
 
-        {{-- New Password --}}
+        {{-- Kata Sandi Baru --}}
         <div>
-            <x-input-label for="update_password_password" :value="__('New Password')" class="text-sky-700 font-medium" />
+            <x-input-label for="update_password_password" :value="__('Kata Sandi Baru')" class="text-sky-700 font-medium" />
             <x-text-input
                 id="update_password_password"
                 name="password"
@@ -36,9 +36,9 @@
             <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
         </div>
 
-        {{-- Confirm Password --}}
+        {{-- Konfirmasi Kata Sandi --}}
         <div>
-            <x-input-label for="update_password_password_confirmation" :value="__('Confirm Password')" class="text-sky-700 font-medium" />
+            <x-input-label for="update_password_password_confirmation" :value="__('Konfirmasi Kata Sandi')" class="text-sky-700 font-medium" />
             <x-text-input
                 id="update_password_password_confirmation"
                 name="password_confirmation"
@@ -48,11 +48,11 @@
             <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
         </div>
 
-        {{-- Save Button --}}
+        {{-- Tombol Simpan --}}
         <div class="flex items-center gap-4">
             <x-primary-button
                 class="bg-gradient-to-r from-sky-700 to-sky-500 hover:from-sky-800 hover:to-sky-600 text-white font-semibold px-4 py-2 rounded shadow transition duration-200">
-                {{ __('Save') }}
+                {{ __('Simpan') }}
             </x-primary-button>
 
             @if (session('status') === 'password-updated')
@@ -63,7 +63,7 @@
                     x-init="setTimeout(() => show = false, 2000)"
                     class="text-sm text-green-600 font-medium"
                 >
-                    {{ __('Saved.') }}
+                    {{ __('Tersimpan.') }}
                 </p>
             @endif
         </div>

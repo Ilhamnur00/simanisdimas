@@ -124,6 +124,21 @@
                         @endif
                     </div>
                 </div>
+
+                {{-- Menu Admin Filament --}}
+                @hasanyrole('admin|super_admin')
+                <a href="{{ url('/admin') }}" class="block px-3 py-2 rounded hover:bg-sky-700 flex items-center gap-2 transition">
+                    {{-- Heroicon: Cog (Settings) --}}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-sky-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11.049 2.927c.3-1.14 1.603-1.14 1.902 0a1.724 1.724 0 002.573.987c.986-.574 2.18.32 1.905 1.37a1.724 1.724 0 00.987 2.573c1.14.3 1.14 1.603 0 1.902a1.724 1.724 0 00-.987 2.573c.274 1.05-.92 1.944-1.905 1.37a1.724 1.724 0 00-2.573.987c-.3 1.14-1.603 1.14-1.902 0a1.724 1.724 0 00-2.573-.987c-.986.574-2.18-.32-1.905-1.37a1.724 1.724 0 00-.987-2.573c-1.14-.3-1.14-1.603 0-1.902a1.724 1.724 0 00.987-2.573c-.275-1.05.92-1.944 1.905-1.37.875.51 2.04.162 2.573-.987z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Panel Admin
+                </a>
+                @endhasanyrole
+
             </nav>
 
             <!-- Admin Section -->

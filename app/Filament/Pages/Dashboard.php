@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Models\LaporanPerawatan;
 use App\Models\Maintenance;
 use App\Models\TransaksiBarang;
 use App\Models\Device;
@@ -14,41 +15,35 @@ class Dashboard extends Page
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static string $view = 'filament.pages.dashboard';
 
-    // Chart Data
-    public array $deviceChartData = [];
     public array $barangChartData = [];
+    public array $deviceChartData = [];
     public array $kendaraanChartData = [];
 
-    // Total Count
-    public int $totalDevice;
     public int $totalBarang;
+    public int $totalDevice;
     public int $totalKendaraan;
 
-    // Tahun yang dipilih
-    public int $selectedYearDevice;
     public int $selectedYearBarang;
+    public int $selectedYearDevice;
     public int $selectedYearKendaraan;
 
-    // Daftar Tahun tersedia
-    public array $availableYearsDevice = [];
     public array $availableYearsBarang = [];
+    public array $availableYearsDevice = [];
     public array $availableYearsKendaraan = [];
 
     public function mount(): void
     {
-        // Ambil tahun dari query string
-        $this->selectedYearDevice = request('tahun_device', now()->year);
         $this->selectedYearBarang = request('tahun_barang', now()->year);
+        $this->selectedYearDevice = request('tahun_device', now()->year);
         $this->selectedYearKendaraan = request('tahun_kendaraan', now()->year);
 
-        // Ambil daftar tahun
-        $this->availableYearsDevice = Maintenance::selectRaw('YEAR(tanggal) as year')
+        $this->availableYearsBarang = TransaksiBarang::selectRaw('YEAR(tanggal) as year')
             ->distinct()
             ->orderByDesc('year')
             ->pluck('year')
             ->toArray();
 
-        $this->availableYearsBarang = TransaksiBarang::selectRaw('YEAR(tanggal) as year')
+        $this->availableYearsDevice = Maintenance::selectRaw('YEAR(tanggal) as year')
             ->distinct()
             ->orderByDesc('year')
             ->pluck('year')
@@ -60,14 +55,12 @@ class Dashboard extends Page
             ->pluck('year')
             ->toArray();
 
-        // Data untuk grafik bulanan
-        $this->deviceChartData = $this->generateMonthlyData(Maintenance::class, 'tanggal', $this->selectedYearDevice);
         $this->barangChartData = $this->generateMonthlyData(TransaksiBarang::class, 'tanggal', $this->selectedYearBarang);
-        $this->kendaraanChartData = $this->generateMonthlyData(Kendaraan::class, 'created_at', $this->selectedYearKendaraan);
+        $this->deviceChartData = $this->generateMonthlyData(Maintenance::class, 'tanggal', $this->selectedYearDevice);
+        $this->kendaraanChartData = $this->generateMonthlyData(LaporanPerawatan::class, 'tanggal', $this->selectedYearKendaraan);
 
-        // Hitung total data
-        $this->totalDevice = Device::count();
         $this->totalBarang = Barang::count();
+        $this->totalDevice = Device::count();
         $this->totalKendaraan = Kendaraan::count();
     }
 

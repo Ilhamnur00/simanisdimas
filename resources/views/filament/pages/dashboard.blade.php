@@ -1,15 +1,4 @@
 <x-filament::page>
-    <!-- Grafik dan Filter Perawatan Device -->
-    <div class="mt-8">
-        @include('components.grafik-perawatan-device', [
-            'deviceChartData' => $deviceChartData,
-            'selectedYearDevice' => $selectedYearDevice,
-            'availableYearsDevice' => $availableYearsDevice,
-            'selectedYearBarang' => $selectedYearBarang,
-            'totalDevice' => $totalDevice, // <--- Tambahkan ini
-        ])
-    </div>
-
     <!-- Grafik dan Filter Transaksi Barang -->
     <div class="mt-8">
         @include('components.grafik-transaksi-barang', [
@@ -18,6 +7,17 @@
             'availableYearsBarang' => $availableYearsBarang,
             'selectedYearDevice' => $selectedYearDevice,
             'totalBarang' => $totalBarang, // <-- Tambahan ini
+        ])
+    </div>
+    
+    <!-- Grafik dan Filter Perawatan Device -->
+    <div class="mt-8">
+        @include('components.grafik-perawatan-device', [
+            'deviceChartData' => $deviceChartData,
+            'selectedYearDevice' => $selectedYearDevice,
+            'availableYearsDevice' => $availableYearsDevice,
+            'selectedYearBarang' => $selectedYearBarang,
+            'totalDevice' => $totalDevice, // <--- Tambahkan ini
         ])
     </div>
 

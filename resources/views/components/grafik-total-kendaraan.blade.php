@@ -119,7 +119,7 @@
                         displayColors: false,
                         callbacks: {
                             label: (tooltipItem) => {
-                                return `Jumlah Kendaraan: ${tooltipItem.raw}`;
+                                return `Jumlah Perawatan: ${tooltipItem.raw}`;
                             }
                         }
                     }
